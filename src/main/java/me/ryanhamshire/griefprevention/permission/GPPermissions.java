@@ -81,7 +81,7 @@ public class GPPermissions {
     public static final String CLAIM_RESIZE = "griefprevention.user.claim.resize";
     public static final String CLAIM_SHOW_TUTORIAL = "griefprevention.user.claim.show-tutorial";
     public static final String SIEGE_IMMUNE = "griefprevention.user.claim.siege.immune";
-    public static final String VISUALIZE_CLAIMS = "griefprevention.user.claim.visualize";
+    public static final String VISUALIZE_CLAIMS = "griefprevention.user.claim.visualize.base";
     public static final String VISUALIZE_CLAIMS_NEARBY = "griefprevention.user.claim.visualize.nearby";
     public static final String COMMAND_PLAYER_INFO_BASE = "griefprevention.user.command.info.base";
     public static final String COMMAND_PLAYER_INFO_OTHERS = "griefprevention.user.command.info.others";

@@ -141,7 +141,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.common.SpongeImpl;
 import org.spongepowered.common.SpongeImplHooks;
 import org.spongepowered.common.bridge.OwnershipTrackedBridge;
-import org.spongepowered.common.data.util.NbtDataUtil;
+//import org.spongepowered.common.data.util.NbtDataUtil;
 import org.spongepowered.common.entity.SpongeEntityType;
 import org.spongepowered.common.bridge.entity.EntityBridge;
 import org.spongepowered.common.bridge.world.chunk.ActiveChunkReferantBridge;
@@ -216,7 +216,7 @@ public class PlayerEventHandler {
                 playerData.inTown = false;
             }
             final GPClaim sourceTown = sourceClaim.getTownClaim();
-            final Text townTag = sourceTown.getTownData().getTownTag().orElse(null);
+            final String townTag = sourceTown.getTownData().getTownTag().orElse(null);
 
             Text header = event.getFormatter().getHeader().toText();
             Text body = event.getFormatter().getBody().toText();

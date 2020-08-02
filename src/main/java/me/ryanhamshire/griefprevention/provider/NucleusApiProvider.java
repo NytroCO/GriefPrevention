@@ -31,8 +31,10 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingServi
 import me.ryanhamshire.griefprevention.DataStore;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
+import me.ryanhamshire.griefprevention.configuration.TownDataConfig;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
@@ -64,7 +66,7 @@ public class NucleusApiProvider {
 
                             // Shamelessly stolen from PlayerEventHandler
                             if (data.inTown) {
-                                return dataStore.getClaimAtPlayer(data, player.getLocation()).getTownClaim().getTownData().getTownTag();
+                                return Optional.of(Text.of(dataStore.getClaimAtPlayer(data, player.getLocation()).getTownClaim().getTownData().getTownTag()));
                             }
                         }
 

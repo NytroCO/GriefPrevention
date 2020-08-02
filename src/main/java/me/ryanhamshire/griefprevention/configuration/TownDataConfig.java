@@ -37,18 +37,18 @@ import java.util.UUID;
 public class TownDataConfig extends ClaimDataConfig {
 
     @Setting
-    private Text townTag;
+    private String townTag;
     @Setting
     private Map<UUID, String> residentPastDueTaxTimestamps = Maps.newHashMap();
     @Setting
     private Map<UUID, Double> residentTaxBalances = Maps.newHashMap();
 
-    public Optional<Text> getTownTag() {
+    public Optional<String> getTownTag() {
         return Optional.ofNullable(this.townTag);
     }
 
     public void setTownTag(Text tag) {
-        this.townTag = tag;
+        this.townTag = tag.toPlain();
     }
 
     public Map<UUID, String> getResidentPastDueTaxTimestamps() {
