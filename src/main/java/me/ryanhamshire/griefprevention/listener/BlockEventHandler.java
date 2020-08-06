@@ -190,7 +190,7 @@ public class BlockEventHandler {
                 // check overrides
                 final Tristate result = GPPermissionHandler.getClaimPermission(event, location, targetClaim, GPPermissions.BLOCK_BREAK, source, location.getBlock(), player, TrustType.BUILDER, true);
                 if (result != Tristate.TRUE) {
-                    final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, targetClaim.getOwnerName() + "'s permission to build.");
+                    final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, targetClaim.getOwnerName().toPlain() + "'s permission to build.");
                     GriefPreventionPlugin.sendClaimDenyMessage(targetClaim, player, message);
                     event.setCancelled(true);
                     lastBlockPreCancelled = true;
@@ -730,7 +730,7 @@ public class BlockEventHandler {
             final Tristate result = GPPermissionHandler.getClaimPermission(event, location, targetClaim, GPPermissions.BLOCK_BREAK, source, transaction.getOriginal(), user, TrustType.BUILDER, true);
             if (result != Tristate.TRUE) {
                 if (player != null) {
-                    final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, targetClaim.getOwnerName() + "'s permission to build.");
+                    final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, targetClaim.getOwnerName().toPlain() + "'s permission to build.");
                     GriefPreventionPlugin.sendClaimDenyMessage(targetClaim, player, message);
                 }
 
@@ -974,7 +974,7 @@ public class BlockEventHandler {
         if (GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.INTERACT_BLOCK_SECONDARY, user, location.getBlock(), user, TrustType.ACCESSOR, true) == Tristate.FALSE) {
             if (user instanceof Player) {
                 event.setCancelled(true);
-                final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName() + "'s permission to access that.");
+                final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName().toPlain() + "'s permission to access that.");
                 GriefPreventionPlugin.sendClaimDenyMessage(claim, (Player) user, message);
                 return;
             }

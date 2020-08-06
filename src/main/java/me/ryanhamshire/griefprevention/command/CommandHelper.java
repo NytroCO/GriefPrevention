@@ -569,7 +569,7 @@ public class CommandHelper {
 
                 Text claimName = claim.getData().getName().orElse(Text.of());
                 Text teleportName = claim.getData().getName().orElse(claim.getFriendlyNameType());
-                Text ownerLine = Text.of(TextColors.YELLOW, "Owner", TextColors.WHITE, " : ", TextColors.GOLD, claim.getOwnerName(), "\n");
+                Text ownerLine = Text.of(TextColors.YELLOW, "Owner", TextColors.WHITE, " : ", TextColors.GOLD, claim.getOwnerName().toPlain(), "\n");
                 Text claimTypeInfo = Text.of(TextColors.YELLOW, "Type", TextColors.WHITE, " : ",
                         claim.getFriendlyNameType(), " ", TextColors.GRAY, claim.isCuboid() ? "3D " : "2D ",
                         TextColors.WHITE, " (Area: ", TextColors.GRAY, claim.getClaimBlocks(), " blocks",
@@ -625,7 +625,7 @@ public class CommandHelper {
                             .append(Text.of(
                                     claimSpawn, " ",
                                     claimInfoCommandClick, TextColors.WHITE, " : ",
-                                    TextColors.GOLD, claim.getOwnerName(), " ",
+                                    TextColors.GOLD, claim.getOwnerName().toPlain(), " ",
                                     children, " ",
                                     claimName.isEmpty() ? "" : claimName, " ",
                                     buyClaim))
@@ -635,7 +635,7 @@ public class CommandHelper {
                             .append(Text.of(
                                     claimSpawn, " ",
                                     claimInfoCommandClick, TextColors.WHITE, " : ",
-                                    TextColors.GOLD, claim.getOwnerName(), " ",
+                                    TextColors.GOLD, claim.getOwnerName().toPlain(), " ",
                                     claimName.isEmpty() ? "" : claimName, " ",
                                     buyClaim))
                             .build());
@@ -656,7 +656,7 @@ public class CommandHelper {
             }
             Account playerAccount = GriefPreventionPlugin.instance.economyService.get().getOrCreateAccount(player.getUniqueId()).orElse(null);
             if (playerAccount == null) {
-                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "No economy account found for user " + claim.getOwnerName() + "."));
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "No economy account found for user " + claim.getOwnerName().toPlain() + "."));
                 return;
             }
 
@@ -904,7 +904,7 @@ public class CommandHelper {
         } else {
             //check permission here
             if (claim.allowGrantPermission(player) != null) {
-                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "s permission to manage permissions here."));
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "s permission to manage permissions here."));
                 return;
             }
 
@@ -975,7 +975,7 @@ public class CommandHelper {
         } else {
             //check permission here
             if (claim.allowGrantPermission(player) != null) {
-                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "s permission to manage permissions here."));
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "s permission to manage permissions here."));
                 return;
             }
 
@@ -1166,7 +1166,7 @@ public class CommandHelper {
                 }
             }
         } else {
-            final Text message = Text.of(TextColors.RED, "You don't have permission to manage " + claim.getOwnerName() + "'s claim bank.");
+            final Text message = Text.of(TextColors.RED, "You don't have permission to manage " + claim.getOwnerName().toPlain() + "'s claim bank.");
             GriefPreventionPlugin.sendMessage(src, message);
         }
     }

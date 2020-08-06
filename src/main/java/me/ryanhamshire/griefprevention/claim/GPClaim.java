@@ -510,7 +510,7 @@ public class GPClaim implements Claim {
             return this.parent.allowEdit(user);
         }
 
-        return Text.of(TextColors.RED, "Only " + this.getOwnerName() + " can modify this claim.");
+        return Text.of(TextColors.RED, "Only " + this.getOwnerName().toPlain() + " can modify this claim.");
     }
 
     //grant permission check, relatively simple
@@ -531,7 +531,7 @@ public class GPClaim implements Claim {
             return this.parent.allowGrantPermission(player);
         }
 
-        return Text.of(TextColors.RED, "You don't have " + this.getOwnerName() + "s permission to manage permissions here.");
+        return Text.of(TextColors.RED, "You don't have " + this.getOwnerName().toPlain() + "s permission to manage permissions here.");
     }
 
     // returns a copy of the location representing lower x, y, z limits
@@ -3034,7 +3034,7 @@ public class GPClaim implements Claim {
                     if (townCost > 0) {
                         Account playerAccount = GriefPreventionPlugin.instance.economyService.get().getOrCreateAccount(player.getUniqueId()).orElse(null);
                         if (playerAccount == null) {
-                            final Text message = Text.of(TextColors.RED, "No economy account found for user " + claim.getOwnerName() + ".");
+                            final Text message = Text.of(TextColors.RED, "No economy account found for user " + claim.getOwnerName().toPlain() + ".");
                             GriefPreventionPlugin.sendMessage(player, message);
                             return new GPClaimResult(claim, ClaimResultType.NOT_ENOUGH_FUNDS, message);
                         }

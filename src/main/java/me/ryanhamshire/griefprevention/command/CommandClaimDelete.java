@@ -110,7 +110,7 @@ public class CommandClaimDelete implements CommandExecutor {
 
             GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Claim deleted."));
             GriefPreventionPlugin.addLogEntry(
-                    player.getName() + " deleted " + claim.getOwnerName() + "'s claim at "
+                    player.getName() + " deleted " + claim.getOwnerName().toPlain() + "'s claim at "
                             + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()),
                     CustomLogEntryTypes.AdminActivity);
 

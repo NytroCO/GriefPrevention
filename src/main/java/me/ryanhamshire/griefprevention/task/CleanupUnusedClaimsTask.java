@@ -102,7 +102,7 @@ public class CleanupUnusedClaimsTask implements Runnable {
                                 GriefPreventionPlugin.instance.restoreClaim(claim, 0);
                             }
 
-                            GriefPreventionPlugin.addLogEntry(" " + claim.getOwnerName() + "'s new player claim " + "'" + claim.id + "' expired.",
+                            GriefPreventionPlugin.addLogEntry(" " + claim.getOwnerName().toPlain() + "'s new player claim " + "'" + claim.id + "' expired.",
                                     CustomLogEntryTypes.AdminActivity);
                         }
                     }
@@ -130,7 +130,7 @@ public class CleanupUnusedClaimsTask implements Runnable {
                         Sponge.getCauseStackManager().addContext(GPContextKeys.PLAYER_CLAIM_EXPIRED, GriefPreventionPlugin.instance.pluginContainer);
 
                         claimManager.deleteClaim(claim);
-                        GriefPreventionPlugin.addLogEntry("Removed " + claim.getOwnerName() + "'s unused claim @ "
+                        GriefPreventionPlugin.addLogEntry("Removed " + claim.getOwnerName().toPlain() + "'s unused claim @ "
                                         + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()),
                                 CustomLogEntryTypes.AdminActivity);
 

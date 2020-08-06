@@ -915,7 +915,7 @@ public class EntityEventHandler {
                     }
                 }
                 if (cancelled) {
-                    final Text message = Text.of(TextColors.RED, "You can't use this portal because you don't have " + sourceClaim.getOwnerName() + "'s permission to build an exit portal in the destination land claim.");
+                    final Text message = Text.of(TextColors.RED, "You can't use this portal because you don't have " + sourceClaim.getOwnerName().toPlain() + "'s permission to build an exit portal in the destination land claim.");
                     if (player != null) {
                         GriefPreventionPlugin.sendMessage(player, message);
                     }
@@ -944,7 +944,7 @@ public class EntityEventHandler {
                     }
                 }
                 if (cancelled) {
-                    final Text message = Text.of(TextColors.RED, "You can't use this portal because you don't have " + toClaim.getOwnerName() + "'s permission to enter the destination land claim.");
+                    final Text message = Text.of(TextColors.RED, "You can't use this portal because you don't have " + toClaim.getOwnerName().toPlain() + "'s permission to enter the destination land claim.");
                     if (player != null) {
                         GriefPreventionPlugin.sendMessage(player, message);
                     }

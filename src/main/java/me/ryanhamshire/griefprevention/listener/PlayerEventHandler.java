@@ -632,7 +632,7 @@ public class PlayerEventHandler {
                 return;
             }
             if (result == Tristate.FALSE) {
-                final Text denyMessage = Text.of(TextColors.RED, "The command " + command + " has been blocked by claim owner " + claim.getOwnerName() + ".");
+                final Text denyMessage = Text.of(TextColors.RED, "The command " + command + " has been blocked by claim owner " + claim.getOwnerName().toPlain() + ".");
                 GriefPreventionPlugin.sendMessage(player, denyMessage);
                 event.setCancelled(true);
                 GPTimings.PLAYER_COMMAND_EVENT.stopTimingIfSync();
@@ -1155,7 +1155,7 @@ public class PlayerEventHandler {
                 } else if (perm == Tristate.FALSE) {
                     event.setCancelled(true);
                     if (spawncause instanceof Player) {
-                        final Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "'s", TextColors.RED,
+                        final Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "'s", TextColors.RED,
                                 " permission to drop the item ", TextColors.LIGHT_PURPLE, entityItem.getType().getId() + " in this claim.");
                         GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
                     }
@@ -1188,7 +1188,8 @@ public class PlayerEventHandler {
         final GPClaim claim = this.dataStore.getClaimAt(location);
         final Tristate result = GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.INVENTORY_OPEN, player, blockSnapshot, player, TrustType.CONTAINER, true);
         if (result == Tristate.FALSE) {
-            Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName() + "'s", TextColors.RED, " permission to open ", TextColors.LIGHT_PURPLE, blockSnapshot.getState().getType().getId() + ".");
+            Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName().toPlain() + "'s", TextColors.RED, " permission to open ", TextColors.LIGHT_PURPLE, blockSnapshot.getState().getType().getId() +
+                    ".");
             GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
             ((EntityPlayerMP) player).closeScreen();
             event.setCancelled(true);
@@ -1211,7 +1212,7 @@ public class PlayerEventHandler {
         final Location<World> location = player.getLocation();
         final GPClaim claim = this.dataStore.getClaimAt(location);
         if (GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.ITEM_DROP, player, cursor, player, TrustType.ACCESSOR, true) == Tristate.FALSE) {
-            Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "'s", TextColors.RED,
+            Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "'s", TextColors.RED,
                     " permission to drop the item ", TextColors.LIGHT_PURPLE, cursor.getType().getId() + " in this claim.");
             GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
             event.setCancelled(true);
@@ -1235,7 +1236,7 @@ public class PlayerEventHandler {
         if (isDrop && cursorItem != ItemStackSnapshot.NONE) {
             final boolean itemDropBlacklisted = GriefPreventionPlugin.isTargetIdBlacklisted(ClaimFlag.ITEM_DROP.toString(), cursorItem, player.getWorld().getProperties());
             if (!itemDropBlacklisted && GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.ITEM_DROP, player, cursorItem, player, TrustType.ACCESSOR, true) == Tristate.FALSE) {
-                Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "'s", TextColors.RED,
+                Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "'s", TextColors.RED,
                         " permission to drop the item ", TextColors.LIGHT_PURPLE, cursorItem.getType().getId() + " in this claim.");
                 GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
                 event.setCancelled(true);
@@ -1254,7 +1255,7 @@ public class PlayerEventHandler {
 
             final Tristate result = GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.INVENTORY_CLICK, player, transaction.getOriginal(), player, TrustType.CONTAINER, true);
             if (result == Tristate.FALSE) {
-                Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "'s", TextColors.RED, " permission to interact with the item ", TextColors.LIGHT_PURPLE,
+                Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "'s", TextColors.RED, " permission to interact with the item ", TextColors.LIGHT_PURPLE,
                         transaction.getOriginal().getType().getId() + ".");
                 GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
                 event.setCancelled(true);
@@ -1268,7 +1269,7 @@ public class PlayerEventHandler {
                 }
 
                 if (GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.ITEM_DROP, player, transaction.getFinal(), player, TrustType.ACCESSOR, true) == Tristate.FALSE) {
-                    Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "'s", TextColors.RED,
+                    Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "'s", TextColors.RED,
                             " permission to drop the item ", TextColors.LIGHT_PURPLE, transaction.getFinal().getType().getId() + " in this claim.");
                     GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
                     event.setCancelled(true);
@@ -1304,7 +1305,7 @@ public class PlayerEventHandler {
 
         Tristate result = GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.INTERACT_ENTITY_PRIMARY, source, targetEntity, player, TrustType.ACCESSOR, true);
         if (result == Tristate.FALSE) {
-            final Text message = Text.of(TextColors.RED, "That belongs to " + claim.getOwnerName() + ".");
+            final Text message = Text.of(TextColors.RED, "That belongs to " + claim.getOwnerName().toPlain() + ".");
             GriefPreventionPlugin.sendMessage(player, message);
             event.setCancelled(true);
             this.sendInteractEntityDenyMessage(itemInHand, targetEntity, claim, player, handType);
@@ -1743,7 +1744,7 @@ public class PlayerEventHandler {
 
         final GPClaim claim = this.dataStore.getClaimAtPlayer(location, playerData, true);
         if (GPPermissionHandler.getClaimPermission(event, location, claim, ITEM_PERMISSION, player, itemType, player, TrustType.ACCESSOR, true) == Tristate.FALSE) {
-            Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName() + "'s", TextColors.RED, " permission to interact with the item ", TextColors.LIGHT_PURPLE,
+            Text message = Text.of(TextColors.RED, "You don't have " + claim.getOwnerName().toPlain() + "'s", TextColors.RED, " permission to interact with the item ", TextColors.LIGHT_PURPLE,
                     itemInHand.getType().getId() + ".");
             GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
             if (event instanceof InteractItemEvent) {
@@ -1811,7 +1812,7 @@ public class PlayerEventHandler {
             // if the clicked block is in a claim, visualize that claim and deliver an error message
             final GPClaim claim = this.dataStore.getClaimAtPlayer(location, playerData, true);
             if (!claim.isWilderness()) {
-                final Text message = Text.of(TextColors.GREEN, "That block has been claimed by ", TextColors.GOLD, claim.getOwnerName() + ".");
+                final Text message = Text.of(TextColors.GREEN, "That block has been claimed by ", TextColors.GOLD, claim.getOwnerName().toPlain() + ".");
                 GriefPreventionPlugin.sendMessage(player, message);
                 Visualization visualization = new Visualization(claim, VisualizationType.ERROR);
                 visualization.createClaimBlockVisuals(location.getBlockY(), player.getLocation(), playerData);
@@ -2063,7 +2064,7 @@ public class PlayerEventHandler {
 
                     // if resizing someone else's claim, make a log entry
                     if (!playerID.equals(claim.getOwnerUniqueId()) && !claim.getParent().isPresent()) {
-                        GriefPreventionPlugin.addLogEntry(player.getName() + " resized " + claim.getOwnerName() + "'s claim at "
+                        GriefPreventionPlugin.addLogEntry(player.getName() + " resized " + claim.getOwnerName().toPlain() + "'s claim at "
                                 + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()) + ".");
                     }
 
@@ -2300,7 +2301,7 @@ public class PlayerEventHandler {
             // otherwise tell the player he can't claim here because it's
             // someone else's claim, and show him the claim
             else {
-                final Text message = Text.of(TextColors.RED, "You can't create a claim here because it would overlap " + claim.getOwnerName() + "'s claim.");
+                final Text message = Text.of(TextColors.RED, "You can't create a claim here because it would overlap " + claim.getOwnerName().toPlain() + "'s claim.");
                 GriefPreventionPlugin.sendMessage(player, message);
                 Visualization visualization = new Visualization(claim, VisualizationType.ERROR);
                 visualization.createClaimBlockVisuals(location.getBlockY(), player.getLocation(), playerData);
@@ -2530,7 +2531,7 @@ public class PlayerEventHandler {
             claims.add(claim);
             CommandHelper.showClaims(player, claims);
         }
-        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "That block has been claimed by ", TextColors.GOLD, claim.getOwnerName() + "."));
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "That block has been claimed by ", TextColors.GOLD, claim.getOwnerName().toPlain() + "."));
 
         GPTimings.PLAYER_INVESTIGATE_CLAIM.stopTimingIfSync();
         return true;
@@ -2574,7 +2575,7 @@ public class PlayerEventHandler {
 
         final String entityId = entity.getType() != null ? entity.getType().getId() : ((net.minecraft.entity.Entity) entity).getName();
         if (playerItem == null || playerItem == ItemTypes.NONE || playerItem.isEmpty()) {
-            final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName() + "'s", TextColors.RED, " permission to interact with the entity ",
+            final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName().toPlain() + "'s", TextColors.RED, " permission to interact with the entity ",
                     TextColors.LIGHT_PURPLE, entityId,
                     ".");
 
@@ -2597,7 +2598,7 @@ public class PlayerEventHandler {
         if (playerData != null && claim.getData() != null && claim.getData().isExpired() && GriefPreventionPlugin.getActiveConfig(player.getWorld().getProperties()).getConfig().claim.bankTaxSystem) {
             playerData.sendTaxExpireMessage(player, claim);
         } else if (playerItem == null || playerItem == ItemTypes.NONE || playerItem.isEmpty()) {
-            final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName()
+            final Text message = Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName().toPlain()
                     + "'s", TextColors.RED, " permission to interact with the block ", TextColors.LIGHT_PURPLE, blockSnapshot.getState().getType().getId() + ".");
             GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
         } else {

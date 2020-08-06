@@ -114,8 +114,7 @@ public class CommandClaimAbandon implements CommandExecutor {
                 GPDeleteClaimEvent.Abandon event = new GPDeleteClaimEvent.Abandon(claim);
                 Sponge.getEventManager().post(event);
                 if (event.isCancelled()) {
-                    player
-                            .sendMessage(Text.of(TextColors.RED, event.getMessage().orElse(Text.of("Could not abandon claim. A plugin has denied it."))));
+                    player.sendMessage(Text.of(TextColors.RED, event.getMessage().orElse(Text.of("Could not abandon claim. A plugin has denied it."))));
                     return CommandResult.success();
                 }
             }
@@ -130,8 +129,7 @@ public class CommandClaimAbandon implements CommandExecutor {
 
             // if in a creative mode world, restore the claim area
             if (GriefPreventionPlugin.instance.claimModeIsActive(claim.getLesserBoundaryCorner().getExtent().getProperties(), ClaimsMode.Creative)) {
-                GriefPreventionPlugin.addLogEntry(
-                        player.getName() + " abandoned a " + claim.getType() + " @ " + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()));
+                GriefPreventionPlugin.addLogEntry(player.getName() + " abandoned a " + claim.getType() + " @ " + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()));
                 GriefPreventionPlugin.sendMessage(player, Text.of("The land you've unclaimed may be changed by other players or cleaned up by administrators.  If you've built something there you want to keep, you should reclaim it."));
                 GriefPreventionPlugin.instance.restoreClaim(claim, 20L * 60 * 2);
             }
