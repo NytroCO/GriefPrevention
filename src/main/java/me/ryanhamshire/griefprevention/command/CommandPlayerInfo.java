@@ -68,7 +68,7 @@ public class CommandPlayerInfo implements CommandExecutor {
 
         if (user == null) {
             if (!(src instanceof Player)) {
-                GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.commandPlayerInvalid.toText());
+                GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Player is not valid."));
                 return CommandResult.success();
             }
 
@@ -104,16 +104,16 @@ public class CommandPlayerInfo implements CommandExecutor {
         }
 
         Text townTaxRate = Text.of(
-                TextColors.GRAY, "TOWN", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateTown, 
-                TextColors.GRAY, " BASIC", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateTownBasic, 
+                TextColors.GRAY, "TOWN", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateTown,
+                TextColors.GRAY, " BASIC", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateTownBasic,
                 TextColors.GRAY, " SUB", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateTownSubdivision);
         Text claimTaxRate = Text.of(
-                TextColors.GRAY, "BASIC", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateBasic, 
+                TextColors.GRAY, "BASIC", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateBasic,
                 TextColors.GRAY, " SUB", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionTaxRateSubdivision);
         Text currentTaxRateText = Text.of(TextColors.YELLOW, "Current Claim Tax Rate", TextColors.WHITE, " : ", TextColors.RED, "N/A");
         Text claimCreateLimits = Text.of(
-                TextColors.GRAY, "TOWN", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionCreateClaimLimitTown, 
-                TextColors.GRAY, " BASIC", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionCreateClaimLimitBasic, 
+                TextColors.GRAY, "TOWN", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionCreateClaimLimitTown,
+                TextColors.GRAY, " BASIC", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionCreateClaimLimitBasic,
                 TextColors.GRAY, " SUB", TextColors.WHITE, " : ", TextColors.GREEN, playerData.optionCreateClaimLimitSubdivision);
         if (src instanceof Player) {
             Player player = (Player) src;
@@ -144,7 +144,7 @@ public class CommandPlayerInfo implements CommandExecutor {
         final Text globalClaimTaxText = Text.of(TextColors.YELLOW, "Global Claim Tax Rate", WHITE_SEMI_COLON, TextColors.GREEN, claimTaxRate);
         final Text totalTaxText = Text.of(TextColors.YELLOW, "Total Tax", WHITE_SEMI_COLON, TextColors.GREEN, playerData.getTotalTax());
         final Text totalBlockText = Text.of(TextColors.YELLOW, "Total Blocks", WHITE_SEMI_COLON, TextColors.GREEN, playerData.optionInitialClaimBlocks + playerData.getAccruedClaimBlocks() + playerData.getBonusClaimBlocks());
-        final Text totalClaimableChunkText = Text.of(TextColors.YELLOW, "Total Claimable Chunks", WHITE_SEMI_COLON, TextColors.GREEN, Math.round(claimableChunks * 100.0)/100.0);
+        final Text totalClaimableChunkText = Text.of(TextColors.YELLOW, "Total Claimable Chunks", WHITE_SEMI_COLON, TextColors.GREEN, Math.round(claimableChunks * 100.0) / 100.0);
         final Text totalClaimText = Text.of(TextColors.YELLOW, "Total Claims", WHITE_SEMI_COLON, TextColors.GREEN, claimList.size());
 
         List<Text> claimsTextList = Lists.newArrayList();
@@ -173,7 +173,7 @@ public class CommandPlayerInfo implements CommandExecutor {
             Date lastActive = null;
             try {
                 lastActive = Date.from(joinData.lastPlayed().get());
-            } catch(DateTimeParseException ex) {
+            } catch (DateTimeParseException ex) {
                 // ignore
             }
             if (lastActive != null) {

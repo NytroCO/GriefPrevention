@@ -26,8 +26,8 @@ package me.ryanhamshire.griefprevention;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import me.ryanhamshire.griefprevention.util.HttpClient;
+import okhttp3.*;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
@@ -37,17 +37,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Tristate;
 
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -98,80 +88,6 @@ public class GPDebugData {
         this.header.add("| Record start | " + DATE_FORMAT.format(new Date(this.startTime)) + "|");
     }
 
-    public void addRecord(String flag, String trust, String source, String target, String location, String user, Tristate result) {
-        if (this.records.size() < MAX_LINES) {
-            this.records.add("| " + flag + " | " + trust + " | " + source + " | " + target + " | " + location + " | " + user + " | " + result + " | ");
-        } else {
-            this.source.sendMessage(Text.of("MAX DEBUG LIMIT REACHED!", "\n",
-                    TextColors.GREEN, "Pasting output..."));
-            this.pasteRecords();
-            this.records.clear();
-            GriefPreventionPlugin.debugActive = false;
-            this.source.sendMessage(Text.of(GP_TEXT, TextColors.GRAY, "Debug ", TextColors.RED, "OFF"));
-        }
-    }
-
-    public CommandSource getSource() {
-        return this.source;
-    }
-
-    public User getTarget() {
-        return this.target;
-    }
-
-    public boolean isRecording() {
-        return !this.verbose;
-    }
-
-    public void setTarget(User user) {
-        this.target = user;
-    }
-
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
-    public void pasteRecords() {
-        if (this.records.isEmpty()) {
-            this.source.sendMessage(Text.of(TextColors.RED, "No debug records to paste!"));
-            return;
-        }
-
-        final long endTime = System.currentTimeMillis();
-        List<String> debugOutput = new ArrayList<>(this.header);
-        debugOutput.add("| Record end | " + DATE_FORMAT.format(new Date(endTime)) + "|");
-        long elapsed = (endTime - startTime) / 1000L; 
-        debugOutput.add("| Time elapsed | " + elapsed + " seconds" + "|");
-        debugOutput.add("");
-        debugOutput.add("### Output") ;
-        debugOutput.add("| Flag | Trust | Source | Target | Location | User | Result |");
-        debugOutput.add("|------|-------|--------|--------|----------|------|--------|");
-
-        debugOutput.addAll(this.records);
-
-        String content = String.join("\n", debugOutput);
-
-        String pasteId;
-        try {
-            pasteId = postContent(content);
-        } catch (Exception e) {
-            this.source.sendMessage(Text.of(TextColors.RED, "Error uploading content : ", TextColors.WHITE, e.getMessage()));
-            return;
-        }
-
-        String url = DEBUG_VIEWER_URL + pasteId;
-
-        URL jUrl;
-        try {
-            jUrl = new URL(url);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
-        this.source.sendMessage(Text.builder().append(Text.of(TextColors.GREEN, "Paste success! : " + url))
-                .onClick(TextActions.openUrl(jUrl)).build());
-    }
-
     private static String postContent(String content) throws IOException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try (GZIPOutputStream writer = new GZIPOutputStream(byteOut)) {
@@ -202,5 +118,79 @@ public class GPDebugData {
                 }
             }
         }
+    }
+
+    public void addRecord(String flag, String trust, String source, String target, String location, String user, Tristate result) {
+        if (this.records.size() < MAX_LINES) {
+            this.records.add("| " + flag + " | " + trust + " | " + source + " | " + target + " | " + location + " | " + user + " | " + result + " | ");
+        } else {
+            this.source.sendMessage(Text.of("MAX DEBUG LIMIT REACHED!", "\n",
+                    TextColors.GREEN, "Pasting output..."));
+            this.pasteRecords();
+            this.records.clear();
+            GriefPreventionPlugin.debugActive = false;
+            this.source.sendMessage(Text.of(GP_TEXT, TextColors.GRAY, "Debug ", TextColors.RED, "OFF"));
+        }
+    }
+
+    public CommandSource getSource() {
+        return this.source;
+    }
+
+    public User getTarget() {
+        return this.target;
+    }
+
+    public void setTarget(User user) {
+        this.target = user;
+    }
+
+    public boolean isRecording() {
+        return !this.verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public void pasteRecords() {
+        if (this.records.isEmpty()) {
+            this.source.sendMessage(Text.of(TextColors.RED, "No debug records to paste!"));
+            return;
+        }
+
+        final long endTime = System.currentTimeMillis();
+        List<String> debugOutput = new ArrayList<>(this.header);
+        debugOutput.add("| Record end | " + DATE_FORMAT.format(new Date(endTime)) + "|");
+        long elapsed = (endTime - startTime) / 1000L;
+        debugOutput.add("| Time elapsed | " + elapsed + " seconds" + "|");
+        debugOutput.add("");
+        debugOutput.add("### Output");
+        debugOutput.add("| Flag | Trust | Source | Target | Location | User | Result |");
+        debugOutput.add("|------|-------|--------|--------|----------|------|--------|");
+
+        debugOutput.addAll(this.records);
+
+        String content = String.join("\n", debugOutput);
+
+        String pasteId;
+        try {
+            pasteId = postContent(content);
+        } catch (Exception e) {
+            this.source.sendMessage(Text.of(TextColors.RED, "Error uploading content : ", TextColors.WHITE, e.getMessage()));
+            return;
+        }
+
+        String url = DEBUG_VIEWER_URL + pasteId;
+
+        URL jUrl;
+        try {
+            jUrl = new URL(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.source.sendMessage(Text.builder().append(Text.of(TextColors.GREEN, "Paste success! : " + url))
+                .onClick(TextActions.openUrl(jUrl)).build());
     }
 }

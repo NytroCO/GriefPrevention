@@ -56,13 +56,14 @@ import java.util.Set;
 public class Visualization {
 
     public ArrayList<Transaction<BlockSnapshot>> elements;
-    private ArrayList<Transaction<BlockSnapshot>> newElements;
-    private ArrayList<Vector3i> corners;
+    public boolean displaySubdivisions = false;
+    private final ArrayList<Transaction<BlockSnapshot>> newElements;
+    private final ArrayList<Vector3i> corners;
     private VisualizationType type;
     private GPClaim claim;
     private Location<World> lesserBoundaryCorner;
     private Location<World> greaterBoundaryCorner;
-    private boolean cuboidVisual = false;
+    private final boolean cuboidVisual = false;
     private int smallx;
     private int smally;
     private int smallz;
@@ -76,8 +77,7 @@ public class Visualization {
     private BlockType cornerMaterial;
     private BlockType accentMaterial;
     private BlockType fillerMaterial; // used for 3d cuboids
-    private BlockSnapshot.Builder snapshotBuilder;
-    public boolean displaySubdivisions = false;
+    private final BlockSnapshot.Builder snapshotBuilder;
     private int STEP = 10;
 
     public Visualization(VisualizationType type) {
@@ -105,37 +105,6 @@ public class Visualization {
         this.corners = new ArrayList<>();
     }
 
-    public void initBlockVisualTypes(VisualizationType type) {
-        if (type == VisualizationType.CLAIM) {
-            cornerMaterial = BlockTypes.GLOWSTONE;
-            accentMaterial = BlockTypes.GOLD_BLOCK;
-            fillerMaterial = BlockTypes.GOLD_BLOCK;
-            //fillerMaterial = BlockTypes.STAINED_GLASS;
-        } else if (type == VisualizationType.ADMINCLAIM) {
-            cornerMaterial = BlockTypes.GLOWSTONE;
-            accentMaterial = BlockTypes.PUMPKIN;
-            fillerMaterial = BlockTypes.PUMPKIN;
-           // fillerMaterial = BlockTypes.DIAMOND_BLOCK;
-        } else if (type == VisualizationType.SUBDIVISION) {
-            cornerMaterial = BlockTypes.IRON_BLOCK;
-            accentMaterial = BlockTypes.WOOL;
-            fillerMaterial = BlockTypes.WOOL;
-           // fillerMaterial = BlockTypes.DIAMOND_BLOCK;
-        } else if (type == VisualizationType.RESTORENATURE) {
-            cornerMaterial = BlockTypes.DIAMOND_BLOCK;
-            accentMaterial = BlockTypes.DIAMOND_BLOCK;
-           // fillerMaterial = BlockTypes.DIAMOND_BLOCK;
-        } else if (type == VisualizationType.TOWN) {
-            cornerMaterial = BlockTypes.GLOWSTONE;
-            accentMaterial = BlockTypes.EMERALD_BLOCK;
-            fillerMaterial = BlockTypes.EMERALD_BLOCK;
-        } else {
-            cornerMaterial = BlockTypes.REDSTONE_ORE;
-            accentMaterial = BlockTypes.NETHERRACK;
-            fillerMaterial = BlockTypes.DIAMOND_BLOCK;
-        }
-    }
-
     public static VisualizationType getVisualizationType(GPClaim claim) {
         ClaimType type = claim.getType();
         if (type != null) {
@@ -149,6 +118,97 @@ public class Visualization {
         }
 
         return VisualizationType.CLAIM;
+    }
+
+    public static Visualization fromClick(Location<World> location, int height, VisualizationType visualizationType, Player player, GPPlayerData playerData) {
+        Visualization visualization = new Visualization(visualizationType);
+        BlockSnapshot blockClicked =
+                visualization.snapshotBuilder.from(location).blockState(visualization.cornerMaterial.getDefaultState()).build();
+        visualization.elements.add(new Transaction<BlockSnapshot>(blockClicked.getLocation().get().createSnapshot(), blockClicked));
+        if (GriefPreventionPlugin.instance.worldEditProvider != null) {
+            GriefPreventionPlugin.instance.worldEditProvider.sendVisualDrag(player, playerData, location.getBlockPosition());
+        }
+        return visualization;
+    }
+
+    // finds a block the player can probably see. this is how visualizations "cling" to the ground or ceiling
+    private static Location<World> getVisibleLocation(World world, int x, int y, int z, boolean waterIsTransparent) {
+        Location<World> location = world.getLocation(x, y, z);
+        Direction direction = (isTransparent(location.getBlock(), waterIsTransparent)) ? Direction.DOWN : Direction.UP;
+
+        while (location.getPosition().getY() >= 1 &&
+                location.getPosition().getY() < world.getDimension().getBuildHeight() - 1 &&
+                (!isTransparent(location.getBlockRelative(Direction.UP).getBlock(), waterIsTransparent)
+                        || isTransparent(location.getBlock(), waterIsTransparent))) {
+            location = location.getBlockRelative(direction);
+        }
+
+        return location;
+    }
+
+    // helper method for above. allows visualization blocks to sit underneath partly transparent blocks like grass and fence
+    private static boolean isTransparent(BlockState blockstate, boolean waterIsTransparent) {
+        if (blockstate.getType() == BlockTypes.SNOW_LAYER) {
+            return false;
+        }
+
+        IBlockState iblockstate = (IBlockState) blockstate;
+        Optional<MatterProperty> matterProperty = blockstate.getProperty(MatterProperty.class);
+        if (!waterIsTransparent && matterProperty.isPresent() && matterProperty.get().getValue() == MatterProperty.Matter.LIQUID) {
+            return false;
+        }
+        return !iblockstate.isOpaqueCube();
+    }
+
+    public static Visualization fromClaims(Set<Claim> claims, int height, Location<World> locality, GPPlayerData playerData, Visualization visualization) {
+        if (visualization == null) {
+            visualization = new Visualization(VisualizationType.CLAIM);
+        }
+
+        for (Claim claim : claims) {
+            GPClaim gpClaim = (GPClaim) claim;
+            if (!gpClaim.children.isEmpty()) {
+                fromClaims(gpClaim.children, height, locality, playerData, visualization);
+            }
+            if (gpClaim.visualization != null && !gpClaim.visualization.elements.isEmpty()) {
+                visualization.elements.addAll(gpClaim.getVisualizer().elements);
+            } else {
+                visualization.createClaimBlockVisualWithType(gpClaim, height, locality, playerData, Visualization.getVisualizationType(gpClaim));
+            }
+        }
+
+        return visualization;
+    }
+
+    public void initBlockVisualTypes(VisualizationType type) {
+        if (type == VisualizationType.CLAIM) {
+            cornerMaterial = BlockTypes.GLOWSTONE;
+            accentMaterial = BlockTypes.GOLD_BLOCK;
+            fillerMaterial = BlockTypes.GOLD_BLOCK;
+            //fillerMaterial = BlockTypes.STAINED_GLASS;
+        } else if (type == VisualizationType.ADMINCLAIM) {
+            cornerMaterial = BlockTypes.GLOWSTONE;
+            accentMaterial = BlockTypes.PUMPKIN;
+            fillerMaterial = BlockTypes.PUMPKIN;
+            // fillerMaterial = BlockTypes.DIAMOND_BLOCK;
+        } else if (type == VisualizationType.SUBDIVISION) {
+            cornerMaterial = BlockTypes.IRON_BLOCK;
+            accentMaterial = BlockTypes.WOOL;
+            fillerMaterial = BlockTypes.WOOL;
+            // fillerMaterial = BlockTypes.DIAMOND_BLOCK;
+        } else if (type == VisualizationType.RESTORENATURE) {
+            cornerMaterial = BlockTypes.DIAMOND_BLOCK;
+            accentMaterial = BlockTypes.DIAMOND_BLOCK;
+            // fillerMaterial = BlockTypes.DIAMOND_BLOCK;
+        } else if (type == VisualizationType.TOWN) {
+            cornerMaterial = BlockTypes.GLOWSTONE;
+            accentMaterial = BlockTypes.EMERALD_BLOCK;
+            fillerMaterial = BlockTypes.EMERALD_BLOCK;
+        } else {
+            cornerMaterial = BlockTypes.REDSTONE_ORE;
+            accentMaterial = BlockTypes.NETHERRACK;
+            fillerMaterial = BlockTypes.DIAMOND_BLOCK;
+        }
     }
 
     public GPClaim getClaim() {
@@ -165,7 +225,7 @@ public class Visualization {
 
         // if he has any current visualization, clear it first
         //playerData.revertActiveVisual(player);
-        
+
         boolean hideBorders = GriefPreventionPlugin.instance.worldEditProvider != null &&
                 GriefPreventionPlugin.instance.worldEditProvider.hasCUISupport(player) &&
                 GriefPreventionPlugin.getActiveConfig(player.getWorld().getProperties()).getConfig().claim.hideBorders;
@@ -220,17 +280,6 @@ public class Visualization {
         }
     }
 
-    public static Visualization fromClick(Location<World> location, int height, VisualizationType visualizationType, Player player, GPPlayerData playerData) {
-        Visualization visualization = new Visualization(visualizationType);
-        BlockSnapshot blockClicked =
-                visualization.snapshotBuilder.from(location).blockState(visualization.cornerMaterial.getDefaultState()).build();
-        visualization.elements.add(new Transaction<BlockSnapshot>(blockClicked.getLocation().get().createSnapshot(), blockClicked));
-        if (GriefPreventionPlugin.instance.worldEditProvider != null) {
-            GriefPreventionPlugin.instance.worldEditProvider.sendVisualDrag(player, playerData, location.getBlockPosition());
-        }
-        return visualization;
-    }
-
     public void resetVisuals() {
         this.elements.clear();
         this.newElements.clear();
@@ -270,7 +319,7 @@ public class Visualization {
         Location<World> lesser = this.claim.getLesserBoundaryCorner();
         Location<World> greater = this.claim.getGreaterBoundaryCorner();
         World world = lesser.getExtent();
-        boolean liquidTransparent = locality.getBlock().getType().getProperty(MatterProperty.class).isPresent() ? false : true;
+        boolean liquidTransparent = !locality.getBlock().getType().getProperty(MatterProperty.class).isPresent();
 
         this.smallx = lesser.getBlockX();
         this.smally = this.useCuboidVisual() ? lesser.getBlockY() : 0;
@@ -452,7 +501,7 @@ public class Visualization {
                     BlockSnapshot visualBlock =
                             snapshotBuilder.from(new Location<World>(world, this.smallx, y, z)).blockState(accentMaterial.getDefaultState()).build();
                     newElements.add(new Transaction<BlockSnapshot>(visualBlock.getLocation().get().createSnapshot(), visualBlock));
-               }
+                }
             }
         }
     }
@@ -501,55 +550,6 @@ public class Visualization {
         }
     }
 
-    // finds a block the player can probably see. this is how visualizations "cling" to the ground or ceiling
-    private static Location<World> getVisibleLocation(World world, int x, int y, int z, boolean waterIsTransparent) {
-        Location<World> location = world.getLocation(x, y, z);
-        Direction direction = (isTransparent(location.getBlock(), waterIsTransparent)) ? Direction.DOWN : Direction.UP;
-
-        while (location.getPosition().getY() >= 1 &&
-                location.getPosition().getY() < world.getDimension().getBuildHeight() - 1 &&
-                (!isTransparent(location.getBlockRelative(Direction.UP).getBlock(), waterIsTransparent)
-                        || isTransparent(location.getBlock(), waterIsTransparent))) {
-            location = location.getBlockRelative(direction);
-        }
-
-        return location;
-    }
-
-    // helper method for above. allows visualization blocks to sit underneath partly transparent blocks like grass and fence
-    private static boolean isTransparent(BlockState blockstate, boolean waterIsTransparent) {
-        if (blockstate.getType() == BlockTypes.SNOW_LAYER) {
-            return false;
-        }
-
-        IBlockState iblockstate = (IBlockState)(Object) blockstate;
-        Optional<MatterProperty> matterProperty = blockstate.getProperty(MatterProperty.class);
-        if (!waterIsTransparent && matterProperty.isPresent() && matterProperty.get().getValue() == MatterProperty.Matter.LIQUID) {
-            return false;
-        }
-        return !iblockstate.isOpaqueCube();
-    }
-
-    public static Visualization fromClaims(Set<Claim> claims, int height, Location<World> locality, GPPlayerData playerData, Visualization visualization) {
-        if (visualization == null) {
-            visualization = new Visualization(VisualizationType.CLAIM);
-        }
-
-        for (Claim claim : claims) {
-            GPClaim gpClaim = (GPClaim) claim;
-            if (!gpClaim.children.isEmpty()) {
-                fromClaims(gpClaim.children, height, locality, playerData, visualization);
-            }
-            if (gpClaim.visualization != null && !gpClaim.visualization.elements.isEmpty()) {
-                visualization.elements.addAll(gpClaim.getVisualizer().elements);
-            } else {
-                visualization.createClaimBlockVisualWithType(gpClaim, height, locality, playerData, Visualization.getVisualizationType(gpClaim));
-            }
-        }
-
-        return visualization;
-    }
-
     private boolean useCuboidVisual() {
         if (this.claim.cuboid) {
             return true;
@@ -560,10 +560,6 @@ public class Visualization {
             return true;
         }
         // Claim could of been created with different min/max levels, so check Y values
-        if (this.claim.getLesserBoundaryCorner().getBlockY() > 0 || this.claim.getGreaterBoundaryCorner().getBlockY() < 255) {
-            return true;
-        }
-
-        return false;
+        return this.claim.getLesserBoundaryCorner().getBlockY() > 0 || this.claim.getGreaterBoundaryCorner().getBlockY() < 255;
     }
 }

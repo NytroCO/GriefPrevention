@@ -39,9 +39,9 @@ public class TownDataConfig extends ClaimDataConfig {
     @Setting
     private String townTag;
     @Setting
-    private Map<UUID, String> residentPastDueTaxTimestamps = Maps.newHashMap();
+    private final Map<UUID, String> residentPastDueTaxTimestamps = Maps.newHashMap();
     @Setting
-    private Map<UUID, Double> residentTaxBalances = Maps.newHashMap();
+    private final Map<UUID, Double> residentTaxBalances = Maps.newHashMap();
 
     public Optional<String> getTownTag() {
         return Optional.ofNullable(this.townTag);

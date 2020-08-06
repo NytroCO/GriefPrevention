@@ -30,8 +30,8 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class MigratorCategory extends ConfigCategory {
 
-    @Setting(value = "red-protect", comment = 
+    @Setting(value = "red-protect", comment =
             "Set to true to enable RedProtect data migrator." +
-            "\nNote: All RedProtect data will be converted into basic claim data.")
+                    "\nNote: All RedProtect data will be converted into basic claim data.")
     public boolean redProtectMigrator = false;
 }

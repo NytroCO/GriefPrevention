@@ -51,11 +51,16 @@ public class EconomyDataConfig extends ConfigCategory implements EconomyData {
     @Setting(value = ClaimStorageData.MAIN_TAX_PAST_DUE_DATE)
     private String taxPastDueDate;
     @Setting
-    private List<String> bankTransactionLog = new ArrayList<>();
+    private final List<String> bankTransactionLog = new ArrayList<>();
 
     @Override
     public boolean isForSale() {
         return this.forSale;
+    }
+
+    @Override
+    public void setForSale(boolean forSale) {
+        this.forSale = forSale;
     }
 
     @Override
@@ -64,8 +69,8 @@ public class EconomyDataConfig extends ConfigCategory implements EconomyData {
     }
 
     @Override
-    public void setForSale(boolean forSale) {
-        this.forSale = forSale;
+    public void setSalePrice(double price) {
+        this.salePrice = price;
     }
 
     @Override
@@ -97,11 +102,6 @@ public class EconomyDataConfig extends ConfigCategory implements EconomyData {
         } else {
             this.taxPastDueDate = date.toString();
         }
-    }
-
-    @Override
-    public void setSalePrice(double price) {
-        this.salePrice = price;
     }
 
     @Override

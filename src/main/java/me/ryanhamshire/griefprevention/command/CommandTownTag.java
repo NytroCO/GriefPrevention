@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
@@ -35,6 +34,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class CommandTownTag implements CommandExecutor {
@@ -52,7 +52,7 @@ public class CommandTownTag implements CommandExecutor {
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
         if (claim == null || !claim.isInTown()) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.townNotIn.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You are not in a town."));
             return CommandResult.empty();
         }
 
@@ -71,10 +71,7 @@ public class CommandTownTag implements CommandExecutor {
         }
 
         town.getInternalClaimData().setRequiresSave(true);
-        final Text message = GriefPreventionPlugin.instance.messageData.townTag
-                .apply(ImmutableMap.of(
-                "tag", name)).build();
-        GriefPreventionPlugin.sendMessage(src, message);
+        GriefPreventionPlugin.sendMessage(src, Text.of("Set town tag to " + name.toPlain() + "."));
         return CommandResult.success();
     }
 }

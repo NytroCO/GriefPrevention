@@ -45,13 +45,13 @@ public class PlayerDataConfig extends ConfigCategory {
         return this.accruedClaimBlocks;
     }
 
-    public int getBonusClaimBlocks() {
-        return this.bonusClaimBlocks;
-    }
-
     public void setAccruedClaimBlocks(int blocks) {
         this.requiresSave = true;
         this.accruedClaimBlocks = blocks;
+    }
+
+    public int getBonusClaimBlocks() {
+        return this.bonusClaimBlocks;
     }
 
     public void setBonusClaimBlocks(int blocks) {

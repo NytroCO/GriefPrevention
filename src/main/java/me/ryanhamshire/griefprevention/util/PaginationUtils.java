@@ -48,7 +48,7 @@ public class PaginationUtils {
                     final Integer page = Integer.parseInt(args);
                     activePageMap.put(uuid, page);
                 } catch (Throwable t) {
-                    
+
                 }
             }
             return;

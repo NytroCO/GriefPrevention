@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandRestoreNatureAggressive implements CommandExecutor {
 
@@ -49,7 +51,7 @@ public class CommandRestoreNatureAggressive implements CommandExecutor {
 
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         playerData.shovelMode = ShovelMode.RestoreNatureAggressive;
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.restoreNatureAggressiveActivate.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Aggressive mode activated. Do NOT use this underneath anything you want to keep! Right click to aggressively restore nature, and use /BasicClaims to stop."));
         return CommandResult.success();
     }
 }

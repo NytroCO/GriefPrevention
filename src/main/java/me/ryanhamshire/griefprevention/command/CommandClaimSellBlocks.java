@@ -25,7 +25,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.configuration.GriefPreventionConfig;
@@ -40,6 +39,7 @@ import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -58,7 +58,7 @@ public class CommandClaimSellBlocks implements CommandExecutor {
 
         // if economy is disabled, don't do anything
         if (!GriefPreventionPlugin.instance.economyService.isPresent()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyNotInstalled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Economy plugin not installed!."));
             return CommandResult.success();
         }
 
@@ -66,13 +66,13 @@ public class CommandClaimSellBlocks implements CommandExecutor {
 
         GriefPreventionConfig<?> activeConfig = GriefPreventionPlugin.getActiveConfig(player.getWorld().getProperties());
         if (activeConfig.getConfig().economy.economyClaimBlockCost == 0 && activeConfig.getConfig().economy.economyClaimBlockSell == 0) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyBuySellNotConfigured.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Sorry, buying and selling claim blocks is disabled."));
             return CommandResult.success();
         }
 
         // if selling disabled, send error message
         if (activeConfig.getConfig().economy.economyClaimBlockSell == 0) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyOnlyBuyBlocks.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Claim blocks may only be purchased, not sold."));
             return CommandResult.success();
         }
 
@@ -80,20 +80,17 @@ public class CommandClaimSellBlocks implements CommandExecutor {
         int availableBlocks = playerData.getRemainingClaimBlocks();
         Optional<Integer> blockCountOpt = ctx.getOne("numberOfBlocks");
         if (!blockCountOpt.isPresent()) {
-            final Text message = GriefPreventionPlugin.instance.messageData.economyBlockPurchaseCost
-                    .apply(ImmutableMap.of(
-                    "cost", activeConfig.getConfig().economy.economyClaimBlockSell,
-                    "balance", availableBlocks)).build();
+            final Text message = Text.of("Each claim block costs " + activeConfig.getConfig().economy.economyClaimBlockCost + " Your balance is " + availableBlocks + ".");
             GriefPreventionPlugin.sendMessage(player, message);
             return CommandResult.success();
         } else {
             int blockCount = blockCountOpt.get();
             // try to parse number of blocks
             if (blockCount <= 0) {
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyBuyInvalidBlockCount.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Block count must be greater than 0."));
                 return CommandResult.success();
             } else if (blockCount > availableBlocks) {
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyBlocksNotAvailable.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have that many claim blocks available for sale."));
                 return CommandResult.success();
             }
 
@@ -103,15 +100,13 @@ public class CommandClaimSellBlocks implements CommandExecutor {
                 Sponge.getCauseStackManager().pushCause(player);
                 Sponge.getCauseStackManager().addContext(GriefPreventionPlugin.PLUGIN_CONTEXT, GriefPreventionPlugin.instance);
                 TransactionResult
-                    transactionResult =
-                    GriefPreventionPlugin.instance.economyService.get().getOrCreateAccount(player.getUniqueId()).get().deposit
-                        (GriefPreventionPlugin.instance.economyService.get().getDefaultCurrency(), BigDecimal.valueOf(totalValue),
-                            Sponge.getCauseStackManager().getCurrentCause());
+                        transactionResult =
+                        GriefPreventionPlugin.instance.economyService.get().getOrCreateAccount(player.getUniqueId()).get().deposit
+                                (GriefPreventionPlugin.instance.economyService.get().getDefaultCurrency(), BigDecimal.valueOf(totalValue),
+                                        Sponge.getCauseStackManager().getCurrentCause());
 
                 if (transactionResult.getResult() != ResultType.SUCCESS) {
-                    final Text message = GriefPreventionPlugin.instance.messageData.economyBlockSellError
-                        .apply(ImmutableMap.of(
-                            "reason", transactionResult.getResult().name())).build();
+                    final Text message = Text.of(TextColors.RED, "Could not sell blocks. Reason: " + transactionResult.getResult().name() + ".");
                     GriefPreventionPlugin.sendMessage(player, message);
                     return CommandResult.success();
                 }
@@ -120,10 +115,7 @@ public class CommandClaimSellBlocks implements CommandExecutor {
                 playerData.getStorageData().save();
 
             }
-            final Text message = GriefPreventionPlugin.instance.messageData.economyBlockSaleConfirmation
-                    .apply(ImmutableMap.of(
-                    "deposit", totalValue,
-                    "remaining-blocks", playerData.getRemainingClaimBlocks())).build();
+            final Text message = Text.of(TextColors.GREEN, "Deposited " + totalValue + " in your account.  You now have " + playerData.getRemainingClaimBlocks() + " available claim blocks.");
             // inform player
             GriefPreventionPlugin.sendMessage(player, message);
         }

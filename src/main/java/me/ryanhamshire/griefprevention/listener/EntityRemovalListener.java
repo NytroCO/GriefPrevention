@@ -55,7 +55,7 @@ public class EntityRemovalListener implements IWorldEventListener {
 
     @Override
     public void playSoundToAllNearExcept(EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x, double y, double z, float volume,
-            float pitch) {
+                                         float pitch) {
     }
 
     @Override
@@ -64,12 +64,12 @@ public class EntityRemovalListener implements IWorldEventListener {
 
     @Override
     public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed,
-            double zSpeed, int... parameters) {
+                              double zSpeed, int... parameters) {
     }
 
     @Override
     public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_, double p_190570_4_, double p_190570_6_, double p_190570_8_,
-            double p_190570_10_, double p_190570_12_, double p_190570_14_, int... p_190570_16_) {
+                              double p_190570_10_, double p_190570_12_, double p_190570_14_, int... p_190570_16_) {
     }
 
     @Override

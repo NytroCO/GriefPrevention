@@ -34,6 +34,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
 
 public class CommandUnseparate implements CommandExecutor {
 
@@ -51,7 +52,7 @@ public class CommandUnseparate implements CommandExecutor {
         final User targetPlayer2 = args.<User>getOne("player2").get();
         GriefPreventionPlugin.instance.setIgnoreStatus(player.getWorld(), targetPlayer, targetPlayer2, IgnoreMode.None);
         GriefPreventionPlugin.instance.setIgnoreStatus(player.getWorld(), targetPlayer2, targetPlayer, IgnoreMode.None);
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.playerUnseparate.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of("Those players will no longer ignore each other in chat."));
         return CommandResult.success();
     }
 }

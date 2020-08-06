@@ -26,7 +26,6 @@
 package me.ryanhamshire.griefprevention.command;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
@@ -77,12 +76,12 @@ public class CommandTrustAll implements CommandExecutor {
 
         // validate player argument
         if (user == null && group == null) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandPlayerGroupInvalid.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Not a valid player or group."));
             return CommandResult.success();
         }
 
         if (user != null && user.getUniqueId().equals(player.getUniqueId())) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.trustSelf.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You cannot trust yourself."));
             return CommandResult.success();
         }
 
@@ -93,7 +92,7 @@ public class CommandTrustAll implements CommandExecutor {
         }
 
         if (playerData == null || claimList == null || claimList.size() == 0) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.trustNoClaims.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You have no claims to trust."));
             return CommandResult.success();
         }
 
@@ -101,11 +100,11 @@ public class CommandTrustAll implements CommandExecutor {
             try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
                 Sponge.getCauseStackManager().pushCause(player);
                 GPUserTrustClaimEvent.Add
-                    event = new GPUserTrustClaimEvent.Add(new ArrayList<>(claimList), ImmutableList.of(user.getUniqueId()), TrustType.NONE);
+                        event = new GPUserTrustClaimEvent.Add(new ArrayList<>(claimList), ImmutableList.of(user.getUniqueId()), TrustType.NONE);
                 Sponge.getEventManager().post(event);
                 if (event.isCancelled()) {
                     player.sendMessage(Text.of(TextColors.RED,
-                        event.getMessage().orElse(Text.of("Could not add trust for user '" + user.getName() + "'. A plugin has denied it."))));
+                            event.getMessage().orElse(Text.of("Could not add trust for user '" + user.getName() + "'. A plugin has denied it."))));
                     return CommandResult.success();
                 }
 
@@ -115,7 +114,7 @@ public class CommandTrustAll implements CommandExecutor {
             }
         } else {
             if (!PermissionUtils.hasGroupSubject(group)) {
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandGroupInvalid.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Group " + group + " is not valid."));
                 return CommandResult.success();
             }
 
@@ -123,11 +122,11 @@ public class CommandTrustAll implements CommandExecutor {
                 final Subject subject = PermissionUtils.getGroupSubject(group);
                 Sponge.getCauseStackManager().pushCause(player);
                 GPGroupTrustClaimEvent.Add
-                    event = new GPGroupTrustClaimEvent.Add(new ArrayList<>(claimList), ImmutableList.of(group), TrustType.NONE);
+                        event = new GPGroupTrustClaimEvent.Add(new ArrayList<>(claimList), ImmutableList.of(group), TrustType.NONE);
                 Sponge.getEventManager().post(event);
                 if (event.isCancelled()) {
                     player.sendMessage(Text.of(TextColors.RED,
-                        event.getMessage().orElse(Text.of("Could not add trust for group '" + group + "'. A plugin has denied it."))));
+                            event.getMessage().orElse(Text.of("Could not add trust for group '" + group + "'. A plugin has denied it."))));
                     return CommandResult.success();
                 }
 
@@ -137,10 +136,9 @@ public class CommandTrustAll implements CommandExecutor {
             }
         }
 
-        final Text message = GriefPreventionPlugin.instance.messageData.trustIndividualAllClaims
-                .apply(ImmutableMap.of(
-                "player", user.getName())).build();
-        GriefPreventionPlugin.sendMessage(player, message);
+        if (user != null) {
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Granted ", TextColors.AQUA, user.getName() + "'s full trust to all your claims.  To unset permissions for ALL your claims, use /untrustall."));
+        }
         return CommandResult.success();
     }
 

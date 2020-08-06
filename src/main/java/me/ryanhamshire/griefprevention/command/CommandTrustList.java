@@ -52,23 +52,6 @@ import java.util.function.Consumer;
 
 public class CommandTrustList implements CommandExecutor {
 
-    @Override
-    public CommandResult execute(CommandSource src, CommandContext ctx) {
-        Player player;
-        try {
-            player = GriefPreventionPlugin.checkPlayer(src);
-        } catch (CommandException e) {
-            src.sendMessage(e.getText());
-            return CommandResult.success();
-        }
-
-        final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
-        final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
-        showTrustList(src, claim, player, TrustType.NONE);
-        return CommandResult.success();
-
-    }
-
     public static void showTrustList(CommandSource src, GPClaim claim, Player player, TrustType type) {
         final Text whiteOpenBracket = Text.of(TextColors.AQUA, "[");
         final Text whiteCloseBracket = Text.of(TextColors.AQUA, "]");
@@ -98,7 +81,7 @@ public class CommandTrustList implements CommandExecutor {
                 .onClick(TextActions.executeCallback(createTrustConsumer(src, claim, player, TrustType.MANAGER)))
                 .onHover(TextActions.showText(showManagerText)).build();
         final Text claimTrustHead = Text.builder().append(Text.of(
-                TextColors.AQUA," Displaying : ", allTypeText, "  ", accessorTrustText, "  ", builderTrustText, "  ", containerTrustText, "  ", managerTrustText)).build();
+                TextColors.AQUA, " Displaying : ", allTypeText, "  ", accessorTrustText, "  ", builderTrustText, "  ", containerTrustText, "  ", managerTrustText)).build();
 
         List<UUID> userIdList = new ArrayList<>(claim.getUserTrusts());
         List<Text> trustList = new ArrayList<>();
@@ -121,11 +104,11 @@ public class CommandTrustList implements CommandExecutor {
                 trustList.add(Text.of(TextColors.GREEN, user.getName()));
                 userIdList.remove(uuid);
             }
-    
+
             /*for (String group : claim.getInternalClaimData().getManagerGroups()) {
                 permissions.append(SPACE_TEXT, Text.of(group));
             }*/
-    
+
             for (UUID uuid : claim.getInternalClaimData().getContainers()) {
                 if (!userIdList.contains(uuid)) {
                     continue;
@@ -135,11 +118,11 @@ public class CommandTrustList implements CommandExecutor {
                 trustList.add(Text.of(TextColors.LIGHT_PURPLE, user.getName()));
                 userIdList.remove(uuid);
             }
-    
+
            /* for (String group : claim.getInternalClaimData().getBuilderGroups()) {
                 permissions.append(SPACE_TEXT, Text.of(group));
             }*/
-    
+
             for (UUID uuid : claim.getInternalClaimData().getAccessors()) {
                 if (!userIdList.contains(uuid)) {
                     continue;
@@ -149,23 +132,23 @@ public class CommandTrustList implements CommandExecutor {
                 trustList.add(Text.of(TextColors.YELLOW, user.getName()));
                 userIdList.remove(uuid);
             }
-    
+
             /*for (String group : claim.getInternalClaimData().getContainerGroups()) {
                 permissions.append(SPACE_TEXT, Text.of(group));
             }
-    
+
             player.sendMessage(permissions.build());
             permissions = Text.builder(">").color(TextColors.BLUE);
-    
+
             for (UUID uuid : claim.getInternalClaimData().getAccessors()) {
                 User user = GriefPreventionPlugin.getOrCreateUser(uuid);
                 permissions.append(SPACE_TEXT, Text.of(user.getName()));
             }
-    
+
             for (String group : claim.getInternalClaimData().getAccessorGroups()) {
                 permissions.append(SPACE_TEXT, Text.of(group));
             }*/
-    
+
         } else {
             for (UUID uuid : claim.getUserTrusts(type)) {
                 if (!userIdList.contains(uuid)) {
@@ -184,7 +167,7 @@ public class CommandTrustList implements CommandExecutor {
         }
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         PaginationList.Builder paginationBuilder = paginationService.builder()
-                .title(claimTrustHead).padding(Text.of(TextStyles.STRIKETHROUGH,"-")).contents(trustList);
+                .title(claimTrustHead).padding(Text.of(TextStyles.STRIKETHROUGH, "-")).contents(trustList);
         paginationBuilder.sendTo(src);
 
     }
@@ -209,5 +192,22 @@ public class CommandTrustList implements CommandExecutor {
         return consumer -> {
             showTrustList(src, claim, player, type);
         };
+    }
+
+    @Override
+    public CommandResult execute(CommandSource src, CommandContext ctx) {
+        Player player;
+        try {
+            player = GriefPreventionPlugin.checkPlayer(src);
+        } catch (CommandException e) {
+            src.sendMessage(e.getText());
+            return CommandResult.success();
+        }
+
+        final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
+        final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
+        showTrustList(src, claim, player, TrustType.NONE);
+        return CommandResult.success();
+
     }
 }

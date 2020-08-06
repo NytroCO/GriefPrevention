@@ -69,7 +69,7 @@ public class CommandClaimClear implements CommandExecutor {
         }
 
         if (!GriefPreventionPlugin.instance.claimsEnabledForWorld(worldProperties)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.claimDisabledWorld.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Land claims are disabled in this world."));
             return CommandResult.success();
         }
 
@@ -149,7 +149,7 @@ public class CommandClaimClear implements CommandExecutor {
                     }
                 }
             } else {
-                if (entityType == null || !entityType.equals(((SpongeEntityType) entity.getType()))) {
+                if (entityType == null || !entityType.equals(entity.getType())) {
                     continue;
                 }
 
@@ -162,11 +162,11 @@ public class CommandClaimClear implements CommandExecutor {
         }
 
         if (count == 0) {
-            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.GRAY, "Could not locate any entities of type ", 
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.GRAY, "Could not locate any entities of type ",
                     TextColors.GREEN, target, TextColors.WHITE, "."));
         } else {
-            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Killed ", TextColors.AQUA, count, 
-                    TextColors.WHITE, " entities of type ", TextColors.GREEN, target, 
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Killed ", TextColors.AQUA, count,
+                    TextColors.WHITE, " entities of type ", TextColors.GREEN, target,
                     TextColors.WHITE, "."));
         }
 

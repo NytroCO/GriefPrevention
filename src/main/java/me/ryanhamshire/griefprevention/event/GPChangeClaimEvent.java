@@ -39,18 +39,18 @@ public class GPChangeClaimEvent extends GPClaimEvent implements ChangeClaimEvent
     public static class Type extends GPChangeClaimEvent implements ChangeClaimEvent.Type {
         private final ClaimType originalType;
         private final ClaimType newType;
-    
+
         public Type(Claim claim, ClaimType newType) {
             super(claim);
             this.originalType = claim.getType();
             this.newType = newType;
         }
-    
+
         @Override
         public ClaimType getOriginalType() {
             return originalType;
         }
-    
+
         @Override
         public ClaimType getType() {
             return newType;
@@ -58,7 +58,7 @@ public class GPChangeClaimEvent extends GPClaimEvent implements ChangeClaimEvent
     }
 
     public static class Resize extends GPChangeClaimEvent implements ChangeClaimEvent.Resize {
-        private Claim resizedClaim;
+        private final Claim resizedClaim;
         private Location<World> startCorner;
         private Location<World> endCorner;
 

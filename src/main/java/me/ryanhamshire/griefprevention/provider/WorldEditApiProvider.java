@@ -37,16 +37,11 @@ import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
 import me.ryanhamshire.griefprevention.provider.worldedit.GPActor;
 import me.ryanhamshire.griefprevention.provider.worldedit.cui.MultiSelectionColors;
-import me.ryanhamshire.griefprevention.provider.worldedit.cui.event.MultiSelectionClearEvent;
-import me.ryanhamshire.griefprevention.provider.worldedit.cui.event.MultiSelectionColorEvent;
-import me.ryanhamshire.griefprevention.provider.worldedit.cui.event.MultiSelectionCuboidEvent;
-import me.ryanhamshire.griefprevention.provider.worldedit.cui.event.MultiSelectionGridEvent;
-import me.ryanhamshire.griefprevention.provider.worldedit.cui.event.MultiSelectionPointEvent;
+import me.ryanhamshire.griefprevention.provider.worldedit.cui.event.*;
 import me.ryanhamshire.griefprevention.util.BlockUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -54,7 +49,7 @@ import java.util.UUID;
 public class WorldEditApiProvider {
 
     private final WorldEdit worldEditService;
-    private Map<UUID, GPActor> worldEditPlayers = Maps.newHashMap();
+    private final Map<UUID, GPActor> worldEditPlayers = Maps.newHashMap();
 
     public WorldEditApiProvider() {
         this.worldEditService = WorldEdit.getInstance();
@@ -238,10 +233,6 @@ public class WorldEditApiProvider {
 
     public boolean hasCUISupport(String name) {
         final LocalSession session = this.getLocalSession(name);
-        if (session == null || !session.hasCUISupport()) {
-            return false;
-        }
-
-        return true;
+        return session != null && session.hasCUISupport();
     }
 }

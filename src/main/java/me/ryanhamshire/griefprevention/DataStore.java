@@ -31,11 +31,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import me.ryanhamshire.griefprevention.api.claim.Claim;
-import me.ryanhamshire.griefprevention.api.claim.ClaimContexts;
-import me.ryanhamshire.griefprevention.api.claim.ClaimResult;
-import me.ryanhamshire.griefprevention.api.claim.ClaimResultType;
-import me.ryanhamshire.griefprevention.api.claim.ClaimType;
+import me.ryanhamshire.griefprevention.api.claim.*;
 import me.ryanhamshire.griefprevention.claim.ClaimsMode;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
 import me.ryanhamshire.griefprevention.claim.GPClaimManager;
@@ -60,32 +56,32 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 //singleton class which manages all GriefPrevention data (except for config options)
 public abstract class DataStore {
 
-    // World UUID -> PlayerDataWorldManager
-    protected final Map<UUID, GPClaimManager> claimWorldManagers = Maps.newHashMap();
-
+    // path information, for where stuff stored on disk is well... stored
+    public final static Path dataLayerFolderPath = GriefPreventionPlugin.instance.getConfigPath();
+    public final static Path globalPlayerDataPath = dataLayerFolderPath.resolve("GlobalPlayerData");
+    // video links
+    public static final String SURVIVAL_VIDEO_URL_RAW = "http://bit.ly/mcgpuser";
+    // pattern for unique user identifiers (UUIDs)
+    protected final static Pattern uuidpattern = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+    // the latest version of the data schema implemented here
+    protected static final int latestSchemaVersion = 2;
+    // the latest version of the data migration implemented here
+    protected static final int latestMigrationVersion = 1;
+    final static Path softMuteFilePath = dataLayerFolderPath.resolve("softMute.txt");
+    final static Path bannedWordsFilePath = dataLayerFolderPath.resolve("bannedWords.txt");
+    static final String CREATIVE_VIDEO_URL_RAW = "http://bit.ly/mcgpcrea";
+    static final String SUBDIVISION_VIDEO_URL_RAW = "http://bit.ly/mcgpsub";
     // in-memory cache for claim data
     public static Map<UUID, GriefPreventionConfig<ConfigBase>> dimensionConfigMap = Maps.newHashMap();
     public static Map<UUID, GriefPreventionConfig<ConfigBase>> worldConfigMap = Maps.newHashMap();
@@ -94,21 +90,39 @@ public abstract class DataStore {
     public static Map<UUID, GPPlayerData> GLOBAL_PLAYER_DATA = Maps.newHashMap();
     public static boolean USE_GLOBAL_PLAYER_STORAGE = true;
     public static Map<ClaimType, Map<String, Boolean>> CLAIM_FLAG_DEFAULTS = Maps.newHashMap();
+    public static boolean generateMessages = true;
+    public static List<String> bannedWords = new ArrayList<>();
+    // World UUID -> PlayerDataWorldManager
+    protected final Map<UUID, GPClaimManager> claimWorldManagers = Maps.newHashMap();
+    // list of UUIDs which are soft-muted
+    Set<UUID> softMuteMap = ConcurrentHashMap.newKeySet();
+    // current version of the schema of data in secondary storage
+    private int currentSchemaVersion = -1; // -1 means not determined yet
+    // current version of the migration of data in secondary storage
+    private int currentMigrationVersion = -1; // -1 means not determined yet
 
-    // pattern for unique user identifiers (UUIDs)
-    protected final static Pattern uuidpattern = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+    public static void loadBannedWords() {
+        try {
+            File bannedWordsFile = bannedWordsFilePath.toFile();
+            boolean regenerateDefaults = false;
+            if (!bannedWordsFile.exists()) {
+                Files.touch(bannedWordsFile);
+                regenerateDefaults = true;
+            }
 
-    // path information, for where stuff stored on disk is well... stored
-    public final static Path dataLayerFolderPath = GriefPreventionPlugin.instance.getConfigPath();
-    public final static Path globalPlayerDataPath = dataLayerFolderPath.resolve("GlobalPlayerData");
-    final static Path softMuteFilePath = dataLayerFolderPath.resolve("softMute.txt");
-    final static Path bannedWordsFilePath = dataLayerFolderPath.resolve("bannedWords.txt");
-
-    // the latest version of the data schema implemented here
-    protected static final int latestSchemaVersion = 2;
-
-    // the latest version of the data migration implemented here
-    protected static final int latestMigrationVersion = 1;
+            bannedWords = Files.readLines(bannedWordsFile, StandardCharsets.UTF_8);
+            if (regenerateDefaults || bannedWords.isEmpty()) {
+                String defaultWords =
+                        "nigger\nniggers\nniger\nnigga\nnigers\nniggas\n" +
+                                "fag\nfags\nfaggot\nfaggots\nfeggit\nfeggits\nfaggit\nfaggits\n" +
+                                "cunt\ncunts\nwhore\nwhores\nslut\nsluts\n";
+                Files.write(defaultWords, bannedWordsFile, StandardCharsets.UTF_8);
+            }
+        } catch (Exception e) {
+            GriefPreventionPlugin.addLogEntry("Failed to read from the banned words data file: " + e.toString());
+            e.printStackTrace();
+        }
+    }
 
     // reading and writing the schema version to the data store
     abstract int getSchemaVersionFromStorage();
@@ -119,23 +133,6 @@ public abstract class DataStore {
     abstract int getMigrationVersionFromStorage();
 
     abstract void updateMigrationVersionInStorage(int versionToSet);
-
-    // current version of the schema of data in secondary storage
-    private int currentSchemaVersion = -1; // -1 means not determined yet
-
-    // current version of the migration of data in secondary storage
-    private int currentMigrationVersion = -1; // -1 means not determined yet
-
-    // video links
-    public static final String SURVIVAL_VIDEO_URL_RAW = "http://bit.ly/mcgpuser";
-    static final String CREATIVE_VIDEO_URL_RAW = "http://bit.ly/mcgpcrea";
-    static final String SUBDIVISION_VIDEO_URL_RAW = "http://bit.ly/mcgpsub";
-
-    public static boolean generateMessages = true;
-    public static List<String> bannedWords = new ArrayList<>();
-
-    // list of UUIDs which are soft-muted
-    Set<UUID> softMuteMap = ConcurrentHashMap.newKeySet();
 
     protected int getSchemaVersion() {
         if (this.currentSchemaVersion >= 0) {
@@ -177,8 +174,8 @@ public abstract class DataStore {
         }
 
         // load up all the messages from messages.hocon
-       // this.loadMessages();
-        this.loadBannedWords();
+        // this.loadMessages();
+        loadBannedWords();
         GriefPreventionPlugin.addLogEntry("Customizable messages loaded.");
 
         // load list of soft mutes
@@ -227,29 +224,6 @@ public abstract class DataStore {
                 }
             } catch (IOException exception) {
             }
-        }
-    }
-
-    public static void loadBannedWords() {
-        try {
-            File bannedWordsFile = bannedWordsFilePath.toFile();
-            boolean regenerateDefaults = false;
-            if (!bannedWordsFile.exists()) {
-                Files.touch(bannedWordsFile);
-                regenerateDefaults = true;
-            }
-
-            bannedWords = Files.readLines(bannedWordsFile, Charset.forName("UTF-8"));
-            if (regenerateDefaults || bannedWords.isEmpty()) {
-                String defaultWords =
-                        "nigger\nniggers\nniger\nnigga\nnigers\nniggas\n" +
-                                "fag\nfags\nfaggot\nfaggots\nfeggit\nfeggits\nfaggit\nfaggits\n" +
-                                "cunt\ncunts\nwhore\nwhores\nslut\nsluts\n";
-                Files.write(defaultWords, bannedWordsFile, Charset.forName("UTF-8"));
-            }
-        } catch (Exception e) {
-            GriefPreventionPlugin.addLogEntry("Failed to read from the banned words data file: " + e.toString());
-            e.printStackTrace();
         }
     }
 
@@ -355,7 +329,7 @@ public abstract class DataStore {
 
                 // write data to file
                 File playerDataFile = globalPlayerDataPath.resolve(playerID.toString() + ".ignore").toFile();
-                Files.write(fileContent.toString().trim().getBytes("UTF-8"), playerDataFile);
+                Files.write(fileContent.toString().trim().getBytes(StandardCharsets.UTF_8), playerDataFile);
             }
 
             // if any problem, log it
@@ -391,7 +365,7 @@ public abstract class DataStore {
         Vector3d newGreaterPosition = new Vector3d(claim.greaterBoundaryCorner.getX(), newDepth, claim.greaterBoundaryCorner.getZ());
         claim.greaterBoundaryCorner = claim.greaterBoundaryCorner.setPosition(newGreaterPosition);
         if (claim.parent == null) {
-            
+
         }
 
         for (Claim subClaim : claim.children) {
@@ -447,7 +421,7 @@ public abstract class DataStore {
             Sponge.getEventManager().post(event);
             if (event.isCancelled()) {
                 return new GPClaimResult(ClaimResultType.CLAIM_EVENT_CANCELLED,
-                    event.getMessage().orElse(Text.of("Could not delete all admin claims. A plugin has denied it.")));
+                        event.getMessage().orElse(Text.of("Could not delete all admin claims. A plugin has denied it.")));
             }
         }
 
@@ -505,7 +479,7 @@ public abstract class DataStore {
                     claimsToDelete.add(claim);
                 }
             }
- 
+
             for (Claim claim : claimsToDelete) {
                 ((GPClaim) claim).removeSurfaceFluids(null);
                 GriefPreventionPlugin.GLOBAL_SUBJECT.getSubjectData().clearPermissions(ImmutableSet.of(claim.getContext()));
@@ -675,7 +649,7 @@ public abstract class DataStore {
                 // make sure all defaults are available
                 for (Map.Entry<String, Boolean> mapEntry : defaultFlags.entrySet()) {
                     String flagPermission = GPPermissions.FLAG_BASE + "." + mapEntry.getKey();
-                    if (!defaultPermissions.keySet().contains(flagPermission)) {
+                    if (!defaultPermissions.containsKey(flagPermission)) {
                         GriefPreventionPlugin.GLOBAL_SUBJECT.getTransientSubjectData().setPermission(contexts, flagPermission, Tristate.fromBoolean(mapEntry.getValue()));
                     }
                 }

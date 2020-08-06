@@ -36,10 +36,10 @@ import org.spongepowered.api.world.World;
 public class CheckForPortalTrapTask implements Runnable {
 
     // player who recently teleported via nether portal
-    private Player player;
+    private final Player player;
 
     // where to send the player back to if he hasn't left the portal frame
-    private Location<World> returnLocation;
+    private final Location<World> returnLocation;
 
     public CheckForPortalTrapTask(Player player, Location<World> location) {
         this.player = player;

@@ -42,13 +42,6 @@ import java.util.UUID;
 
 public class ClaimStorageData {
 
-    protected HoconConfigurationLoader loader;
-    private CommentedConfigurationNode root = SimpleCommentedConfigurationNode.root(ConfigurationOptions.defaults());
-    protected ObjectMapper<ClaimDataConfig>.BoundInstance configMapper;
-    protected ClaimDataConfig configBase;
-    public Path filePath;
-    public Path folderPath;
-
     // MAIN
     public static final String MAIN_WORLD_UUID = "world-uuid";
     public static final String MAIN_OWNER_UUID = "owner-uuid";
@@ -62,12 +55,9 @@ public class ClaimStorageData {
     public static final String MAIN_CLAIM_PVP = "pvp";
     public static final String MAIN_CLAIM_DATE_CREATED = "date-created";
     public static final String MAIN_CLAIM_DATE_LAST_ACTIVE = "date-last-active";
-    public static final String MAIN_CLAIM_MAX_WIDTH = "max-width";
     public static final String MAIN_CLAIM_FOR_SALE = "for-sale";
     public static final String MAIN_CLAIM_SALE_PRICE = "sale-price";
     public static final String MAIN_REQUIRES_CLAIM_BLOCKS = "requires-claim-blocks";
-    public static final String MAIN_SUBDIVISION_UUID = "uuid";
-    public static final String MAIN_PARENT_CLAIM_UUID = "parent-claim-uuid";
     public static final String MAIN_LESSER_BOUNDARY_CORNER = "lesser-boundary-corner";
     public static final String MAIN_GREATER_BOUNDARY_CORNER = "greater-boundary-corner";
     public static final String MAIN_ACCESSORS = "accessors";
@@ -85,6 +75,12 @@ public class ClaimStorageData {
     public static final String MAIN_TAX_BALANCE = "tax-balance";
     // SUB
     public static final String MAIN_INHERIT_PARENT = "inherit-parent";
+    public Path filePath;
+    public Path folderPath;
+    protected HoconConfigurationLoader loader;
+    protected ObjectMapper<ClaimDataConfig>.BoundInstance configMapper;
+    protected ClaimDataConfig configBase;
+    private CommentedConfigurationNode root = SimpleCommentedConfigurationNode.root(ConfigurationOptions.defaults());
 
     // Used for new claims after server startup
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -103,7 +99,7 @@ public class ClaimStorageData {
             if (type == ClaimType.TOWN) {
                 this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(TownDataConfig.class).bindToNew();
             } else {
-                this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(ClaimDataConfig.class).bindToNew();
+                this.configMapper = ObjectMapper.forClass(ClaimDataConfig.class).bindToNew();
             }
             this.configMapper.getInstance().setWorldUniqueId(worldUniqueId);
             this.configMapper.getInstance().setOwnerUniqueId(ownerUniqueId);
@@ -130,7 +126,7 @@ public class ClaimStorageData {
             }
 
             this.loader = HoconConfigurationLoader.builder().setPath(path).build();
-            this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(ClaimDataConfig.class).bind(claimData);
+            this.configMapper = ObjectMapper.forClass(ClaimDataConfig.class).bind(claimData);
             this.configMapper.getInstance().setClaimStorageData(this);
             load();
             ((EconomyDataConfig) this.configMapper.getInstance().getEconomyData()).activeConfig = GriefPreventionPlugin.getActiveConfig(worldUniqueId);
@@ -156,7 +152,7 @@ public class ClaimStorageData {
             if (path.getParent().endsWith("town")) {
                 this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(TownDataConfig.class).bindToNew();
             } else {
-                this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(ClaimDataConfig.class).bindToNew();
+                this.configMapper = ObjectMapper.forClass(ClaimDataConfig.class).bindToNew();
             }
             this.configMapper.getInstance().setClaimStorageData(this);
             load();

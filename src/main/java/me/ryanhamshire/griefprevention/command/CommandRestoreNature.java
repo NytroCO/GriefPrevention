@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandRestoreNature implements CommandExecutor {
 
@@ -49,7 +51,7 @@ public class CommandRestoreNature implements CommandExecutor {
 
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         playerData.shovelMode = ShovelMode.RestoreNature;
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.restoreNatureActivate.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Ready to restore some nature! Right click to restore nature, and use /BasicClaims to stop."));
         return CommandResult.success();
     }
 }

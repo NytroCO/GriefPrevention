@@ -10,25 +10,9 @@ import java.util.Map;
 
 public class GPOptions {
 
-    public enum Type {
-        ABANDON_RETURN_RATIO,
-        MAX_CLAIM_SIZE_X,
-        MAX_CLAIM_SIZE_Y,
-        MAX_CLAIM_SIZE_Z,
-        MIN_CLAIM_SIZE_X,
-        MIN_CLAIM_SIZE_Y,
-        MIN_CLAIM_SIZE_Z,
-        CLAIM_EXPIRATION,
-        CLAIM_LIMIT,
-        EXPIRATION_DAYS_KEEP,
-        TAX_EXPIRATION,
-        TAX_RATE
-    }
-
     public static final Map<String, Double> DEFAULT_OPTIONS = Maps.newHashMap();
     // All options in this list can only be used globally
     public static final List<String> GLOBAL_OPTIONS = new ArrayList<>();
-
     public static final String INVALID_OPTION = "invalid-option";
     public static final String ABANDON_RETURN_RATIO_BASIC = "griefprevention.abandon-return-ratio-basic";
     public static final String ABANDON_RETURN_RATIO_TOWN = "griefprevention.abandon-return-ratio-town";
@@ -79,7 +63,6 @@ public class GPOptions {
     public static final String MEMBER_CLAIM_BOOST = "mcclans.member-claim-boost";
     public static final String MEMBER_EXPIRATION = "mcclans.member-expiration";
     public static final String MEMBER_TRUST_LEVEL = "mcclans.member-trust-level";
-
     public static final double DEFAULT_ABANDON_RETURN_RATIO_BASIC = 1.0;
     public static final double DEFAULT_ABANDON_RETURN_RATIO_TOWN = 1.0;
     public static final int DEFAULT_BLOCKS_ACCRUED_PER_HOUR = GriefPreventionPlugin.CLAIM_BLOCK_SYSTEM == ClaimBlockSystem.VOLUME ? 30720 : 120;
@@ -91,20 +74,20 @@ public class GPOptions {
     public static final int DEFAULT_RADIUS_CLAIM_LIST = 0;
     public static final int DEFAULT_MAX_ACCRUED_BLOCKS = GriefPreventionPlugin.CLAIM_BLOCK_SYSTEM == ClaimBlockSystem.VOLUME ? 20480000 : 80000;
     public static final int DEFAULT_MAX_CLAIM_LEVEL = 255;
-    public static final int DEFAULT_MAX_CLAIM_SIZE_BASIC_X= 5000;
+    public static final int DEFAULT_MAX_CLAIM_SIZE_BASIC_X = 5000;
     public static final int DEFAULT_MAX_CLAIM_SIZE_BASIC_Y = 256;
     public static final int DEFAULT_MAX_CLAIM_SIZE_BASIC_Z = 5000;
-    public static final int DEFAULT_MAX_CLAIM_SIZE_TOWN_X= 10000;
+    public static final int DEFAULT_MAX_CLAIM_SIZE_TOWN_X = 10000;
     public static final int DEFAULT_MAX_CLAIM_SIZE_TOWN_Y = 256;
     public static final int DEFAULT_MAX_CLAIM_SIZE_TOWN_Z = 10000;
-    public static final int DEFAULT_MAX_CLAIM_SIZE_SUBDIVISION_X= 1000;
+    public static final int DEFAULT_MAX_CLAIM_SIZE_SUBDIVISION_X = 1000;
     public static final int DEFAULT_MAX_CLAIM_SIZE_SUBDIVISION_Y = 256;
     public static final int DEFAULT_MAX_CLAIM_SIZE_SUBDIVISION_Z = 1000;
     public static final int DEFAULT_MIN_CLAIM_LEVEL = 0;
-    public static final int DEFAULT_MIN_CLAIM_SIZE_BASIC_X= 5;
+    public static final int DEFAULT_MIN_CLAIM_SIZE_BASIC_X = 5;
     public static final int DEFAULT_MIN_CLAIM_SIZE_BASIC_Y = 5;
     public static final int DEFAULT_MIN_CLAIM_SIZE_BASIC_Z = 5;
-    public static final int DEFAULT_MIN_CLAIM_SIZE_TOWN_X= 32;
+    public static final int DEFAULT_MIN_CLAIM_SIZE_TOWN_X = 32;
     public static final int DEFAULT_MIN_CLAIM_SIZE_TOWN_Y = 32;
     public static final int DEFAULT_MIN_CLAIM_SIZE_TOWN_Z = 32;
     public static final int DEFAULT_CLAIM_CREATE_MODE = 0;
@@ -207,7 +190,7 @@ public class GPOptions {
         DEFAULT_OPTIONS.put(TOWN_PURCHASE_COST, GPOptions.DEFAULT_TOWN_PURCHASE_COST);
 
         if (GriefPreventionPlugin.instance.clanApiProvider != null) {
-            // The ratio used to determine how many bonus blocks the leader of a clan receives. 
+            // The ratio used to determine how many bonus blocks the leader of a clan receives.
             // Example: If the ratio is 1.0 and there are 10 active members, the leader would gain 10 bonus claim blocks(1.0 * 10) every time the claim block task runs.
             DEFAULT_OPTIONS.put(LEADER_CLAIM_BOOST, 1.0);
             // Number of bonus claim blocks to give members of a clan
@@ -229,5 +212,20 @@ public class GPOptions {
         GLOBAL_OPTIONS.add(GPOptions.CREATE_CLAIM_LIMIT_BASIC);
         GLOBAL_OPTIONS.add(GPOptions.CREATE_CLAIM_LIMIT_SUBDIVISION);
         GLOBAL_OPTIONS.add(GPOptions.CREATE_CLAIM_LIMIT_TOWN);
+    }
+
+    public enum Type {
+        ABANDON_RETURN_RATIO,
+        MAX_CLAIM_SIZE_X,
+        MAX_CLAIM_SIZE_Y,
+        MAX_CLAIM_SIZE_Z,
+        MIN_CLAIM_SIZE_X,
+        MIN_CLAIM_SIZE_Y,
+        MIN_CLAIM_SIZE_Z,
+        CLAIM_EXPIRATION,
+        CLAIM_LIMIT,
+        EXPIRATION_DAYS_KEEP,
+        TAX_EXPIRATION,
+        TAX_RATE
     }
 }

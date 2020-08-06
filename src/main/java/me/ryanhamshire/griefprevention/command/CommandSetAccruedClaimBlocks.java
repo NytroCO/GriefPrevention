@@ -42,8 +42,8 @@ public class CommandSetAccruedClaimBlocks implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        WorldProperties worldProperties = args.<WorldProperties> getOne("world").orElse(null);
-        Player player = src instanceof Player ? (Player)src : null;
+        WorldProperties worldProperties = args.<WorldProperties>getOne("world").orElse(null);
+        Player player = src instanceof Player ? (Player) src : null;
         if (worldProperties == null) {
             if (player != null) {
                 worldProperties = player.getWorld().getProperties();
@@ -54,7 +54,7 @@ public class CommandSetAccruedClaimBlocks implements CommandExecutor {
         }
 
         if (!GriefPreventionPlugin.instance.claimsEnabledForWorld(worldProperties)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.claimDisabledWorld.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Land claims are disabled in this world."));
             return CommandResult.success();
         }
 
@@ -73,7 +73,7 @@ public class CommandSetAccruedClaimBlocks implements CommandExecutor {
         }
 
         playerData.getStorageData().save();
-        GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.commandAcbSuccess.toText());
+        GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.GREEN, "Updated accrued claim blocks."));
         GriefPreventionPlugin.addLogEntry(src.getName() + " set " + user.getName() + "'s accrued claim blocks to " + newAmount + ".",
                 CustomLogEntryTypes.AdminActivity);
         return CommandResult.success();

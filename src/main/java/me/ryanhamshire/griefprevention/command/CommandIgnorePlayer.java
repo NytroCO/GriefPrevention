@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandIgnorePlayer implements CommandExecutor {
 
@@ -51,7 +53,7 @@ public class CommandIgnorePlayer implements CommandExecutor {
         final Player targetPlayer = args.<Player>getOne("player").get();
         if (targetPlayer.hasPermission(GPPermissions.NOT_IGNORABLE)) {
             try {
-                throw new CommandException(GriefPreventionPlugin.instance.messageData.permissionPlayerNotIgnorable.toText());
+                throw new CommandException(Text.of(TextColors.RED, "You can't ignore that player."));
             } catch (CommandException e) {
                 src.sendMessage(e.getText());
                 return CommandResult.success();
@@ -59,7 +61,7 @@ public class CommandIgnorePlayer implements CommandExecutor {
         }
 
         GriefPreventionPlugin.instance.setIgnoreStatus(player.getWorld(), player, targetPlayer, IgnoreMode.StandardIgnore);
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.playerIgnoreConfirmation.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of("You're now ignoring chat messages from that player."));
         return CommandResult.success();
     }
 }

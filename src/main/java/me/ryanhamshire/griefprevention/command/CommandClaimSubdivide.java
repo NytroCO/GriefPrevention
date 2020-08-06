@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandClaimSubdivide implements CommandExecutor {
 
@@ -50,7 +52,7 @@ public class CommandClaimSubdivide implements CommandExecutor {
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         playerData.shovelMode = ShovelMode.Subdivide;
         playerData.claimSubdividing = null;
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimModeSubdivision.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Subdivision mode.  Use your shovel to create subdivisions in your existing claims.  Use /basicclaims to exit."));
 
         return CommandResult.success();
     }

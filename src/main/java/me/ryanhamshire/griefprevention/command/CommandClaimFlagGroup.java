@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.ClaimFlag;
@@ -69,7 +68,7 @@ public class CommandClaimFlagGroup extends ClaimFlagBase implements CommandExecu
         String source = ctx.<String>getOne("source").orElse(null);
         String target = null;
         // Workaround command API issue not handling onlyOne arguments with sequences properly
-        List<String> targetValues = new ArrayList<>(ctx.<String>getAll("target"));
+        List<String> targetValues = new ArrayList<>(ctx.getAll("target"));
         if (targetValues.size() > 0) {
             if (targetValues.size() > 1) {
                 target = targetValues.get(1);
@@ -83,9 +82,7 @@ public class CommandClaimFlagGroup extends ClaimFlagBase implements CommandExecu
         }
 
         if (!PermissionUtils.hasGroupSubject(group)) {
-            final Text message = GriefPreventionPlugin.instance.messageData.commandGroupInvalid
-                    .apply(ImmutableMap.of(
-                    "group", group)).build();
+            final Text message = Text.of(TextColors.RED, "Group " + group + " is not valid.");
             GriefPreventionPlugin.sendMessage(player, message);
             return CommandResult.success();
         }
@@ -95,7 +92,7 @@ public class CommandClaimFlagGroup extends ClaimFlagBase implements CommandExecu
         GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
         if (claim == null) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimNotFound.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "There's no claim here."));
             return CommandResult.success();
         }
 
@@ -121,10 +118,7 @@ public class CommandClaimFlagGroup extends ClaimFlagBase implements CommandExecu
         if (context != null) {
             claimContext = CommandHelper.validateCustomContext(src, claim, context);
             if (claimContext == null) {
-                final Text message = GriefPreventionPlugin.instance.messageData.flagInvalidContext
-                        .apply(ImmutableMap.of(
-                        "context", context,
-                        "flag", flag)).build();
+                final Text message = Text.of(TextColors.RED, "Invalid context '" + context + "' entered for base flag " + flag + ".");
                 GriefPreventionPlugin.sendMessage(src, message);
                 return CommandResult.success();
             }

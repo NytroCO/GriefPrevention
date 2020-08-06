@@ -36,13 +36,23 @@ public interface IClaimData extends ClaimData {
 
     boolean isExpired();
 
+    void setExpired(boolean expire);
+
     List<UUID> getAccessors();
+
+    void setAccessors(List<UUID> accessors);
 
     List<UUID> getBuilders();
 
+    void setBuilders(List<UUID> builders);
+
     List<UUID> getContainers();
 
+    void setContainers(List<UUID> containers);
+
     List<UUID> getManagers();
+
+    void setManagers(List<UUID> coowners);
 
     List<String> getAccessorGroups();
 
@@ -64,15 +74,5 @@ public interface IClaimData extends ClaimData {
 
     void setGreaterBoundaryCorner(String location);
 
-    void setAccessors(List<UUID> accessors);
-
-    void setBuilders(List<UUID> builders);
-
-    void setContainers(List<UUID> containers);
-
-    void setManagers(List<UUID> coowners);
-
     void setRequiresSave(boolean flag);
-
-    void setExpired(boolean expire);
 }

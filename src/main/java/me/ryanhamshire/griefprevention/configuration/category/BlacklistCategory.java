@@ -28,10 +28,9 @@ import me.ryanhamshire.griefprevention.api.claim.ClaimFlag;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 @ConfigSerializable
 public class BlacklistCategory extends ConfigCategory {

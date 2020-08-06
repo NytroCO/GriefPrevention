@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandClaimAdmin implements CommandExecutor {
 
@@ -46,10 +48,10 @@ public class CommandClaimAdmin implements CommandExecutor {
             src.sendMessage(e.getText());
             return CommandResult.success();
         }
- 
+
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         playerData.shovelMode = ShovelMode.Admin;
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimModeAdmin.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Administrative claims mode active. Any claims created will be free and editable by other administrators."));
         return CommandResult.success();
     }
 }

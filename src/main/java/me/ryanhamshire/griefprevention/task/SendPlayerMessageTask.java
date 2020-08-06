@@ -34,8 +34,8 @@ import org.spongepowered.api.text.Text;
 //used to send delayed messages, for example help text triggered by a player's chat
 public class SendPlayerMessageTask implements Runnable {
 
-    private Player player;
-    private Text message;
+    private final Player player;
+    private final Text message;
 
     public SendPlayerMessageTask(Player player, Text message) {
         this.player = player;

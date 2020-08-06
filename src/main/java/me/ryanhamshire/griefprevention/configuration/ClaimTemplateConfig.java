@@ -56,15 +56,15 @@ public class ClaimTemplateConfig extends ConfigCategory {
     @Setting(value = ClaimStorageData.MAIN_MANAGERS, comment = "The coowners associated with subdivision.")
     public ArrayList<UUID> coowners = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_ACCESSOR_GROUPS)
-    private List<String> accessorGroups = new ArrayList<>();
+    private final List<String> accessorGroups = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_BUILDER_GROUPS)
-    private List<String> builderGroups = new ArrayList<>();
+    private final List<String> builderGroups = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_CONTAINER_GROUPS)
-    private List<String> containerGroups = new ArrayList<>();
+    private final List<String> containerGroups = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_MANAGER_GROUPS)
-    private List<String> managerGroups = new ArrayList<>();
+    private final List<String> managerGroups = new ArrayList<>();
     @Setting(value = "permissions")
-    private Map<Context, String> permissions = Maps.newHashMap();
+    private final Map<Context, String> permissions = Maps.newHashMap();
 
     public ClaimTemplateConfig() {
 

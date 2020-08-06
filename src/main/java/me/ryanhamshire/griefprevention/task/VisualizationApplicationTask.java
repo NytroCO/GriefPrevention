@@ -38,10 +38,10 @@ import java.util.concurrent.TimeUnit;
 //applies a visualization for a player by sending him block change packets
 public class VisualizationApplicationTask implements Runnable {
 
-    private Visualization visualization;
-    private Player player;
-    private GPPlayerData playerData;
-    private boolean resetActive;
+    private final Visualization visualization;
+    private final Player player;
+    private final GPPlayerData playerData;
+    private final boolean resetActive;
 
     public VisualizationApplicationTask(Player player, GPPlayerData playerData, Visualization visualization) {
         this(player, playerData, visualization, true);

@@ -33,6 +33,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 
 public class CommandUnlockDrops implements CommandExecutor {
 
@@ -48,7 +49,7 @@ public class CommandUnlockDrops implements CommandExecutor {
 
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         playerData.dropsAreUnlocked = true;
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.playerDropUnlockConfirmation.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of("Unlocked your drops.  Other players may now pick them up (until you die again)."));
         return CommandResult.success();
     }
 }

@@ -30,9 +30,9 @@ public enum ClaimSubjectType {
     GROUP("Group"),
     PLAYER("Player");
 
-    private String friendlyName;
+    private final String friendlyName;
 
-    private ClaimSubjectType(String name) {
+    ClaimSubjectType(String name) {
         this.friendlyName = name;
     }
 

@@ -34,9 +34,9 @@ import java.util.Map;
 @ConfigSerializable
 public class ModuleCategory {
 
-    @Setting(value = "protection", comment = "Controls which protection modules are enabled." 
+    @Setting(value = "protection", comment = "Controls which protection modules are enabled."
             + "\nNote: If you want full protection, it is recommended to keep everything enabled.")
-    private Map<String, Boolean> protection = Maps.newHashMap();
+    private final Map<String, Boolean> protection = Maps.newHashMap();
 
     public ModuleCategory() {
         protection.put(ClaimFlag.BLOCK_BREAK.toString(), true);

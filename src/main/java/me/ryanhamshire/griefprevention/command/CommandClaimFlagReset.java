@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
@@ -37,6 +36,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Set;
 
@@ -54,9 +54,7 @@ public class CommandClaimFlagReset implements CommandExecutor {
 
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
-        final Text message = GriefPreventionPlugin.instance.messageData.permissionClaimResetFlags
-                .apply(ImmutableMap.of(
-                "type", claim.getType().name())).build();
+        final Text message = Text.of(TextColors.RED, "You don't have permission to reset " + claim.getType().name() + " claims to flag defaults.");
         if (claim.isWilderness()) {
             if (!src.hasPermission(GPPermissions.MANAGE_WILDERNESS)) {
                 GriefPreventionPlugin.sendMessage(src, message);
@@ -68,7 +66,7 @@ public class CommandClaimFlagReset implements CommandExecutor {
                 return CommandResult.success();
             }
         } else if (!src.hasPermission(GPPermissions.COMMAND_ADMIN_CLAIMS) && (claim.isBasicClaim() || claim.isSubdivision()) && !player.getUniqueId().equals(claim.getOwnerUniqueId())) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionClaimResetFlagsSelf.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You don't have permission to reset your claim flags to defaults."));
             return CommandResult.success();
         }
 
@@ -89,7 +87,7 @@ public class CommandClaimFlagReset implements CommandExecutor {
             }
         }
 
-        GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.flagResetSuccess.toText());
+        GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.GREEN, "Claim flags reset to defaults successfully."));
         return CommandResult.success();
     }
 }

@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandTownChat implements CommandExecutor {
 
@@ -50,7 +52,7 @@ public class CommandTownChat implements CommandExecutor {
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAt(player.getLocation());
         if (!claim.isInTown()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.townNotIn.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You are not in a town."));
             return CommandResult.success();
         }
 
@@ -59,9 +61,9 @@ public class CommandTownChat implements CommandExecutor {
 
         // toggle ignore claims mode on or off
         if (!playerData.townChat) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.townChatDisabled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("Town chat disabled."));
         } else {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.townChatEnabled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("Town chat enabled."));
         }
 
         return CommandResult.success();

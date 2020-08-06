@@ -64,7 +64,7 @@ public class CommandIgnoredPlayerList implements CommandExecutor {
 
         String list = builder.toString().trim();
         if (list.isEmpty()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.playerNotIgnoring.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("You're not ignoring that player."));
         } else {
             GriefPreventionPlugin.sendMessage(player, Text.of(list));
         }

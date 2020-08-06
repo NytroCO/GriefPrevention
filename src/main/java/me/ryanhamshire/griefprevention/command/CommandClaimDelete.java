@@ -25,7 +25,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
@@ -47,7 +46,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 public class CommandClaimDelete implements CommandExecutor {
 
-    private boolean deleteTopLevelClaim;
+    private final boolean deleteTopLevelClaim;
 
     public CommandClaimDelete(boolean deleteTopLevelClaim) {
         this.deleteTopLevelClaim = deleteTopLevelClaim;
@@ -69,14 +68,11 @@ public class CommandClaimDelete implements CommandExecutor {
         final boolean isTown = claim.isTown();
 
         if (claim.isWilderness()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimNotFound.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "There's no claim here."));
             return CommandResult.success();
         }
 
-        final Text message = GriefPreventionPlugin.instance.messageData.permissionClaimDelete
-                .apply(ImmutableMap.of(
-                "type", claim.getType().name())).build();
-
+        final Text message = Text.of(TextColors.RED, "You don't have permission to delete " + claim.getType().name() + " claims.");
         if (claim.isAdminClaim() && !player.hasPermission(GPPermissions.DELETE_CLAIM_ADMIN)) {
             GriefPreventionPlugin.sendMessage(player, message);
             return CommandResult.success();
@@ -87,7 +83,7 @@ public class CommandClaimDelete implements CommandExecutor {
         }
 
         if (!this.deleteTopLevelClaim && !claim.isTown() && claim.children.size() > 0 && !playerData.warnedAboutMajorDeletion) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimChildrenWarning.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("This claim includes child claims.  If you're sure you want to delete it, use /DeleteClaim again."));
             playerData.warnedAboutMajorDeletion = true;
             return CommandResult.success();
         }
@@ -95,11 +91,11 @@ public class CommandClaimDelete implements CommandExecutor {
         try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
             Sponge.getCauseStackManager().pushCause(src);
             ClaimResult
-                claimResult =
-                GriefPreventionPlugin.instance.dataStore.deleteClaim(claim, !this.deleteTopLevelClaim);
+                    claimResult =
+                    GriefPreventionPlugin.instance.dataStore.deleteClaim(claim, !this.deleteTopLevelClaim);
             if (!claimResult.successful()) {
                 player.sendMessage(
-                    Text.of(TextColors.RED, claimResult.getMessage().orElse(Text.of("Could not delete claim. A plugin has denied it."))));
+                        Text.of(TextColors.RED, claimResult.getMessage().orElse(Text.of("Could not delete claim. A plugin has denied it."))));
                 return CommandResult.success();
             }
 
@@ -108,15 +104,15 @@ public class CommandClaimDelete implements CommandExecutor {
             GriefPreventionPlugin.GLOBAL_SUBJECT.getSubjectData().clearPermissions(ImmutableSet.of(claim.getContext()));
             // if in a creative mode world, /restorenature the claim
             if (GriefPreventionPlugin.instance
-                .claimModeIsActive(claim.getLesserBoundaryCorner().getExtent().getProperties(), ClaimsMode.Creative)) {
+                    .claimModeIsActive(claim.getLesserBoundaryCorner().getExtent().getProperties(), ClaimsMode.Creative)) {
                 GriefPreventionPlugin.instance.restoreClaim(claim, 0);
             }
 
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimDeleted.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Claim deleted."));
             GriefPreventionPlugin.addLogEntry(
-                player.getName() + " deleted " + claim.getOwnerName() + "'s claim at "
-                + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()),
-                CustomLogEntryTypes.AdminActivity);
+                    player.getName() + " deleted " + claim.getOwnerName() + "'s claim at "
+                            + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()),
+                    CustomLogEntryTypes.AdminActivity);
 
             // revert any current visualization
             playerData.revertActiveVisual(player);

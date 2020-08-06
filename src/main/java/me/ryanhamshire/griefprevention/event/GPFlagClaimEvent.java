@@ -43,6 +43,11 @@ public class GPFlagClaimEvent extends GPClaimEvent implements FlagClaimEvent {
         this.subject = subject;
     }
 
+    @Override
+    public Subject getSubject() {
+        return this.subject;
+    }
+
     public static class Clear extends GPFlagClaimEvent implements FlagClaimEvent.Clear {
 
         private final java.util.Set<Context> contexts;
@@ -99,10 +104,5 @@ public class GPFlagClaimEvent extends GPClaimEvent implements FlagClaimEvent {
         public Context getPermissionContext() {
             return this.context;
         }
-    }
-
-    @Override
-    public Subject getSubject() {
-        return this.subject;
     }
 }

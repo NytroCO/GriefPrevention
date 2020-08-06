@@ -31,14 +31,8 @@ import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import me.ryanhamshire.griefprevention.DataStore;
 import me.ryanhamshire.griefprevention.GPPlayerData;
-import me.ryanhamshire.griefprevention.GPTimings;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
-import me.ryanhamshire.griefprevention.api.claim.Claim;
-import me.ryanhamshire.griefprevention.api.claim.ClaimBlockSystem;
-import me.ryanhamshire.griefprevention.api.claim.ClaimManager;
-import me.ryanhamshire.griefprevention.api.claim.ClaimResult;
-import me.ryanhamshire.griefprevention.api.claim.ClaimResultType;
-import me.ryanhamshire.griefprevention.api.claim.ClaimType;
+import me.ryanhamshire.griefprevention.api.claim.*;
 import me.ryanhamshire.griefprevention.configuration.ClaimDataConfig;
 import me.ryanhamshire.griefprevention.configuration.ClaimStorageData;
 import me.ryanhamshire.griefprevention.configuration.GriefPreventionConfig;
@@ -58,33 +52,26 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
+import java.util.*;
 
 public class GPClaimManager implements ClaimManager {
 
     private static final DataStore DATASTORE = GriefPreventionPlugin.instance.dataStore;
     private WorldProperties worldProperties;
-    private GriefPreventionConfig<?> activeConfig;
+    private final GriefPreventionConfig<?> activeConfig;
 
     // Player UUID -> player data
-    private Map<UUID, GPPlayerData> playerDataList = Maps.newHashMap();
+    private final Map<UUID, GPPlayerData> playerDataList = Maps.newHashMap();
     // World claim list
-    private Set<Claim> worldClaims = new HashSet<>();
+    private final Set<Claim> worldClaims = new HashSet<>();
     // Claim UUID -> Claim
-    private Map<UUID, Claim> claimUniqueIdMap = Maps.newHashMap();
+    private final Map<UUID, Claim> claimUniqueIdMap = Maps.newHashMap();
     // String -> Claim
-    private Map<Long, Set<Claim>> chunksToClaimsMap = new Long2ObjectOpenHashMap<>(4096);
+    private final Map<Long, Set<Claim>> chunksToClaimsMap = new Long2ObjectOpenHashMap<>(4096);
     private GPClaim theWildernessClaim;
 
     public GPClaimManager() {
@@ -132,9 +119,9 @@ public class GPClaimManager implements ClaimManager {
                         continue;
                     }
                     if (gpClaim.parent != null) {
-                       if (gpClaim.parent.getOwnerUniqueId().equals(playerUniqueId)) {
-                           claimList.add(claim);
-                       }
+                        if (gpClaim.parent.getOwnerUniqueId().equals(playerUniqueId)) {
+                            claimList.add(claim);
+                        }
                     } else {
                         if (gpClaim.getOwnerUniqueId().equals(playerUniqueId)) {
                             claimList.add(claim);
@@ -149,9 +136,9 @@ public class GPClaimManager implements ClaimManager {
                     continue;
                 }
                 if (gpClaim.parent != null) {
-                   if (gpClaim.parent.getOwnerUniqueId().equals(playerUniqueId)) {
-                       claimList.add(claim);
-                   }
+                    if (gpClaim.parent.getOwnerUniqueId().equals(playerUniqueId)) {
+                        claimList.add(claim);
+                    }
                 } else {
                     if (gpClaim.getOwnerUniqueId().equals(playerUniqueId)) {
                         claimList.add(claim);
@@ -214,27 +201,21 @@ public class GPClaimManager implements ClaimManager {
         if (claim.parent != null) {
             claim.parent.children.add(claim);
             this.worldClaims.remove(claim);
-            this.deleteChunkHashes((GPClaim) claim);
+            this.deleteChunkHashes(claim);
             if (!claim.isAdminClaim() && (!claim.isInTown() || !claim.getTownClaim().getOwnerUniqueId().equals(claim.getOwnerUniqueId()))) {
                 final GPPlayerData playerData = this.getPlayerDataMap().get(claim.getOwnerUniqueId());
                 Set<Claim> playerClaims = playerData.getInternalClaims();
-                if (!playerClaims.contains(claim)) {
-                    playerClaims.add(claim);
-                }
+                playerClaims.add(claim);
             }
             return;
         }
 
-        if (!this.worldClaims.contains(claim)) {
-            this.worldClaims.add(claim);
-        }
+        this.worldClaims.add(claim);
         final UUID ownerId = claim.getOwnerUniqueId();
         final GPPlayerData playerData = this.getPlayerDataMap().get(ownerId);
         if (playerData != null) {
             Set<Claim> playerClaims = playerData.getInternalClaims();
-            if (!playerClaims.contains(claim)) {
-                playerClaims.add(claim);
-            }
+            playerClaims.add(claim);
         } else if (!claim.isAdminClaim()) {
             this.createPlayerData(ownerId);
         }
@@ -304,7 +285,7 @@ public class GPClaimManager implements ClaimManager {
                 final UniqueAccount ownerAccount = economyService.getOrCreateAccount(claim.getOwnerUniqueId()).orElse(null);
                 if (ownerAccount != null) {
                     ownerAccount.deposit(economyService.getDefaultCurrency(), bankAccount.getBalance(economyService.getDefaultCurrency()),
-                        Sponge.getCauseStackManager().getCurrentCause());
+                            Sponge.getCauseStackManager().getCurrentCause());
                 }
                 bankAccount.resetBalance(economyService.getDefaultCurrency(), Sponge.getCauseStackManager().getCurrentCause());
             }
@@ -503,11 +484,11 @@ public class GPClaimManager implements ClaimManager {
     }
 
     public Claim getClaimAtPlayer(Location<World> location, GPPlayerData playerData) {
-        return this.getClaimAt(location, (GPClaim) playerData.lastClaim.get(), playerData, false);
+        return this.getClaimAt(location, playerData.lastClaim.get(), playerData, false);
     }
 
     public Claim getClaimAtPlayer(Location<World> location, GPPlayerData playerData, boolean useBorderBlockRadius) {
-        return this.getClaimAt(location, (GPClaim) playerData.lastClaim.get(), playerData, useBorderBlockRadius);
+        return this.getClaimAt(location, playerData.lastClaim.get(), playerData, useBorderBlockRadius);
     }
 
     // gets the claim at a specific location
@@ -516,7 +497,7 @@ public class GPClaimManager implements ClaimManager {
         //GPTimings.CLAIM_GETCLAIM.startTimingIfSync();
         // check cachedClaim guess first. if the location is inside it, we're done
         if (cachedClaim != null && !cachedClaim.isWilderness() && cachedClaim.contains(location, true)) {
-           // GPTimings.CLAIM_GETCLAIM.stopTimingIfSync();
+            // GPTimings.CLAIM_GETCLAIM.stopTimingIfSync();
             return cachedClaim;
         }
 
@@ -528,7 +509,7 @@ public class GPClaimManager implements ClaimManager {
                 for (Direction direction : BlockUtils.ORDINAL_SET) {
                     Location<World> currentLocation = location;
                     for (int i = 0; i < borderBlockRadius; i++) { // Handle depth
-                        currentLocation = currentLocation.getBlockRelative(direction); 
+                        currentLocation = currentLocation.getBlockRelative(direction);
                         Set<Claim> relativeClaims = this.getInternalChunksToClaimsMap().get(ChunkPos.asLong(currentLocation.getBlockX() >> 4, currentLocation.getBlockZ() >> 4));
                         if (relativeClaims != null) {
                             if (claimsInChunk == null) {
@@ -592,7 +573,7 @@ public class GPClaimManager implements ClaimManager {
                 }
             }
             // check children
-            for (Claim child : ((GPClaim) worldClaim).getChildren(true)) {
+            for (Claim child : worldClaim.getChildren(true)) {
                 if (child.getUniqueId().toString().equals(name)) {
                     claimList.add(child);
                 }

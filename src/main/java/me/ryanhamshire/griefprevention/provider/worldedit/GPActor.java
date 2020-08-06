@@ -49,16 +49,16 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
 
-import java.nio.charset.Charset;
-import java.util.UUID;
-
 import javax.annotation.Nullable;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 public class GPActor extends AbstractPlayerActor {
 
-    private final EntityPlayerMP player;
-    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
+    public static final Charset UTF_8_CHARSET = StandardCharsets.UTF_8;
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
+    private final EntityPlayerMP player;
 
     public GPActor(Player player) {
         this.player = (EntityPlayerMP) player;
@@ -102,7 +102,7 @@ public class GPActor extends AbstractPlayerActor {
 
     @Override
     public com.sk89q.worldedit.world.World getWorld() {
-        return GriefPreventionPlugin.instance.worldEditProvider.getWorld((World) this.player.getEntityWorld()) ;
+        return GriefPreventionPlugin.instance.worldEditProvider.getWorld((World) this.player.getEntityWorld());
     }
 
     @Override

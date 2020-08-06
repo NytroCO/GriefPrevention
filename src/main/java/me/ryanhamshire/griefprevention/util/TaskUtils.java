@@ -32,13 +32,12 @@ import java.time.ZonedDateTime;
 
 public class TaskUtils {
 
-    public static long computeDelay(int targetHour, int targetMin, int targetSec) 
-    {
+    public static long computeDelay(int targetHour, int targetMin, int targetSec) {
         LocalDateTime localNow = LocalDateTime.now();
         ZoneId currentZone = ZoneId.systemDefault();
         ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
         ZonedDateTime zonedNextTarget = zonedNow.withHour(targetHour).withMinute(targetMin).withSecond(targetSec);
-        if(zonedNow.compareTo(zonedNextTarget) > 0) {
+        if (zonedNow.compareTo(zonedNextTarget) > 0) {
             zonedNextTarget = zonedNextTarget.plusDays(1);
         }
 
@@ -51,7 +50,7 @@ public class TaskUtils {
         ZoneId currentZone = ZoneId.systemDefault();
         ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
         ZonedDateTime zonedNextTarget = zonedNow.withHour(targetHour).withMinute(targetMin).withSecond(targetSec);
-        if(zonedNow.compareTo(zonedNextTarget) > 0) {
+        if (zonedNow.compareTo(zonedNextTarget) > 0) {
             zonedNextTarget = zonedNextTarget.plusDays(1);
         }
         return zonedNextTarget;

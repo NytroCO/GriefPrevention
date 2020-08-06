@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.ClaimFlag;
@@ -63,7 +62,7 @@ public class CommandClaimFlag extends ClaimFlagBase implements CommandExecutor {
         String source = ctx.<String>getOne("source").orElse(null);
         String target = null;
         // Workaround command API issue not handling onlyOne arguments with sequences properly
-        List<String> targetValues = new ArrayList<>(ctx.<String>getAll("target"));
+        List<String> targetValues = new ArrayList<>(ctx.getAll("target"));
         if (targetValues.size() > 0) {
             if (targetValues.size() > 1) {
                 target = targetValues.get(1);
@@ -133,10 +132,7 @@ public class CommandClaimFlag extends ClaimFlagBase implements CommandExecutor {
                 if (context != null) {
                     claimContext = CommandHelper.validateCustomContext(src, claim, context);
                     if (claimContext == null) {
-                        final Text message = GriefPreventionPlugin.instance.messageData.flagInvalidContext
-                                .apply(ImmutableMap.of(
-                                "context", context,
-                                "flag", flag)).build();
+                        final Text message = Text.of(TextColors.RED, "Invalid context '" + context + "' entered for base flag " + flag + ".");
                         GriefPreventionPlugin.sendMessage(src, message);
                         return CommandResult.success();
                     }
@@ -145,14 +141,14 @@ public class CommandClaimFlag extends ClaimFlagBase implements CommandExecutor {
                 try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
                     Sponge.getCauseStackManager().pushCause(src);
                     claim.setPermission(GriefPreventionPlugin.GLOBAL_SUBJECT, "ALL", ClaimFlag.getEnum(flag), source, target, value, claimContext,
-                        reasonText);
+                            reasonText);
                 }
                 return CommandResult.success();
             }
 
             GriefPreventionPlugin.sendMessage(src, CommandMessageFormatting.error(Text.of("Usage: /cf [<flag> <target> <value> [subject|context]]")));
         } else {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.claimNotFound.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "There's no claim here."));
         }
         return CommandResult.success();
     }

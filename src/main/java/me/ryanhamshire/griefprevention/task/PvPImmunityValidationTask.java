@@ -29,6 +29,7 @@ import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 //used to send delayed messages, for example help text triggered by a player's chat
 public class PvPImmunityValidationTask implements Runnable {
 
-    private Player player;
+    private final Player player;
 
     public PvPImmunityValidationTask(Player player) {
         this.player = player;
@@ -57,7 +58,7 @@ public class PvPImmunityValidationTask implements Runnable {
         if (!GriefPreventionPlugin.isInventoryEmpty(player)) {
             // if found, cancel invulnerability and notify
             playerData.pvpImmune = false;
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.pvpImmunityStart.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("You're protected from attack by other players as long as your inventory is empty."));
         } else {
             // otherwise check again in one minute
             Sponge.getGame().getScheduler().createTaskBuilder().delay(1, TimeUnit.MINUTES).execute(this).submit(GriefPreventionPlugin.instance);

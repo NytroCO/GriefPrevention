@@ -32,7 +32,7 @@ import java.util.List;
 
 public class GPGroupTrustClaimEvent extends GPTrustClaimEvent implements GroupTrustClaimEvent {
 
-    private List<String> groups;
+    private final List<String> groups;
 
     public GPGroupTrustClaimEvent(Claim claim, List<String> groups, TrustType trustType) {
         super(claim, trustType);

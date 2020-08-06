@@ -79,12 +79,12 @@ import java.util.regex.Pattern;
 
 public class GPPermissionHandler {
 
+    private static final Pattern PATTERN_META = Pattern.compile("\\.[\\d+]*$");
     private static Event currentEvent;
     private static Location<World> eventLocation;
     private static Subject eventSubject;
     private static String eventSourceId = "none";
     private static String eventTargetId = "none";
-    private static final Pattern PATTERN_META = Pattern.compile("\\.[\\d+]*$");
 
     public static Tristate getClaimPermission(Event event, Location<World> location, GPClaim claim, String flagPermission, Object source, Object target, User user) {
         return getClaimPermission(event, location, claim, flagPermission, source, target, user, null, false);
@@ -197,7 +197,7 @@ public class GPPermissionHandler {
         for (Claim parentClaim : inheritParents) {
             GPClaim parent = (GPClaim) parentClaim;
             // check parent context
-            contexts.add(parent.getContext());  
+            contexts.add(parent.getContext());
 
             Tristate value = user.getPermissionValue(contexts, permission);
             if (value != Tristate.UNDEFINED) {
@@ -637,11 +637,11 @@ public class GPPermissionHandler {
                 String id = "";
                 if (itemstack.getType() instanceof ItemBlock) {
                     ItemBlock itemBlock = (ItemBlock) itemstack.getType();
-                    net.minecraft.item.ItemStack nmsStack = (net.minecraft.item.ItemStack)(Object) itemstack;
+                    net.minecraft.item.ItemStack nmsStack = (net.minecraft.item.ItemStack) (Object) itemstack;
                     BlockState blockState = ((BlockState) itemBlock.getBlock().getStateFromMeta(nmsStack.getItemDamage()));
                     id = blockState.getType().getId() + "." + nmsStack.getItemDamage();
                 } else {
-                    id = itemstack.getType().getId() + "." + ((net.minecraft.item.ItemStack)(Object) itemstack).getItemDamage();
+                    id = itemstack.getType().getId() + "." + ((net.minecraft.item.ItemStack) (Object) itemstack).getItemDamage();
                 }
 
                 return populateEventSourceTarget(id, isSource);
@@ -718,7 +718,7 @@ public class GPPermissionHandler {
         }
         final int sourceIndex = flagPermission.indexOf(".source.");
         if (sourceIndex != -1) {
-            flagPermission = StringUtils.replace(flagPermission, flagPermission.substring(sourceIndex, flagPermission.length()), "");
+            flagPermission = StringUtils.replace(flagPermission, flagPermission.substring(sourceIndex), "");
         }
 
         return flagPermission;

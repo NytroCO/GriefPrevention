@@ -25,7 +25,6 @@
 package me.ryanhamshire.griefprevention.command;
 
 import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.TrustType;
@@ -38,6 +37,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -56,21 +56,19 @@ public class CommandClaimSpawn implements CommandExecutor {
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
         if (!playerData.canIgnoreClaim(claim) && !claim.isUserTrusted(player, TrustType.ACCESSOR) && !player.hasPermission(GPPermissions.COMMAND_DELETE_CLAIMS)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionAccess.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You don't have ", TextColors.GOLD, claim.getOwnerName() + "'s permission to access that."));
             return CommandResult.success();
         }
 
         final Vector3i spawnPos = claim.getData().getSpawnPos().orElse(null);
         if (spawnPos == null) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.commandSpawnNotSet.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "No claim spawn has been set."));
             return CommandResult.success();
         }
 
         final Location<World> spawnLocation = new Location<World>(claim.getWorld(), spawnPos);
         player.setLocation(spawnLocation);
-        final Text message = GriefPreventionPlugin.instance.messageData.commandSpawnTeleport
-                .apply(ImmutableMap.of(
-                "location", spawnPos)).build();
+        final Text message = Text.of(TextColors.GREEN, "Teleported to claim spawn at " + spawnPos + ".");
         GriefPreventionPlugin.sendMessage(src, message);
 
         return CommandResult.success();

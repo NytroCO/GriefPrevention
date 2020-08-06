@@ -57,7 +57,7 @@ public class CommandClaimInherit implements CommandExecutor {
         }
 
         if (claim.parent == null) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandInherit.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This command can only be used in child claims."));
             return CommandResult.success();
         }
         claim.getData().setInheritParent(!claim.getData().doesInheritParent());

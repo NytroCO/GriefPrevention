@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandClaimTown implements CommandExecutor {
 
@@ -50,7 +52,7 @@ public class CommandClaimTown implements CommandExecutor {
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         playerData.shovelMode = ShovelMode.Town;
         playerData.claimSubdividing = null;
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimModeTown.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Town creation mode enabled."));
 
         return CommandResult.success();
     }

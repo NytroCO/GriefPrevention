@@ -72,7 +72,7 @@ public class CommandDebug implements CommandExecutor {
             }
         } else {
             src.sendMessage(Text.of(
-                    GP_TEXT, TextColors.GRAY, "Debug: ", TextColors.GREEN, "ON", TextColors.WHITE, " | ", 
+                    GP_TEXT, TextColors.GRAY, "Debug: ", TextColors.GREEN, "ON", TextColors.WHITE, " | ",
                     TextColors.GRAY, "Verbose: ", !debugData.isRecording() ? Text.of(TextColors.GREEN, "ON") : Text.of(TextColors.RED, "OFF"), " | ",
                     TextColors.GRAY, "Record: ", debugData.isRecording() ? Text.of(TextColors.GREEN, "ON") : Text.of(TextColors.RED, "OFF"), " | ",
                     TextColors.GRAY, "User: ", TextColors.GOLD, user == null ? "ALL" : user.getName()));

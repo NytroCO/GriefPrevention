@@ -68,7 +68,7 @@ public class MCClansEventHandler {
             return;
         }
 
-        final GPPlayerData playerData  = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(world, player.getUniqueId());
+        final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(world, player.getUniqueId());
         for (Claim claim : playerData.getInternalClaims()) {
             if (claim.isTown()) {
                 return;

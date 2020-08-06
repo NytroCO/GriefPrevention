@@ -35,7 +35,7 @@ public class MultiSelectionPointEvent implements CUIEvent {
 
     // Used to force WECUI to follow player EYE
     public MultiSelectionPointEvent(int id) {
-        this.parameters = new String[] { 
+        this.parameters = new String[]{
                 String.valueOf(id),
                 TILDE,
                 TILDE,
@@ -44,7 +44,7 @@ public class MultiSelectionPointEvent implements CUIEvent {
     }
 
     public MultiSelectionPointEvent(int id, Vector pos, int area) {
-        this.parameters = new String[] { 
+        this.parameters = new String[]{
                 String.valueOf(id),
                 String.valueOf(pos.getX()),
                 String.valueOf(pos.getY()),

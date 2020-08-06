@@ -90,7 +90,7 @@ public class CleanupUnusedClaimsTask implements Runnable {
                     final int claimExpirationChest = playerData.getChestClaimExpiration();
                     if (claim.getArea() <= areaOfDefaultClaim && claimExpirationChest > 0) {
                         if (claimLastActive.plus(Duration.ofDays(claimExpirationChest))
-                            .isBefore(Instant.now())) {
+                                .isBefore(Instant.now())) {
                             Sponge.getCauseStackManager().addContext(GPContextKeys.CHEST_CLAIM_EXPIRED, GriefPreventionPlugin.instance.pluginContainer);
 
                             claim.removeSurfaceFluids(null);
@@ -98,12 +98,12 @@ public class CleanupUnusedClaimsTask implements Runnable {
 
                             // if configured to do so, restore the land to natural
                             if (GriefPreventionPlugin.instance.claimModeIsActive(worldProperties, ClaimsMode.Creative) || activeConfig
-                                .getConfig().claim.claimAutoNatureRestore) {
+                                    .getConfig().claim.claimAutoNatureRestore) {
                                 GriefPreventionPlugin.instance.restoreClaim(claim, 0);
                             }
 
                             GriefPreventionPlugin.addLogEntry(" " + claim.getOwnerName() + "'s new player claim " + "'" + claim.id + "' expired.",
-                                CustomLogEntryTypes.AdminActivity);
+                                    CustomLogEntryTypes.AdminActivity);
                         }
                     }
 
@@ -131,12 +131,12 @@ public class CleanupUnusedClaimsTask implements Runnable {
 
                         claimManager.deleteClaim(claim);
                         GriefPreventionPlugin.addLogEntry("Removed " + claim.getOwnerName() + "'s unused claim @ "
-                                                          + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()),
-                            CustomLogEntryTypes.AdminActivity);
+                                        + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()),
+                                CustomLogEntryTypes.AdminActivity);
 
                         // if configured to do so, restore the land to natural
                         if (GriefPreventionPlugin.instance.claimModeIsActive(worldProperties, ClaimsMode.Creative)
-                            || activeConfig.getConfig().claim.claimAutoNatureRestore) {
+                                || activeConfig.getConfig().claim.claimAutoNatureRestore) {
                             // restore the claim area to natural state
                             GriefPreventionPlugin.instance.restoreClaim(claim, 0);
                         }

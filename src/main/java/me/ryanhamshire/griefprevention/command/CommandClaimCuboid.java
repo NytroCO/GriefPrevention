@@ -33,6 +33,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandClaimCuboid implements CommandExecutor {
 
@@ -49,10 +51,10 @@ public class CommandClaimCuboid implements CommandExecutor {
         GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         if (playerData.optionClaimCreateMode == 0) {
             playerData.setClaimCreateMode(1);
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimCuboidEnabled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Now claiming in 3D mode."));
         } else {
             playerData.setClaimCreateMode(0);
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimCuboidDisabled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Now claiming in 2D mode."));
         }
 
         return CommandResult.success();

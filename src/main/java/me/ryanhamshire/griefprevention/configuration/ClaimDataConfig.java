@@ -99,15 +99,15 @@ public class ClaimDataConfig extends ConfigCategory implements IClaimData {
     @Setting(value = ClaimStorageData.MAIN_MANAGERS)
     private List<UUID> managers = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_ACCESSOR_GROUPS)
-    private List<String> accessorGroups = new ArrayList<>();
+    private final List<String> accessorGroups = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_BUILDER_GROUPS)
-    private List<String> builderGroups = new ArrayList<>();
+    private final List<String> builderGroups = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_CONTAINER_GROUPS)
-    private List<String> containerGroups = new ArrayList<>();
+    private final List<String> containerGroups = new ArrayList<>();
     @Setting(value = ClaimStorageData.MAIN_MANAGER_GROUPS)
-    private List<String> managerGroups = new ArrayList<>();
+    private final List<String> managerGroups = new ArrayList<>();
     @Setting
-    private EconomyDataConfig economyData = new EconomyDataConfig();
+    private final EconomyDataConfig economyData = new EconomyDataConfig();
 
     public ClaimDataConfig() {
 
@@ -123,59 +123,81 @@ public class ClaimDataConfig extends ConfigCategory implements IClaimData {
 
     public ClaimDataConfig(LinkedHashMap<String, Object> dataMap) {
         for (Map.Entry<String, Object> mapEntry : dataMap.entrySet()) {
-            if (mapEntry.getKey().equals("world-uuid")) {
-                this.worldUniqueId = (UUID) UUID.fromString((String) mapEntry.getValue());
-            } else if (mapEntry.getKey().equals("owner-uuid")) {
-                this.ownerUniqueId = (UUID) UUID.fromString((String) mapEntry.getValue());
-            } else if (mapEntry.getKey().equals("claim-type")) {
-                this.claimType = ClaimType.valueOf((String) mapEntry.getValue());
-            } else if (mapEntry.getKey().equals("cuboid")) {
-                this.isCuboid = (boolean) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("claim-expiration")) {
-                this.allowClaimExpiration = (boolean) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("date-created")) {
-                this.dateCreated = (String) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("date-last-active")) {
-                this.dateLastActive = (String) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("deny-messages")) {
-                this.allowDenyMessages = (boolean) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("flag-overrides")) {
-                this.allowFlagOverrides = (boolean) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("greater-boundary-corner")) {
-                this.greaterBoundaryCornerPos = (String) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("lesser-boundary-corner")) {
-                this.lesserBoundaryCornerPos = (String) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("pvp")) {
-                this.pvpOverride = Tristate.valueOf((String) mapEntry.getValue());
-            } else if (mapEntry.getKey().equals("resizeable")) {
-                this.isResizable = (boolean) mapEntry.getValue();
-            } else if (mapEntry.getKey().equals("accessors")) {
-                List<String> stringList = (List<String>) mapEntry.getValue();
-                if (stringList != null) {
-                    for (String str : stringList) {
-                        this.accessors.add(UUID.fromString(str));
+            switch (mapEntry.getKey()) {
+                case "world-uuid":
+                    this.worldUniqueId = UUID.fromString((String) mapEntry.getValue());
+                    break;
+                case "owner-uuid":
+                    this.ownerUniqueId = UUID.fromString((String) mapEntry.getValue());
+                    break;
+                case "claim-type":
+                    this.claimType = ClaimType.valueOf((String) mapEntry.getValue());
+                    break;
+                case "cuboid":
+                    this.isCuboid = (boolean) mapEntry.getValue();
+                    break;
+                case "claim-expiration":
+                    this.allowClaimExpiration = (boolean) mapEntry.getValue();
+                    break;
+                case "date-created":
+                    this.dateCreated = (String) mapEntry.getValue();
+                    break;
+                case "date-last-active":
+                    this.dateLastActive = (String) mapEntry.getValue();
+                    break;
+                case "deny-messages":
+                    this.allowDenyMessages = (boolean) mapEntry.getValue();
+                    break;
+                case "flag-overrides":
+                    this.allowFlagOverrides = (boolean) mapEntry.getValue();
+                    break;
+                case "greater-boundary-corner":
+                    this.greaterBoundaryCornerPos = (String) mapEntry.getValue();
+                    break;
+                case "lesser-boundary-corner":
+                    this.lesserBoundaryCornerPos = (String) mapEntry.getValue();
+                    break;
+                case "pvp":
+                    this.pvpOverride = Tristate.valueOf((String) mapEntry.getValue());
+                    break;
+                case "resizeable":
+                    this.isResizable = (boolean) mapEntry.getValue();
+                    break;
+                case "accessors": {
+                    List<String> stringList = (List<String>) mapEntry.getValue();
+                    if (stringList != null) {
+                        for (String str : stringList) {
+                            this.accessors.add(UUID.fromString(str));
+                        }
                     }
+                    break;
                 }
-            } else if (mapEntry.getKey().equals("builders")) {
-                List<String> stringList = (List<String>) mapEntry.getValue();
-                if (stringList != null) {
-                    for (String str : stringList) {
-                        this.builders.add(UUID.fromString(str));
+                case "builders": {
+                    List<String> stringList = (List<String>) mapEntry.getValue();
+                    if (stringList != null) {
+                        for (String str : stringList) {
+                            this.builders.add(UUID.fromString(str));
+                        }
                     }
+                    break;
                 }
-            } else if (mapEntry.getKey().equals("containers")) {
-                List<String> stringList = (List<String>) mapEntry.getValue();
-                if (stringList != null) {
-                    for (String str : stringList) {
-                        this.containers.add(UUID.fromString(str));
+                case "containers": {
+                    List<String> stringList = (List<String>) mapEntry.getValue();
+                    if (stringList != null) {
+                        for (String str : stringList) {
+                            this.containers.add(UUID.fromString(str));
+                        }
                     }
+                    break;
                 }
-            } else if (mapEntry.getKey().equals("managers")) {
-                List<String> stringList = (List<String>) mapEntry.getValue();
-                if (stringList != null) {
-                    for (String str : stringList) {
-                        this.managers.add(UUID.fromString(str));
+                case "managers": {
+                    List<String> stringList = (List<String>) mapEntry.getValue();
+                    if (stringList != null) {
+                        for (String str : stringList) {
+                            this.managers.add(UUID.fromString(str));
+                        }
                     }
+                    break;
                 }
             }
         }

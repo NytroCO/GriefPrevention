@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
@@ -74,7 +73,7 @@ public class CommandClaimOptionPlayer implements CommandExecutor {
         final boolean isGlobalOption = GPOptions.GLOBAL_OPTIONS.contains(option);
         // Check if global option
         if (isGlobalOption && !player.hasPermission(GPPermissions.MANAGE_GLOBAL_OPTIONS)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionGlobalOption.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You don't have permission to manage global options."));
             return CommandResult.success();
         }
 
@@ -82,19 +81,17 @@ public class CommandClaimOptionPlayer implements CommandExecutor {
         if (!isGlobalOption) {
             final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
             final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
-    
+
             if (claim.isSubdivision()) {
-                GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.commandOptionInvalidClaim.toText());
+                GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "This command cannot be used in subdivisions."));
                 return CommandResult.success();
             }
             if (!playerData.canManageOption(player, claim, false)) {
-                GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionPlayerOption.toText());
+                GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You don't have permission to assign an option to a player."));
                 return CommandResult.success();
             }
-    
-            final Text message = GriefPreventionPlugin.instance.messageData.permissionClaimManage
-                    .apply(ImmutableMap.of(
-                    "type", claim.getType().name())).build();
+
+            final Text message = Text.of(TextColors.RED, "You don't have permission to manage " + claim.getType().name() + " claims.");
             if (claim.isWilderness() && !player.hasPermission(GPPermissions.MANAGE_WILDERNESS)) {
                 GriefPreventionPlugin.sendMessage(src, message);
                 return CommandResult.success();
@@ -107,10 +104,8 @@ public class CommandClaimOptionPlayer implements CommandExecutor {
                 // Validate new value against admin set value
                 Double tempValue = GPOptionHandler.getClaimOptionDouble(user, claim, option, playerData);
                 if (tempValue != value) {
-                    final Text message2 = GriefPreventionPlugin.instance.messageData.commandOptionExceedsAdmin
-                            .apply(ImmutableMap.of(
-                            "original_value", value,
-                            "admin_value", tempValue)).build();
+                    final Text message2 = Text.of(TextColors.RED, "Option value of ", TextColors.GREEN, value + " exceeds admin set value of '", TextColors.GREEN, tempValue + "'. Adjusting to admin " +
+                            "value...");
                     GriefPreventionPlugin.sendMessage(src, message2);
                     return CommandResult.success();
                 }
@@ -124,8 +119,8 @@ public class CommandClaimOptionPlayer implements CommandExecutor {
             Map<String, String> options = user.getSubjectData().getOptions(contexts);
             for (Map.Entry<String, String> optionEntry : options.entrySet()) {
                 String optionValue = optionEntry.getValue();
-                Object[] optionText = new Object[] { TextColors.GREEN, optionEntry.getKey(), "  ",
-                                TextColors.GOLD, optionValue };
+                Object[] optionText = new Object[]{TextColors.GREEN, optionEntry.getKey(), "  ",
+                        TextColors.GOLD, optionValue};
                 optionList.add(optionText);
             }
 
@@ -141,13 +136,13 @@ public class CommandClaimOptionPlayer implements CommandExecutor {
         final String flagOption = option;
         final Double newOptionValue = value;
         user.getSubjectData().setOption(contexts, option, newOptionValue.toString())
-            .thenAccept(consumer -> {
-                if (consumer.booleanValue()) {
-                    GriefPreventionPlugin.sendMessage(src, Text.of("Set option ", TextColors.AQUA, flagOption, TextColors.WHITE, " to ", TextColors.GREEN, newOptionValue, TextColors.WHITE, " on user ", TextColors.GOLD, user.getName(), TextColors.WHITE, "."));
-                } else {
-                    GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "The permission plugin failed to set the option."));
-                }
-            });
+                .thenAccept(consumer -> {
+                    if (consumer.booleanValue()) {
+                        GriefPreventionPlugin.sendMessage(src, Text.of("Set option ", TextColors.AQUA, flagOption, TextColors.WHITE, " to ", TextColors.GREEN, newOptionValue, TextColors.WHITE, " on user ", TextColors.GOLD, user.getName(), TextColors.WHITE, "."));
+                    } else {
+                        GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "The permission plugin failed to set the option."));
+                    }
+                });
 
         return CommandResult.success();
     }

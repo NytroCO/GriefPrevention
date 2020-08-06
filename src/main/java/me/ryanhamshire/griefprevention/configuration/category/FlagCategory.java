@@ -37,20 +37,20 @@ import java.util.Map;
 public class FlagCategory extends ConfigCategory {
 
     @Setting(value = "default-admin", comment = "The default flag settings used when an admin claim is created.")
-    private Map<String, Boolean> defaultAdminFlags = Maps.newHashMap();
+    private final Map<String, Boolean> defaultAdminFlags = Maps.newHashMap();
 
     @Setting(value = "default-basic", comment = "The default flag settings used when a basic claim is created.")
-    private Map<String, Boolean> defaultBasicFlags = Maps.newHashMap();
+    private final Map<String, Boolean> defaultBasicFlags = Maps.newHashMap();
 
     @Setting(value = "default-town", comment = "The default flag settings used for towns.")
-    private Map<String, Boolean> defaultTownFlags = Maps.newHashMap();
+    private final Map<String, Boolean> defaultTownFlags = Maps.newHashMap();
 
     @Setting(value = "default-wilderness", comment = "The default flag settings used for wilderness.")
-    private Map<String, Boolean> defaultWildernessFlags = Maps.newHashMap();
+    private final Map<String, Boolean> defaultWildernessFlags = Maps.newHashMap();
 
     @Setting(value = "user-claim-flags", comment = "A list of flags standard users can manage in their claims with the /cf, /cfg, and /cfp commands.\n"
             + "Note: All flags in this list will be used to determine which user permission to check such as 'griefprevention.user.flag.block-break'.")
-    private List<String> userClaimFlags = new ArrayList<>();
+    private final List<String> userClaimFlags = new ArrayList<>();
 
     public FlagCategory() {
         defaultAdminFlags.put(ClaimFlag.BLOCK_BREAK.toString(), false);

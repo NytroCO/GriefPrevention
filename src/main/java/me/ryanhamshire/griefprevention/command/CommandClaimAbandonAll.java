@@ -26,7 +26,6 @@
 package me.ryanhamshire.griefprevention.command;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
@@ -62,7 +61,7 @@ public class CommandClaimAbandonAll implements CommandExecutor {
         // check count
         if (originalClaimCount == 0) {
             try {
-                throw new CommandException(GriefPreventionPlugin.instance.messageData.claimNoClaims.toText());
+                throw new CommandException(Text.of(TextColors.RED, "You don't have any land claims."));
             } catch (CommandException e) {
                 src.sendMessage(e.getText());
                 return CommandResult.success();
@@ -93,10 +92,7 @@ public class CommandClaimAbandonAll implements CommandExecutor {
 
         // inform the player
         int remainingBlocks = playerData.getRemainingClaimBlocks();
-        final Text message = GriefPreventionPlugin.instance.messageData.claimAbandonSuccess
-                .apply(ImmutableMap.of(
-                "remaining-blocks", Text.of(remainingBlocks)
-        )).build();
+        final Text message = Text.of(TextColors.GREEN, "Claim abandoned. You now have " + remainingBlocks + " available claim blocks.");
         GriefPreventionPlugin.sendMessage(player, message);
 
         // revert any current visualization

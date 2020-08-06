@@ -25,6 +25,7 @@
 package me.ryanhamshire.griefprevention.task;
 
 
+import me.ryanhamshire.griefprevention.DataStore;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 
 import java.io.IOException;
@@ -37,8 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 //loads ignore data from file into a hash map
 public class IgnoreLoaderThread extends Thread {
 
-    private UUID playerToLoad;
-    private ConcurrentHashMap<UUID, Boolean> destinationMap;
+    private final UUID playerToLoad;
+    private final ConcurrentHashMap<UUID, Boolean> destinationMap;
 
     public IgnoreLoaderThread(UUID playerToLoad, ConcurrentHashMap<UUID, Boolean> destinationMap) {
         this.playerToLoad = playerToLoad;
@@ -48,7 +49,7 @@ public class IgnoreLoaderThread extends Thread {
 
     @Override
     public void run() {
-        Path ignorePath = GriefPreventionPlugin.instance.dataStore.globalPlayerDataPath.resolve(this.playerToLoad + ".ignore");
+        Path ignorePath = DataStore.globalPlayerDataPath.resolve(this.playerToLoad + ".ignore");
         if (!Files.exists(ignorePath)) {
             try {
                 Files.createFile(ignorePath);

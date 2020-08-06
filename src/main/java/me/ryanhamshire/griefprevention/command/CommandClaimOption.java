@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
@@ -70,9 +69,7 @@ public class CommandClaimOption implements CommandExecutor {
 
         final String context = args.<String>getOne("context").orElse(null);
         if (context != null && !context.equalsIgnoreCase("default")) {
-            final Text message = GriefPreventionPlugin.instance.messageData.contextInvalid
-                    .apply(ImmutableMap.of(
-                    "context", context)).build();
+            final Text message = Text.of(TextColors.RED, "Context '", TextColors.AQUA, context + "' is invalid.");
             GriefPreventionPlugin.sendMessage(src, message);
             return CommandResult.success();
         }
@@ -80,7 +77,7 @@ public class CommandClaimOption implements CommandExecutor {
         final boolean isGlobalOption = GPOptions.GLOBAL_OPTIONS.contains(option) || context != null;
         // Check if global option
         if (isGlobalOption && !player.hasPermission(GPPermissions.MANAGE_GLOBAL_OPTIONS)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionGlobalOption.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You don't have permission to manage global options."));
             return CommandResult.success();
         }
 
@@ -90,18 +87,16 @@ public class CommandClaimOption implements CommandExecutor {
             final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
             final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
             if (claim.isSubdivision()) {
-                GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.commandOptionInvalidClaim.toText());
+                GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "This command cannot be used in subdivisions."));
                 return CommandResult.success();
             }
 
             if (!playerData.canManageOption(player, claim, true)) {
-                GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionGroupOption.toText());
+                GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You don't have permission to assign an option to a group."));
                 return CommandResult.success();
             }
 
-            final Text message = GriefPreventionPlugin.instance.messageData.permissionClaimManage
-                    .apply(ImmutableMap.of(
-                    "type", claim.getType().name())).build();
+            final Text message = Text.of(TextColors.RED, "You don't have permission to manage " + claim.getType().name() + " claims.");
             if (claim.isWilderness() && !player.hasPermission(GPPermissions.MANAGE_WILDERNESS)) {
                 GriefPreventionPlugin.sendMessage(src, message);
                 return CommandResult.success();
@@ -114,10 +109,8 @@ public class CommandClaimOption implements CommandExecutor {
             if (option != null && value != null) {
                 Double tempValue = GPOptionHandler.getClaimOptionDouble(player, claim, option, playerData);
                 if (tempValue > value || tempValue < value) {
-                    final Text message2 = GriefPreventionPlugin.instance.messageData.commandOptionExceedsAdmin
-                            .apply(ImmutableMap.of(
-                            "original_value", value,
-                            "admin_value", tempValue)).build();
+                    final Text message2 = Text.of(TextColors.RED, "Option value of ", TextColors.GREEN, value + " exceeds admin set value of '", TextColors.GREEN, tempValue + "'. Adjusting to admin " +
+                            "value...");
                     GriefPreventionPlugin.sendMessage(src, message2);
                     return CommandResult.success();
                 }
@@ -130,8 +123,8 @@ public class CommandClaimOption implements CommandExecutor {
             Map<String, String> options = GriefPreventionPlugin.GLOBAL_SUBJECT.getSubjectData().getOptions(contexts);
             for (Map.Entry<String, String> optionEntry : options.entrySet()) {
                 String optionValue = optionEntry.getValue();
-                Object[] optionText = new Object[] { TextColors.GREEN, optionEntry.getKey(), "  ",
-                                TextColors.GOLD, optionValue };
+                Object[] optionText = new Object[]{TextColors.GREEN, optionEntry.getKey(), "  ",
+                        TextColors.GOLD, optionValue};
                 optionList.add(optionText);
             }
 
@@ -142,21 +135,21 @@ public class CommandClaimOption implements CommandExecutor {
                     .title(Text.of("Claim Options")).padding(Text.of(TextStyles.STRIKETHROUGH, "-")).contents(finalTexts);
             paginationBuilder.sendTo(src);
             return CommandResult.success();
-       }
+        }
 
-       final String flagOption = option;
-       GriefPreventionPlugin.GLOBAL_SUBJECT.getSubjectData().setOption(contexts, option, value.toString())
-           .thenAccept(consumer -> {
-               if (consumer.booleanValue()) {
-                   if (context != null) {
-                       GriefPreventionPlugin.sendMessage(src, Text.of("Set ", TextColors.LIGHT_PURPLE,"default", TextColors.WHITE, " option ", TextColors.AQUA, flagOption, TextColors.WHITE, " to ", TextColors.GREEN, value));
-                   } else {
-                       GriefPreventionPlugin.sendMessage(src, Text.of("Set option ", TextColors.AQUA, flagOption, TextColors.WHITE, " to ", TextColors.GREEN, value, TextColors.WHITE, " on group ", TextColors.GOLD, GriefPreventionPlugin.GLOBAL_SUBJECT.getIdentifier(), TextColors.WHITE, "."));
-                   }
-               } else {
-                   GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "The permission plugin failed to set the option."));
-               }
-           });
+        final String flagOption = option;
+        GriefPreventionPlugin.GLOBAL_SUBJECT.getSubjectData().setOption(contexts, option, value.toString())
+                .thenAccept(consumer -> {
+                    if (consumer.booleanValue()) {
+                        if (context != null) {
+                            GriefPreventionPlugin.sendMessage(src, Text.of("Set ", TextColors.LIGHT_PURPLE, "default", TextColors.WHITE, " option ", TextColors.AQUA, flagOption, TextColors.WHITE, " to ", TextColors.GREEN, value));
+                        } else {
+                            GriefPreventionPlugin.sendMessage(src, Text.of("Set option ", TextColors.AQUA, flagOption, TextColors.WHITE, " to ", TextColors.GREEN, value, TextColors.WHITE, " on group ", TextColors.GOLD, GriefPreventionPlugin.GLOBAL_SUBJECT.getIdentifier(), TextColors.WHITE, "."));
+                        }
+                    } else {
+                        GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "The permission plugin failed to set the option."));
+                    }
+                });
 
         return CommandResult.success();
     }

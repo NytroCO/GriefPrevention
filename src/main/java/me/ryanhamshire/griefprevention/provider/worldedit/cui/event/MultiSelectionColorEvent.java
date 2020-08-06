@@ -40,7 +40,7 @@ public class MultiSelectionColorEvent implements CUIEvent {
         this.gridColor = gridColor;
         this.p1Color = p1Color;
         this.p2Color = p2Color;
-        this.parameters = new String[] {
+        this.parameters = new String[]{
                 this.edgeColor,
                 this.gridColor,
                 this.p1Color,

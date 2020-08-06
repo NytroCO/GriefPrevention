@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
@@ -35,6 +34,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class CommandClaimFarewell implements CommandExecutor {
@@ -53,7 +53,7 @@ public class CommandClaimFarewell implements CommandExecutor {
         final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
         if (claim != null) {
             if (claim.allowEdit(player) != null) {
-                GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionEditClaim.toText());
+                GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You don't have permission to edit this claim."));
                 return CommandResult.success();
             }
 
@@ -64,12 +64,10 @@ public class CommandClaimFarewell implements CommandExecutor {
                 claim.getInternalClaimData().setFarewell(farewell);
             }
             claim.getInternalClaimData().setRequiresSave(true);
-            final Text message = GriefPreventionPlugin.instance.messageData.claimFarewell
-                    .apply(ImmutableMap.of(
-                    "farewell", farewell)).build();
+            final Text message = Text.of(TextColors.GREEN, "Set claim farewell to " + farewell + ".");
             GriefPreventionPlugin.sendMessage(src, message);
         } else {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.claimNotFound.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "There's no claim here."));
         }
 
         return CommandResult.success();

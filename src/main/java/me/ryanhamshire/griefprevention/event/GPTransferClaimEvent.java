@@ -31,7 +31,7 @@ import java.util.UUID;
 
 public class GPTransferClaimEvent extends GPClaimEvent implements TransferClaimEvent {
 
-    private UUID originalOwner;
+    private final UUID originalOwner;
     private UUID newOwner;
 
     public GPTransferClaimEvent(Claim claim, UUID originalOwner, UUID newOwner) {

@@ -26,7 +26,6 @@
 package me.ryanhamshire.griefprevention.command;
 
 import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -65,7 +64,7 @@ public class CommandClaimWorldEdit implements CommandExecutor {
         }
 
         if (GriefPreventionPlugin.instance.worldEditProvider == null) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandCreateWorldEdit.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This command requires WorldEdit to be installed on server."));
             return CommandResult.success();
         }
 
@@ -91,21 +90,19 @@ public class CommandClaimWorldEdit implements CommandExecutor {
         try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
             Sponge.getCauseStackManager().pushCause(player);
             final ClaimResult result = GriefPrevention.getApi().createClaimBuilder()
-                .bounds(lesser, greater)
-                .cuboid(playerData.optionClaimCreateMode == 1)
-                .owner(player.getUniqueId())
-                .sizeRestrictions(true)
-                .type(PlayerUtils.getClaimTypeFromShovel(playerData.shovelMode))
-                .world(player.getWorld())
-                .build();
+                    .bounds(lesser, greater)
+                    .cuboid(playerData.optionClaimCreateMode == 1)
+                    .owner(player.getUniqueId())
+                    .sizeRestrictions(true)
+                    .type(PlayerUtils.getClaimTypeFromShovel(playerData.shovelMode))
+                    .world(player.getWorld())
+                    .build();
             if (result.successful()) {
-                final Text message = GriefPreventionPlugin.instance.messageData.claimCreateSuccess
-                    .apply(ImmutableMap.of(
-                        "type", playerData.shovelMode.name())).build();
+                final Text message = Text.of(TextColors.GREEN, playerData.shovelMode.name() + " created!  Use /trust to share it with friends.");
                 GriefPreventionPlugin.sendMessage(player, message);
             } else {
                 if (result.getResultType() == ClaimResultType.OVERLAPPING_CLAIM) {
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimCreateOverlapShort.toText());
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Your selected area overlaps an existing claim."));
                     Set<Claim> claims = new HashSet<>();
                     claims.add(result.getClaim().get());
                     CommandHelper.showOverlapClaims(player, claims, 0);

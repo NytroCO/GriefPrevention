@@ -30,6 +30,8 @@ import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.TrustType;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -48,7 +50,7 @@ public class NucleusEventHandler {
         if (claim != null && !claim.isWilderness() && !claim.isAdminClaim()) {
             if (!claim.isUserTrusted(event.getUser(), TrustType.ACCESSOR)) {
                 event.setCancelled(true);
-                event.setCancelMessage(GriefPreventionPlugin.instance.messageData.nucleusNoSetHome.toText());
+                event.setCancelMessage(Text.of(TextColors.RED, "You must be trusted in order to use /sethome here."));
             }
         }
     }

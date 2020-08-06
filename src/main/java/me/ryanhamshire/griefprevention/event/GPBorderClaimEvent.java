@@ -31,9 +31,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.chat.ChatTypes;
 
-import java.util.Optional;
-
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class GPBorderClaimEvent extends GPClaimEvent implements BorderClaimEvent {
 

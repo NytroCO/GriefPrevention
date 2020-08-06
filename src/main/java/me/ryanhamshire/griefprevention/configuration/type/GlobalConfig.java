@@ -24,14 +24,7 @@
  */
 package me.ryanhamshire.griefprevention.configuration.type;
 
-import me.ryanhamshire.griefprevention.configuration.category.BanCategory;
-import me.ryanhamshire.griefprevention.configuration.category.LoggingCategory;
-import me.ryanhamshire.griefprevention.configuration.category.MessageCategory;
-import me.ryanhamshire.griefprevention.configuration.category.MigratorCategory;
-import me.ryanhamshire.griefprevention.configuration.category.ModuleCategory;
-import me.ryanhamshire.griefprevention.configuration.category.PlayerDataCategory;
-import me.ryanhamshire.griefprevention.configuration.category.SpamCategory;
-import me.ryanhamshire.griefprevention.configuration.category.ThreadCategory;
+import me.ryanhamshire.griefprevention.configuration.category.*;
 import ninja.leaping.configurate.objectmapping.Setting;
 
 public class GlobalConfig extends ConfigBase {
@@ -54,9 +47,9 @@ public class GlobalConfig extends ConfigBase {
     @Setting
     public MessageCategory message = new MessageCategory();
 
-    @Setting(comment = 
-            "List of migrators that convert old or other protection data into the current GP claim data format." + 
-            "\nNote: It is recommended to backup data before using.")
+    @Setting(comment =
+            "List of migrators that convert old or other protection data into the current GP claim data format." +
+                    "\nNote: It is recommended to backup data before using.")
     public MigratorCategory migrator = new MigratorCategory();
 
     @Setting(value = "modules")

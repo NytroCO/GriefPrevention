@@ -25,7 +25,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.logging.CustomLogEntryTypes;
@@ -37,13 +36,14 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 public class CommandAdjustBonusClaimBlocks implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        WorldProperties worldProperties = args.<WorldProperties> getOne("world").orElse(Sponge.getServer().getDefaultWorld().get());
+        WorldProperties worldProperties = args.<WorldProperties>getOne("world").orElse(Sponge.getServer().getDefaultWorld().get());
 
         if (worldProperties == null) {
             if (src instanceof Player) {
@@ -53,7 +53,7 @@ public class CommandAdjustBonusClaimBlocks implements CommandExecutor {
             }
         }
         if (worldProperties == null || !GriefPreventionPlugin.instance.claimsEnabledForWorld(worldProperties)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.claimDisabledWorld.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Land claims are disabled in this world."));
             return CommandResult.success();
         }
 
@@ -65,11 +65,7 @@ public class CommandAdjustBonusClaimBlocks implements CommandExecutor {
         GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(worldProperties, user.getUniqueId());
         playerData.setBonusClaimBlocks(playerData.getBonusClaimBlocks() + adjustment);
         playerData.getStorageData().save();
-        final Text message = GriefPreventionPlugin.instance.messageData.adjustBlocksSuccess
-                .apply(ImmutableMap.of(
-                "player", Text.of(user.getName()),
-                "adjustment", Text.of(adjustment),
-                "total", Text.of(playerData.getBonusClaimBlocks()))).build();
+        final Text message = Text.of(TextColors.GREEN, "Adjusted " + user.getName() + "'s bonus claim blocks by " + adjustment + ".  New total bonus blocks: " + playerData.getBonusClaimBlocks() + ".");
         GriefPreventionPlugin
                 .sendMessage(src, message);
         GriefPreventionPlugin.addLogEntry(

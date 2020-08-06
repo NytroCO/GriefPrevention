@@ -25,12 +25,10 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
-import me.ryanhamshire.griefprevention.configuration.MessageStorage;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -41,10 +39,19 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class CommandClaimSell implements CommandExecutor {
+
+    private static Consumer<CommandSource> createSaleConfirmationConsumer(CommandSource src, Claim claim, double price) {
+        return confirm -> {
+            claim.getEconomyData().setSalePrice(price);
+            claim.getEconomyData().setForSale(true);
+            claim.getData().save();
+            final Text text = Text.of(TextColors.GREEN, "You have successfully put your claim up for sale for the amount of ", TextColors.GOLD, price);
+            GriefPreventionPlugin.sendMessage(src, text);
+        };
+    }
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
@@ -58,7 +65,7 @@ public class CommandClaimSell implements CommandExecutor {
 
         // if economy is disabled, don't do anything
         if (!GriefPreventionPlugin.instance.economyService.isPresent()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyNotInstalled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Economy plugin not installed!."));
             return CommandResult.success();
         }
 
@@ -66,12 +73,12 @@ public class CommandClaimSell implements CommandExecutor {
         final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAt(player.getLocation());
 
         if (claim.isAdminClaim() || claim.isWilderness()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyClaimNotForSale.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This claim is not for sale."));
             return CommandResult.success();
         }
 
         if (!playerData.canIgnoreClaim(claim) && !player.getUniqueId().equals(claim.getOwnerUniqueId())) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.permissionClaimSale.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have permission to sell this claim."));
             return CommandResult.success();
         }
 
@@ -79,47 +86,33 @@ public class CommandClaimSell implements CommandExecutor {
         String arg = ctx.<String>getOne("cancel").orElse(null);
         if (salePrice == null) {
             if (!claim.getEconomyData().isForSale()) {
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyClaimNotForSale.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This claim is not for sale."));
                 return CommandResult.success();
             }
             if (arg.equalsIgnoreCase("cancel")) {
                 claim.getEconomyData().setForSale(false);
                 claim.getEconomyData().setSalePrice(-1);
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyClaimSaleCancelled.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "You have cancelled your claim sale."));
                 return CommandResult.success();
             }
             return CommandResult.success();
         }
 
         if (salePrice < 0) {
-            final Text message = GriefPreventionPlugin.instance.messageData.economyClaimSaleInvalidPrice
-                    .apply(ImmutableMap.of(
-                    "sale_price", salePrice)).build();
+            final Text message = Text.of(TextColors.RED, "The sale price of, ", TextColors.GOLD, salePrice + " must be greater than or equal to 0.");
             GriefPreventionPlugin.sendMessage(player, message);
             return CommandResult.success();
         }
 
-        final Text message = GriefPreventionPlugin.instance.messageData.economyClaimSaleConfirmation
-                .apply(ImmutableMap.of(
-                "sale_price", salePrice)).build();
+        final Text message = Text.of(TextColors.GREEN, "Are you sure you want to sell your claim for " + salePrice + " ? If your claim is sold, all items and blocks will be transferred to the buyer. Click confirm if this is OK" +
+                ".");
         GriefPreventionPlugin.sendMessage(player, message);
 
         final Text saleConfirmationText = Text.builder().append(Text.of(
                 TextColors.WHITE, "\n", TextColors.WHITE, "[", TextColors.GREEN, "Confirm", TextColors.WHITE, "]\n"))
-            .onClick(TextActions.executeCallback(createSaleConfirmationConsumer(src, claim, salePrice))).build();
+                .onClick(TextActions.executeCallback(createSaleConfirmationConsumer(src, claim, salePrice))).build();
         GriefPreventionPlugin.sendMessage(player, saleConfirmationText);
 
         return CommandResult.success();
-    }
-
-    private static Consumer<CommandSource> createSaleConfirmationConsumer(CommandSource src, Claim claim, double price) {
-        return confirm -> {
-            claim.getEconomyData().setSalePrice(price);
-            claim.getEconomyData().setForSale(true);
-            claim.getData().save();
-            Map<String, ?> params = ImmutableMap.of(
-                    "sale_price", price);
-            GriefPreventionPlugin.sendMessage(src, MessageStorage.ECONOMY_CLAIM_SALE_CONFIRMED, GriefPreventionPlugin.instance.messageData.economyClaimSaleConfirmed, params);
-        };
     }
 }

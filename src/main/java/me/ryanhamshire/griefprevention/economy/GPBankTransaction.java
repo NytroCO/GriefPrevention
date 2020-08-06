@@ -24,8 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.economy;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.api.economy.BankTransaction;
 import me.ryanhamshire.griefprevention.api.economy.BankTransactionType;
@@ -33,6 +31,8 @@ import me.ryanhamshire.griefprevention.api.economy.BankTransactionType;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class GPBankTransaction implements BankTransaction {
 
@@ -116,10 +116,10 @@ public class GPBankTransaction implements BankTransaction {
             checkNotNull(this.type);
             checkNotNull(this.amount);
             if (this.source != null) {
-                return new GPBankTransaction(this.type, this.source, Instant.now(), this.amount); 
+                return new GPBankTransaction(this.type, this.source, Instant.now(), this.amount);
             }
-            return new GPBankTransaction(this.type, Instant.now(), this.amount); 
+            return new GPBankTransaction(this.type, Instant.now(), this.amount);
         }
-        
+
     }
 }

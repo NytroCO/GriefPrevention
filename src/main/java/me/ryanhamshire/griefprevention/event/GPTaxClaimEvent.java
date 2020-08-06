@@ -56,12 +56,12 @@ public class GPTaxClaimEvent extends GPClaimEvent implements TaxClaimEvent {
     }
 
     @Override
-    public double getTaxAmount() {
-        return (this.getClaim().getClaimBlocks() / 256) * this.taxRate;
+    public void setTaxRate(double newTaxRate) {
+        this.taxRate = newTaxRate;
     }
 
     @Override
-    public void setTaxRate(double newTaxRate) {
-        this.taxRate = newTaxRate;
+    public double getTaxAmount() {
+        return (this.getClaim().getClaimBlocks() / 256) * this.taxRate;
     }
 }

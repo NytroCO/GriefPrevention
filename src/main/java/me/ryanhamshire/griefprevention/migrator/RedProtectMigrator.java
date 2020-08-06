@@ -70,25 +70,25 @@ public class RedProtectMigrator {
             ConfigurationLoader<CommentedConfigurationNode> regionManager = HoconConfigurationLoader.builder().setPath(redProtectFilePath).build();
             CommentedConfigurationNode region = regionManager.load();
             GriefPreventionPlugin.instance.getLogger().info("Scanning RedProtect regions in world data file '" + redProtectFilePath + "'...");
-            for (Object key:region.getChildrenMap().keySet()){
+            for (Object key : region.getChildrenMap().keySet()) {
                 String rname = key.toString();
-                if (!region.getNode(rname).hasMapChildren()){
+                if (!region.getNode(rname).hasMapChildren()) {
                     continue;
                 }
-                int maxX = region.getNode(rname,"maxX").getInt();
-                int maxY = region.getNode(rname,"maxY").getInt(255);
-                int maxZ = region.getNode(rname,"maxZ").getInt();
-                int minX = region.getNode(rname,"minX").getInt();
-                int minY = region.getNode(rname,"minY").getInt(0);
-                int minZ = region.getNode(rname,"minZ").getInt();
+                int maxX = region.getNode(rname, "maxX").getInt();
+                int maxY = region.getNode(rname, "maxY").getInt(255);
+                int maxZ = region.getNode(rname, "maxZ").getInt();
+                int minX = region.getNode(rname, "minX").getInt();
+                int minY = region.getNode(rname, "minY").getInt(0);
+                int minZ = region.getNode(rname, "minZ").getInt();
                 List<String> owners = new ArrayList<String>();
-                owners.addAll(region.getNode(rname,"owners").getList(TypeToken.of(String.class)));
-                
+                owners.addAll(region.getNode(rname, "owners").getList(TypeToken.of(String.class)));
+
                 List<String> members = new ArrayList<String>();
-                members.addAll(region.getNode(rname,"members").getList(TypeToken.of(String.class)));
-                
-                String creator = region.getNode(rname,"creator").getString();             
-                String welcome = region.getNode(rname,"welcome").getString();                 
+                members.addAll(region.getNode(rname, "members").getList(TypeToken.of(String.class)));
+
+                String creator = region.getNode(rname, "creator").getString();
+                String welcome = region.getNode(rname, "welcome").getString();
 
                 // create GP claim data file
                 GriefPreventionPlugin.instance.getLogger().info("Migrating RedProtect region data '" + rname + "'...");
@@ -140,7 +140,7 @@ public class RedProtectMigrator {
                             builderUniqueId = UUID.fromString(getUUID(builder));
                         }
                     } catch (Throwable e) {
-                        GriefPreventionPlugin.instance.getLogger().error("Could not locate a valid UUID for user '" + builder + "' in region '" + rname + 
+                        GriefPreventionPlugin.instance.getLogger().error("Could not locate a valid UUID for user '" + builder + "' in region '" + rname +
                                 "'. Skipping...");
                         continue;
                     }
@@ -160,10 +160,10 @@ public class RedProtectMigrator {
             e.printStackTrace();
         } catch (ObjectMappingException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
-    private static boolean validate(final String username){
+    private static boolean validate(final String username) {
         Matcher matcher = Pattern.compile(USERNAME_PATTERN).matcher(username);
         return matcher.matches();
     }
@@ -171,24 +171,24 @@ public class RedProtectMigrator {
     // Below taken from https://github.com/FabioZumbi12/Sponge-Redprotect-19/blob/master/src/main/java/br/net/fabiozumbi12/redprotect/MojangUUIDs.java
     public static String getUUID(String player) {
         try {
-          URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + player);
-          BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-          String line = in.readLine();
-          if (line == null){
-             return null;
-          }
-          JSONObject jsonProfile = (JSONObject) new JSONParser().parse(line);
-          String name = (String) jsonProfile.get("id");
-          return toUUID(name);
+            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + player);
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line = in.readLine();
+            if (line == null) {
+                return null;
+            }
+            JSONObject jsonProfile = (JSONObject) new JSONParser().parse(line);
+            String name = (String) jsonProfile.get("id");
+            return toUUID(name);
         } catch (Exception ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
         return null;
     }
-    
-    private static String toUUID(String uuid){
+
+    private static String toUUID(String uuid) {
         return uuid.substring(0, 8) + "-" + uuid.substring(8, 12) + "-"
-                   + uuid.substring(12, 16) + "-" + uuid.substring(16, 20)
-                   + "-" + uuid.substring(20, 32);
+                + uuid.substring(12, 16) + "-" + uuid.substring(16, 20)
+                + "-" + uuid.substring(20, 32);
     }
 }

@@ -43,33 +43,24 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.common.SpongeImplHooks;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 public class PlayerUtils {
 
     public static boolean hasItemInOneHand(Player player, ItemType itemType) {
         ItemStack mainHand = player.getItemInHand(HandTypes.MAIN_HAND).orElse(null);
         ItemStack offHand = player.getItemInHand(HandTypes.OFF_HAND).orElse(null);
-        if ((mainHand != null && mainHand.getType().equals(itemType)) || (offHand != null && offHand.getType().equals(itemType))) {
-            return true;
-        }
-
-        return false;
+        return (mainHand != null && mainHand.getType().equals(itemType)) || (offHand != null && offHand.getType().equals(itemType));
     }
 
     public static boolean hasItemInOneHand(Player player) {
         ItemStack mainHand = player.getItemInHand(HandTypes.MAIN_HAND).orElse(null);
         ItemStack offHand = player.getItemInHand(HandTypes.OFF_HAND).orElse(null);
-        if (mainHand != null || offHand != null) {
-            return true;
-        }
-
-        return false;
+        return mainHand != null || offHand != null;
     }
 
     public static ClaimType getClaimTypeFromShovel(ShovelMode shovelMode) {
@@ -172,7 +163,7 @@ public class PlayerUtils {
         // try online players first
         Optional<Player> targetPlayer = Sponge.getGame().getServer().getPlayer(name);
         if (targetPlayer.isPresent()) {
-            return Optional.of((User) targetPlayer.get());
+            return Optional.of(targetPlayer.get());
         }
 
         Optional<User> user = Sponge.getGame().getServiceManager().provide(UserStorageService.class).get().get(name);

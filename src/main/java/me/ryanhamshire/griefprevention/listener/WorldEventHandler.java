@@ -104,11 +104,11 @@ public class WorldEventHandler {
 
     @Listener
     public void onChunkLoad(LoadChunkEvent event) {
-        
+
     }
 
     @Listener
     public void onChunkUnload(UnloadChunkEvent event) {
-        
+
     }
 }

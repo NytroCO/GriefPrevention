@@ -26,7 +26,6 @@
 package me.ryanhamshire.griefprevention.command;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.event.GPDeleteClaimEvent;
@@ -73,16 +72,14 @@ public class CommandClaimDeleteAll implements CommandExecutor {
             Sponge.getEventManager().post(event);
             if (event.isCancelled()) {
                 player
-                    .sendMessage(Text.of(TextColors.RED, event.getMessage().orElse(Text.of("Could not delete all claims. A plugin has denied it."))));
+                        .sendMessage(Text.of(TextColors.RED, event.getMessage().orElse(Text.of("Could not delete all claims. A plugin has denied it."))));
                 return CommandResult.success();
             }
         }
 
         // delete all that player's claims
         GriefPreventionPlugin.instance.dataStore.deleteClaimsForPlayer(otherPlayer.getUniqueId());
-        final Text message = GriefPreventionPlugin.instance.messageData.claimDeleteAllSuccess
-                .apply(ImmutableMap.of(
-                "owner", otherPlayer.getName())).build();
+        final Text message = Text.of("Deleted all of " + otherPlayer.getName() + "'s claims.");
         GriefPreventionPlugin.sendMessage(player, message);
         if (player != null) {
             GriefPreventionPlugin.addLogEntry(player.getName() + " deleted all claims belonging to " + otherPlayer.getName() + ".",

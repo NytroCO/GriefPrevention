@@ -25,7 +25,6 @@
  */
 package me.ryanhamshire.griefprevention.task;
 
-import me.ryanhamshire.griefprevention.GPPlayerData;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.ban.BanService;
@@ -41,16 +40,16 @@ public class PlayerKickBanTask implements Runnable {
     private final BanService banService = Sponge.getServiceManager().getRegistration(BanService.class).get().getProvider();
 
     // player to kick or ban
-    private Player player;
+    private final Player player;
 
     // message to send player.
-    private Text reason;
+    private final Text reason;
 
     // source of ban
-    private Text source;
+    private final Text source;
 
     // whether to ban
-    private boolean ban;
+    private final boolean ban;
 
     public PlayerKickBanTask(Player player, Text reason, Text source, boolean ban) {
         this.player = player;

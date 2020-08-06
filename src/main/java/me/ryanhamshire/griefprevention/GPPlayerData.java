@@ -25,9 +25,6 @@
  */
 package me.ryanhamshire.griefprevention;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.api.claim.ClaimType;
 import me.ryanhamshire.griefprevention.api.data.PlayerData;
@@ -50,6 +47,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -57,12 +55,7 @@ import org.spongepowered.common.SpongeImpl;
 
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 //holds all of GriefPrevention's player-tied data
@@ -71,135 +64,89 @@ public class GPPlayerData implements PlayerData {
     // the player's ID
     public UUID playerID;
     public WorldProperties worldProperties;
-    private WeakReference<Subject> playerSubject;
-
-    // the player's claims
-    private Set<Claim> claimList;
-
-    private PlayerStorageData playerStorage;
-
     // where this player was the last time we checked on him for earning claim blocks
     public Location<World> lastAfkCheckLocation;
-
     // what "mode" the shovel is in determines what it will do when it's used
     public ShovelMode shovelMode = ShovelMode.Basic;
-
     // radius for restore nature fill mode
     public int fillRadius = 0;
-
     // last place the player used the shovel, useful in creating and resizing claims,
     // because the player must use the shovel twice in those instances
     public Location<World> lastShovelLocation;
     public Location<World> endShovelLocation;
     public Location<World> lastValidInspectLocation;
-
     // used for nature restores
     public Chunk fillerChunk;
     public BlockSnapshot[][][] fillerBlocks;
-
     // the claim this player is currently resizing
     public GPClaim claimResizing;
-
     // the claim this player is currently subdividing
     public GPClaim claimSubdividing;
-
     // whether or not the player has a pending /trapped rescue
     public boolean pendingTrapped = false;
-
     // whether this player was recently warned about building outside land claims
     public boolean warnedAboutBuildingOutsideClaims = false;
-
     // timestamp of last death, for use in preventing death message spam
     public long lastDeathTimeStamp = 0;
-
     // whether the player was kicked (set and used during logout)
     public boolean wasKicked = false;
-
-    // spam when the player last logged into the server
-    @SuppressWarnings("unused")
-    private Date lastLogin;
-
     // the player's last chat message, or slash command complete with parameters
     public String lastMessage = "";
-
     // last time the player sent a chat message or used a monitored slash command
     public Date lastMessageTimestamp = new Date();
-
     // number of consecutive "spams"
     public int spamCount = 0;
-
     // whether the player recently received a warning
     public boolean spamWarned = false;
-
     // visualization
     public List<Transaction<BlockSnapshot>> visualBlocks;
     public UUID visualClaimId;
     public Task visualRevertTask;
-
     // anti-camping pvp protection
     public boolean pvpImmune = false;
     public long lastSpawn = 0;
-
     // ignore claims mode
     public boolean ignoreClaims = false;
-
     public boolean debugClaimPermissions = false;
     // true while /cfd command is executing
     public boolean executingClaimDebug = false;
     // the last claim this player was in, that we know of
     public WeakReference<GPClaim> lastClaim = new WeakReference<>(null);
-
     // pvp
     public long lastPvpTimestamp = 0;
     public String lastPvpPlayer = "";
-
     // safety confirmation for deleting multi-subdivision claims
     public boolean warnedAboutMajorDeletion = false;
-
     // town
     public boolean inTown = false;
     public boolean townChat = false;
-
     public boolean ignoreActiveContexts = false;
     public InetAddress ipAddress;
-
     // whether or not this player has received a message about unlocking death
     // drops since his last death
     public boolean receivedDropUnlockAdvertisement = false;
-
     // whether or not this player's dropped items (on death) are unlocked for
     // other players to pick up
     public boolean dropsAreUnlocked = true;
-
     // message to send to player after he respawns
     public Text messageOnRespawn;
-
     // player which a pet will be given to when it's right-clicked
     public User petGiveawayRecipient;
-
     // timestamp for last "you're building outside your land claims" message
     public Long buildWarningTimestamp;
-
     // spot where a player can't talk, used to mute new players until they've moved a little this is an anti-bot strategy.
     public Location<World> noChatLocation;
-
     // ignore list true means invisible (admin-forced ignore), false means player-created ignore
     public ConcurrentHashMap<UUID, Boolean> ignoredPlayers = new ConcurrentHashMap<UUID, Boolean>();
     public boolean ignoreListChanged = false;
-
     // profanity warning, once per play session
     public boolean profanityWarned = false;
-
     public boolean lastInteractResult = false;
     public int lastTickCounter = 0;
     public UUID lastInteractClaim = GriefPreventionPlugin.PUBLIC_UUID;
-
     // collide event cache
     public int lastCollideEntityId = 0;
     public boolean lastCollideEntityResult = false;
-
-    private String playerName;
-
     // cached option values
     public double optionAbandonReturnRatioBasic = GPOptions.DEFAULT_ABANDON_RETURN_RATIO_BASIC;
     public double optionAbandonReturnRatioTown = GPOptions.DEFAULT_ABANDON_RETURN_RATIO_TOWN;
@@ -241,7 +188,6 @@ public class GPPlayerData implements PlayerData {
     public double optionTaxRateTown = GPOptions.DEFAULT_TAX_RATE_TOWN;
     public double optionTaxRateTownBasic = GPOptions.DEFAULT_TAX_RATE_TOWN_BASIC;
     public double optionTaxRateTownSubdivision = GPOptions.DEFAULT_TAX_RATE_TOWN_SUBDIVISION;
-
     // cached permission values
     public boolean canManageAdminClaims = false;
     public boolean canManageWilderness = false;
@@ -250,9 +196,16 @@ public class GPPlayerData implements PlayerData {
     public boolean ignoreBasicClaims = false;
     public boolean ignoreTowns = false;
     public boolean ignoreWilderness = false;
-
     public boolean dataInitialized = false;
     public boolean showVisualFillers = true;
+    private WeakReference<Subject> playerSubject;
+    // the player's claims
+    private final Set<Claim> claimList;
+    private final PlayerStorageData playerStorage;
+    // spam when the player last logged into the server
+    @SuppressWarnings("unused")
+    private Date lastLogin;
+    private String playerName;
     private boolean checkedDimensionHeight = false;
 
     public GPPlayerData(WorldProperties worldProperties, UUID playerUniqueId, PlayerStorageData playerStorage, GriefPreventionConfig<?> activeConfig, Set<Claim> claims) {
@@ -443,7 +396,7 @@ public class GPPlayerData implements PlayerData {
 
     public double getRemainingChunks() {
         final double remainingChunks = this.getRemainingClaimBlocks() / 65536.0;
-        return Math.round(remainingChunks * 100.0)/100.0;
+        return Math.round(remainingChunks * 100.0) / 100.0;
     }
 
     public int getAccruedClaimBlocks() {
@@ -504,42 +457,38 @@ public class GPPlayerData implements PlayerData {
         if (this.shovelMode == ShovelMode.Basic) {
             if (this.optionClaimCreateMode == 0 && !player.hasPermission(GPPermissions.CLAIM_CREATE_BASIC)) {
                 if (sendMessage) {
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.permissionClaimCreate.toText());
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have permission to claim land."));
                 }
                 return false;
             }
             if (this.optionClaimCreateMode == 1 && !player.hasPermission(GPPermissions.CLAIM_CUBOID_BASIC)) {
                 if (sendMessage) {
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.permissionCuboid.toText());
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimCuboidDisabled.toText());
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have permission to create/resize basic claims in 3D mode."));
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Now claiming in 2D mode."));
                 }
                 return false;
             }
         } else if (this.shovelMode == ShovelMode.Subdivide) {
             if (this.optionClaimCreateMode == 0 && !player.hasPermission(GPPermissions.CLAIM_CREATE_SUBDIVISION)) {
                 if (sendMessage) {
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.permissionClaimCreate.toText());
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have permission to claim land."));
                 }
                 return false;
             } else if (!player.hasPermission(GPPermissions.CLAIM_CUBOID_SUBDIVISION)) {
                 if (sendMessage) {
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.permissionCuboid.toText());
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimCuboidDisabled.toText());
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have permission to create/resize basic claims in 3D mode."));
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Now claiming in 2D mode."));
                 }
                 return false;
             }
         } else if (this.shovelMode == ShovelMode.Admin) {
             if (this.optionClaimCreateMode == 0 && !player.hasPermission(GPPermissions.COMMAND_ADMIN_CLAIMS)) {
                 return false;
-            } else if (!player.hasPermission(GPPermissions.CLAIM_CUBOID_ADMIN)) {
-                return false;
-            }
+            } else return player.hasPermission(GPPermissions.CLAIM_CUBOID_ADMIN);
         } else if (this.shovelMode == ShovelMode.Town) {
             if (this.optionClaimCreateMode == 0 && !player.hasPermission(GPPermissions.CLAIM_CREATE_TOWN)) {
                 return false;
-            } else if (!player.hasPermission(GPPermissions.CLAIM_CUBOID_TOWN)) {
-                return false;
-            }
+            } else return player.hasPermission(GPPermissions.CLAIM_CUBOID_TOWN);
         }
 
         return true;
@@ -584,9 +533,7 @@ public class GPPlayerData implements PlayerData {
 
     public boolean checkLastInteraction(GPClaim claim, User user) {
         if (this.lastInteractResult && user != null && ((SpongeImpl.getServer().getTickCounter() - this.lastTickCounter) <= 2)) {
-            if (claim.getUniqueId().equals(this.lastInteractClaim) || claim.isWilderness()) {
-                return true;
-            }
+            return claim.getUniqueId().equals(this.lastInteractClaim) || claim.isWilderness();
         }
 
         return false;
@@ -627,9 +574,7 @@ public class GPPlayerData implements PlayerData {
             if (claim.isBasicClaim() && player.hasPermission(GPPermissions.COMMAND_OPTIONS_GROUP_BASIC)) {
                 return true;
             }
-            if (claim.isSubdivision() && player.hasPermission(GPPermissions.COMMAND_OPTIONS_GROUP_SUBDIVISION)) {
-                return true;
-            }
+            return claim.isSubdivision() && player.hasPermission(GPPermissions.COMMAND_OPTIONS_GROUP_SUBDIVISION);
         } else {
             if (claim.isTown() && player.hasPermission(GPPermissions.COMMAND_OPTIONS_PLAYER_TOWN)) {
                 return true;
@@ -640,12 +585,8 @@ public class GPPlayerData implements PlayerData {
             if (claim.isBasicClaim() && player.hasPermission(GPPermissions.COMMAND_OPTIONS_PLAYER_BASIC)) {
                 return true;
             }
-            if (claim.isSubdivision() && player.hasPermission(GPPermissions.COMMAND_OPTIONS_PLAYER_SUBDIVISION)) {
-                return true;
-            }
+            return claim.isSubdivision() && player.hasPermission(GPPermissions.COMMAND_OPTIONS_PLAYER_SUBDIVISION);
         }
-
-        return false;
     }
 
     @Override
@@ -655,7 +596,7 @@ public class GPPlayerData implements PlayerData {
 
     @Override
     public int getMaxClaimX(ClaimType type) {
-        switch(type) {
+        switch (type) {
             case BASIC:
                 return this.optionMaxClaimSizeBasicX;
             case SUBDIVISION:
@@ -671,7 +612,7 @@ public class GPPlayerData implements PlayerData {
 
     @Override
     public int getMaxClaimY(ClaimType type) {
-        switch(type) {
+        switch (type) {
             case BASIC:
                 return this.optionMaxClaimSizeBasicY;
             case SUBDIVISION:
@@ -687,7 +628,7 @@ public class GPPlayerData implements PlayerData {
 
     @Override
     public int getMaxClaimZ(ClaimType type) {
-        switch(type) {
+        switch (type) {
             case BASIC:
                 return this.optionMaxClaimSizeBasicZ;
             case SUBDIVISION:
@@ -703,7 +644,7 @@ public class GPPlayerData implements PlayerData {
 
     @Override
     public int getMinClaimX(ClaimType type) {
-        switch(type) {
+        switch (type) {
             case BASIC:
                 return this.optionMinClaimSizeBasicX;
             case TOWN:
@@ -717,7 +658,7 @@ public class GPPlayerData implements PlayerData {
 
     @Override
     public int getMinClaimY(ClaimType type) {
-        switch(type) {
+        switch (type) {
             case BASIC:
                 return this.optionMinClaimSizeBasicY;
             case TOWN:
@@ -731,7 +672,7 @@ public class GPPlayerData implements PlayerData {
 
     @Override
     public int getMinClaimZ(ClaimType type) {
-        switch(type) {
+        switch (type) {
             case BASIC:
                 return this.optionMinClaimSizeBasicZ;
             case TOWN:
@@ -780,10 +721,11 @@ public class GPPlayerData implements PlayerData {
         final double taxRate = GPOptionHandler.getClaimOptionDouble(player, claim, GPOptions.Type.TAX_RATE, this);
         final double taxOwed = claim.getClaimBlocks() * taxRate;
         final double remainingDays = GPOptionHandler.getClaimOptionDouble(player, claim, GPOptions.Type.EXPIRATION_DAYS_KEEP, this);
-        final Text message = GriefPreventionPlugin.instance.messageData.taxClaimExpired
-                .apply(ImmutableMap.of(
-                "remaining_days", remainingDays,
-                "tax_owed", taxOwed)).build();
+        final Text message = Text.of(TextColors.RED, "This claim has been frozen due to unpaid taxes. The current amount owed is '", TextColors.GOLD, taxOwed + "'."
+                + "\nThere are '", TextColors.GREEN, remainingDays + "' days left to deposit payment to claim bank in order to unfreeze this claim.\nFailure to pay this debt will result in deletion of claim.\nNote: To deposit " +
+                "funds to " +
+                "claimbank, use " +
+                "/claimbank deposit <amount>.");
         GriefPreventionPlugin.sendClaimDenyMessage(claim, player, message);
     }
 

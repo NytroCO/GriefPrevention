@@ -25,7 +25,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.claim.GPClaimManager;
@@ -62,15 +61,13 @@ public class CommandClaimBuy implements CommandExecutor {
 
         // if economy is disabled, don't do anything
         if (!GriefPreventionPlugin.instance.economyService.isPresent()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.economyNotInstalled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Economy plugin not installed!."));
             return CommandResult.success();
         }
 
         Account playerAccount = GriefPreventionPlugin.instance.economyService.get().getOrCreateAccount(player.getUniqueId()).orElse(null);
         if (playerAccount == null) {
-            final Text message = GriefPreventionPlugin.instance.messageData.economyUserNotFound
-                    .apply(ImmutableMap.of(
-                    "user", player.getName())).build();
+            final Text message = Text.of(TextColors.RED, "No economy account found for user " + player.getName() + ".");
             GriefPreventionPlugin.sendMessage(player, message);
             return CommandResult.success();
         }
@@ -97,7 +94,7 @@ public class CommandClaimBuy implements CommandExecutor {
         List<Text> claimsTextList = CommandHelper.generateClaimTextList(new ArrayList<Text>(), claimsForSale, player.getWorld().getName(), null, src, CommandHelper.createCommandConsumer(src, "claimbuy", ""), true, false);
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         PaginationList.Builder paginationBuilder = paginationService.builder()
-                .title(Text.of(TextColors.AQUA,"Claims for sale")).padding(Text.of(TextStyles.STRIKETHROUGH, "-")).contents(claimsTextList);
+                .title(Text.of(TextColors.AQUA, "Claims for sale")).padding(Text.of(TextStyles.STRIKETHROUGH, "-")).contents(claimsTextList);
         paginationBuilder.sendTo(src);
         return CommandResult.success();
     }

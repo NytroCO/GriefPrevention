@@ -28,7 +28,6 @@ package me.ryanhamshire.griefprevention.task;
 import me.ryanhamshire.griefprevention.DataStore;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
-import me.ryanhamshire.griefprevention.claim.GPClaim;
 import me.ryanhamshire.griefprevention.configuration.PlayerStorageData;
 import me.ryanhamshire.griefprevention.logging.CustomLogEntryTypes;
 import me.ryanhamshire.griefprevention.permission.GPOptions;
@@ -49,7 +48,7 @@ import java.util.Optional;
 //runs every 5 minutes in the main thread, grants blocks per hour / 12 to each online player who appears to be actively playing
 public class DeliverClaimBlocksTask implements Runnable {
 
-    private Player player;
+    private final Player player;
 
     public DeliverClaimBlocksTask(Player player) {
         this.player = player;

@@ -79,9 +79,7 @@ public class ClaimContextCalculator implements ContextCalculator<Subject> {
                 }
 
                 GPClaim playerClaim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
-                if (playerClaim != null && playerClaim.id.equals(UUID.fromString(context.getValue()))) {
-                    return true;
-                }
+                return playerClaim != null && playerClaim.id.equals(UUID.fromString(context.getValue()));
             }
         }
 

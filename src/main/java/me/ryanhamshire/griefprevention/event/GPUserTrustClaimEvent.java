@@ -33,7 +33,7 @@ import java.util.UUID;
 
 public class GPUserTrustClaimEvent extends GPTrustClaimEvent implements UserTrustClaimEvent {
 
-    private List<UUID> users;
+    private final List<UUID> users;
 
     public GPUserTrustClaimEvent(Claim claim, List<UUID> users, TrustType trustType) {
         super(claim, trustType);
@@ -61,7 +61,7 @@ public class GPUserTrustClaimEvent extends GPTrustClaimEvent implements UserTrus
     }
 
     public static class Remove extends GPUserTrustClaimEvent implements UserTrustClaimEvent.Remove {
-        public Remove(List<Claim> claims,List<UUID> users, TrustType trustType) {
+        public Remove(List<Claim> claims, List<UUID> users, TrustType trustType) {
             super(claims, users, trustType);
         }
 

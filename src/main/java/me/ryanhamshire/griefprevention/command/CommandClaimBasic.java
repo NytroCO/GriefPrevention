@@ -34,6 +34,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandClaimBasic implements CommandExecutor {
 
@@ -50,7 +52,7 @@ public class CommandClaimBasic implements CommandExecutor {
         final GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         playerData.shovelMode = ShovelMode.Basic;
         playerData.claimSubdividing = null;
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimModeBasic.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Basic claim creation mode enabled."));
 
         return CommandResult.success();
     }

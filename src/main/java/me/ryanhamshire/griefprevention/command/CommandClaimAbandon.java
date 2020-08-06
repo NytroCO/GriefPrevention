@@ -25,7 +25,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
@@ -46,15 +45,13 @@ import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 public class CommandClaimAbandon implements CommandExecutor {
 
-    private boolean abandonTopClaim;
+    private final boolean abandonTopClaim;
 
     public CommandClaimAbandon(boolean abandonTopClaim) {
         this.abandonTopClaim = abandonTopClaim;
@@ -78,22 +75,22 @@ public class CommandClaimAbandon implements CommandExecutor {
         final boolean isAdmin = playerData.canIgnoreClaim(claim);
         final boolean isTown = claim.isTown();
         if (claim.isWilderness()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandAbandonClaimMissing.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("Stand in the claim you want to delete, or consider /AbandonAllClaims."));
             return CommandResult.success();
         } else if (!isAdmin && !player.getUniqueId().equals(ownerId) && claim.isUserTrusted(player, TrustType.MANAGER)) {
             if (claim.parent == null) {
                 // Managers can only abandon child claims
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimNotYours.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This isn't your claim."));
                 return CommandResult.success();
             }
         } else if (!isAdmin && (claim.allowEdit(player) != null || (!claim.isAdminClaim() && !player.getUniqueId().equals(ownerId)))) {
             // verify ownership
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimNotYours.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This isn't your claim."));
             return CommandResult.success();
         }
 
         if (!claim.isTown() && !claim.isAdminClaim() && claim.children.size() > 0 && !this.abandonTopClaim) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandAbandonTopLevel.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This claim cannot be abandoned as it contains one or more child claims. In order to abandon a claim with child claims, you must use /AbandonTopLevelClaim instead."));
             return CommandResult.empty();
         } else {
             if (this.abandonTopClaim && (claim.isTown() || claim.isAdminClaim()) && claim.children.size() > 0) {
@@ -106,7 +103,7 @@ public class CommandClaimAbandon implements CommandExecutor {
                 }
 
                 if (!invalidClaims.isEmpty()) {
-                    GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandAbandonTownChildren.toText());
+                    GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You do not have permission to abandon a town with child claims you do not own. Use /ignoreclaims or have the child claim owner abandon their claim first. If you just want to abandon the town without affecting children then use /abandonclaim instead."));
                     CommandHelper.showClaims(player, invalidClaims, 0, true);
                     return CommandResult.success();
                 }
@@ -118,7 +115,7 @@ public class CommandClaimAbandon implements CommandExecutor {
                 Sponge.getEventManager().post(event);
                 if (event.isCancelled()) {
                     player
-                        .sendMessage(Text.of(TextColors.RED, event.getMessage().orElse(Text.of("Could not abandon claim. A plugin has denied it."))));
+                            .sendMessage(Text.of(TextColors.RED, event.getMessage().orElse(Text.of("Could not abandon claim. A plugin has denied it."))));
                     return CommandResult.success();
                 }
             }
@@ -135,7 +132,7 @@ public class CommandClaimAbandon implements CommandExecutor {
             if (GriefPreventionPlugin.instance.claimModeIsActive(claim.getLesserBoundaryCorner().getExtent().getProperties(), ClaimsMode.Creative)) {
                 GriefPreventionPlugin.addLogEntry(
                         player.getName() + " abandoned a " + claim.getType() + " @ " + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()));
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimCleanupWarning.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of("The land you've unclaimed may be changed by other players or cleaned up by administrators.  If you've built something there you want to keep, you should reclaim it."));
                 GriefPreventionPlugin.instance.restoreClaim(claim, 20L * 60 * 2);
             }
 
@@ -147,10 +144,7 @@ public class CommandClaimAbandon implements CommandExecutor {
 
             // tell the player how many claim blocks he has left
             int remainingBlocks = playerData.getRemainingClaimBlocks();
-            final Text message = GriefPreventionPlugin.instance.messageData.claimAbandonSuccess
-                    .apply(ImmutableMap.of(
-                    "remaining-blocks", Text.of(remainingBlocks)
-            )).build();
+            final Text message = Text.of(TextColors.GREEN, "Claim abandoned. You now have " + remainingBlocks + " available claim blocks.");
             GriefPreventionPlugin.sendMessage(player, message);
             // revert any current visualization
             playerData.revertActiveVisual(player);

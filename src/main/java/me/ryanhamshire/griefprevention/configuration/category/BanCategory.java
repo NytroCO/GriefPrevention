@@ -35,7 +35,7 @@ import java.util.Map;
 public class BanCategory extends ConfigCategory {
 
     @Setting
-    private Map<String, Text> banReasons = Maps.newHashMap();
+    private final Map<String, Text> banReasons = Maps.newHashMap();
 
     public void addBan(String permission, Text reason) {
         permission = permission.replace("griefprevention.flag.", "").toLowerCase();

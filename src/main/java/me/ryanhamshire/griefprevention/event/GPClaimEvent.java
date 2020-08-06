@@ -37,10 +37,10 @@ import java.util.Optional;
 
 public class GPClaimEvent extends AbstractEvent implements ClaimEvent {
 
-    private List<Claim> claims;
+    private final Cause cause;
+    private final List<Claim> claims;
     private Text message;
     private boolean isCancelled = false;
-    private final Cause cause;
 
     public GPClaimEvent(Claim claim) {
         this.claims = ImmutableList.of(claim);
@@ -73,13 +73,13 @@ public class GPClaimEvent extends AbstractEvent implements ClaimEvent {
     }
 
     @Override
-    public void setMessage(Text message) {
-        this.message = message;
+    public Optional<Text> getMessage() {
+        return Optional.ofNullable(this.message);
     }
 
     @Override
-    public Optional<Text> getMessage() {
-        return Optional.ofNullable(this.message);
+    public void setMessage(Text message) {
+        this.message = message;
     }
 
 }

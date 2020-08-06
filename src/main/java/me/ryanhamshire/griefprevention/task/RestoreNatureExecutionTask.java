@@ -53,19 +53,19 @@ class RestoreNatureExecutionTask implements Runnable {
 
     // results from processing thread
     // will be applied to the world
-    private BlockSnapshot[][][] snapshots;
+    private final BlockSnapshot[][][] snapshots;
 
     // boundaries for changes
-    private int miny;
-    private Location<World> lesserCorner;
-    private Location<World> greaterCorner;
+    private final int miny;
+    private final Location<World> lesserCorner;
+    private final Location<World> greaterCorner;
 
     // player who should be notified about the result (will see a visualization
     // when the restoration is complete)
-    private Player player;
+    private final Player player;
 
     public RestoreNatureExecutionTask(BlockSnapshot[][][] snapshots, int miny, Location<World> lesserCorner, Location<World> greaterCorner,
-            Player player) {
+                                      Player player) {
         this.snapshots = snapshots;
         this.miny = miny;
         this.lesserCorner = lesserCorner;
@@ -103,7 +103,7 @@ class RestoreNatureExecutionTask implements Runnable {
                     if (!(entity instanceof Player || entity instanceof Animal)) {
                         // hanging entities (paintings, item frames) are protected when they're in land claims
                         if (!(entity instanceof Hanging)
-                            || GriefPreventionPlugin.instance.dataStore.getClaimAt(entity.getLocation()) == null) {
+                                || GriefPreventionPlugin.instance.dataStore.getClaimAt(entity.getLocation()) == null) {
                             // everything else is removed
                             entity.remove();
                         }

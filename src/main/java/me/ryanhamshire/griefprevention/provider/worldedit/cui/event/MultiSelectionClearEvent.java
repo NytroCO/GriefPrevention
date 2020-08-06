@@ -34,13 +34,14 @@ public class MultiSelectionClearEvent implements CUIEvent {
     private final String[] parameters;
 
     public MultiSelectionClearEvent() {
-        this.parameters = new String[] {};
+        this.parameters = new String[]{};
     }
 
     public MultiSelectionClearEvent(UUID uniqueId) {
-        this.parameters = new String[] {
+        this.parameters = new String[]{
                 uniqueId.toString()};
     }
+
     @Override
     public String[] getParameters() {
         return this.parameters;

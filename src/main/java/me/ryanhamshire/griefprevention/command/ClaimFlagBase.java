@@ -30,11 +30,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import me.ryanhamshire.griefprevention.DataStore;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
-import me.ryanhamshire.griefprevention.api.claim.Claim;
-import me.ryanhamshire.griefprevention.api.claim.ClaimContexts;
-import me.ryanhamshire.griefprevention.api.claim.ClaimFlag;
-import me.ryanhamshire.griefprevention.api.claim.ClaimType;
-import me.ryanhamshire.griefprevention.api.claim.FlagResult;
+import me.ryanhamshire.griefprevention.api.claim.*;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
 import me.ryanhamshire.griefprevention.event.GPFlagClaimEvent;
 import me.ryanhamshire.griefprevention.permission.GPPermissionHandler;
@@ -57,43 +53,58 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.util.Tristate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class ClaimFlagBase {
 
-    public enum FlagType {
-        ALL,
-        DEFAULT,
-        CLAIM,
-        OVERRIDE,
-        INHERIT,
-        GROUP,
-        PLAYER
-    }
-
+    private final Cache<UUID, FlagType> lastActiveFlagTypeMap = Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
+            .build();
     protected ClaimSubjectType subjectType;
     protected Subject subject;
     protected String friendlySubjectName;
-    private final Cache<UUID, FlagType> lastActiveFlagTypeMap = Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
-            .build();
-
     protected ClaimFlagBase(ClaimSubjectType type) {
         this.subjectType = type;
     }
 
+    private static Text getFlagText(String flagPermission, String baseFlag) {
+        final String flagSource = GPPermissionHandler.getSourcePermission(flagPermission);
+        final String flagTarget = GPPermissionHandler.getTargetPermission(flagPermission);
+        Text sourceText = flagSource == null ? null : Text.of(TextColors.WHITE, "source=", TextColors.GREEN, flagSource);
+        Text targetText = flagTarget == null ? null : Text.of(TextColors.WHITE, "target=", TextColors.GREEN, flagTarget);
+        if (sourceText != null) {
+           /* if (targetText != null) {
+                sourceText = Text.of(sourceText, "  ");
+            } else {*/
+            sourceText = Text.of(sourceText, "\n");
+            //}
+        } else {
+            sourceText = Text.of();
+        }
+        if (targetText != null) {
+            targetText = Text.of(targetText);
+        } else {
+            targetText = Text.of();
+        }
+        Text baseFlagText = Text.of();
+        if (flagSource == null && flagTarget == null) {
+            baseFlagText = Text.builder().append(Text.of(TextColors.GREEN, baseFlag, " "))
+                    .onHover(TextActions.showText(Text.of(sourceText, targetText))).build();
+        } else {
+            baseFlagText = Text.builder().append(Text.of(TextStyles.ITALIC, TextColors.YELLOW, baseFlag, " ", TextStyles.RESET))
+                    .onHover(TextActions.showText(Text.of(sourceText, targetText))).build();
+        }
+        final Text baseText = Text.builder().append(Text.of(
+                baseFlagText)).build();
+        //sourceText,
+        //targetText)).build();
+        return baseText;
+    }
+
     protected String filterMeta(ItemStack stack, String id) {
         if (stack != null && stack.getType() != null) {
-            final int meta = ((net.minecraft.item.ItemStack)(Object) stack).getItemDamage();
+            final int meta = ((net.minecraft.item.ItemStack) (Object) stack).getItemDamage();
             if (meta == 0) {
                 return GPPermissionHandler.getIdentifierWithoutMeta(id);
             }
@@ -139,10 +150,10 @@ public class ClaimFlagBase {
         Text claimFlagHead = Text.of();
         if (this.subjectType == ClaimSubjectType.GLOBAL) {
             claimFlagHead = Text.builder().append(Text.of(
-                TextColors.AQUA," Displaying : ", allTypeText, "  ", defaultFlagText, "  ", claimFlagText, "  ", inheritFlagText, "  ", overrideFlagText)).build();
+                    TextColors.AQUA, " Displaying : ", allTypeText, "  ", defaultFlagText, "  ", claimFlagText, "  ", inheritFlagText, "  ", overrideFlagText)).build();
         } else {
             claimFlagHead = Text.builder().append(Text.of(
-                    TextColors.AQUA," ", this.subjectType.getFriendlyName(), " ", TextColors.YELLOW, this.friendlySubjectName, TextColors.AQUA, " : ", allTypeText, "  ", claimFlagText, "  ", inheritFlagText, "  ", overrideFlagText)).build();
+                    TextColors.AQUA, " ", this.subjectType.getFriendlyName(), " ", TextColors.YELLOW, this.friendlySubjectName, TextColors.AQUA, " : ", allTypeText, "  ", claimFlagText, "  ", inheritFlagText, "  ", overrideFlagText)).build();
         }
         Map<String, Text> flagList = new TreeMap<>();
         Set<Context> contexts = new HashSet<>();
@@ -193,7 +204,7 @@ public class ClaimFlagBase {
             for (Map.Entry<String, Boolean> permissionEntry : defaultTransientPermissions.entrySet()) {
                 Text flagText = null;
                 String flagPermission = permissionEntry.getKey();
-                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 // check if transient default has been overridden and if so display that value instead
                 Boolean defaultTransientOverrideValue = subjectPermissions.get(flagPermission);
                 if (defaultTransientOverrideValue != null) {
@@ -207,10 +218,10 @@ public class ClaimFlagBase {
                             TextColors.LIGHT_PURPLE, getClickableText(src, claim, flagPermission, Tristate.fromBoolean(permissionEntry.getValue()), source, FlagType.DEFAULT));
                 }
                 if (claimPermissions.get(permissionEntry.getKey()) == null) {
-                    flagText = Text.join(flagText, 
+                    flagText = Text.join(flagText,
                             Text.of(
-                            TextColors.WHITE, ", ",
-                            TextColors.GOLD, getClickableText(src, claim, flagPermission, Tristate.UNDEFINED, source, FlagType.CLAIM)));
+                                    TextColors.WHITE, ", ",
+                                    TextColors.GOLD, getClickableText(src, claim, flagPermission, Tristate.UNDEFINED, source, FlagType.CLAIM)));
                     if (overridePermissions.get(flagPermission) == null) {
                         flagText = Text.join(flagText, Text.of(TextColors.WHITE, "]"));
                     }
@@ -221,24 +232,24 @@ public class ClaimFlagBase {
             for (Map.Entry<String, Boolean> permissionEntry : subjectPermissions.entrySet()) {
                 Text flagText = null;
                 String flagPermission = permissionEntry.getKey();
-                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 Text baseFlagText = null;
                 if (ClaimFlag.contains(baseFlagPerm)) {
                     baseFlagText = Text.builder().append(Text.of(TextColors.GREEN, baseFlagPerm))
                             .onHover(TextActions.showText(CommandHelper.getBaseFlagOverlayText(baseFlagPerm))).build();
                 }
 
-                baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 flagText = Text.of(
                         TextColors.GREEN, baseFlagText != null ? baseFlagText : baseFlagPerm, "  ",
                         TextColors.WHITE, "[",
                         TextColors.LIGHT_PURPLE, getClickableText(src, claim, flagPermission, Tristate.fromBoolean(permissionEntry.getValue()), source, FlagType.DEFAULT));
 
                 if (claimPermissions.get(permissionEntry.getKey()) == null) {
-                    flagText = Text.join(flagText, 
+                    flagText = Text.join(flagText,
                             Text.of(
-                            TextColors.WHITE, ", ",
-                            TextColors.GOLD, getClickableText(src, claim, flagPermission, Tristate.UNDEFINED, source, FlagType.CLAIM)));
+                                    TextColors.WHITE, ", ",
+                                    TextColors.GOLD, getClickableText(src, claim, flagPermission, Tristate.UNDEFINED, source, FlagType.CLAIM)));
                     if (overridePermissions.get(flagPermission) == null) {
                         flagText = Text.join(flagText, Text.of(TextColors.WHITE, "]"));
                     }
@@ -262,7 +273,7 @@ public class ClaimFlagBase {
                 if (currentText == null) {
                     customFlag = true;
                     // custom flag
-                    String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                    String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                     currentText = Text.builder().append(Text.of(
                             TextColors.GREEN, baseFlagPerm, "  ",
                             TextColors.WHITE, "["))
@@ -285,7 +296,7 @@ public class ClaimFlagBase {
                 if (currentText == null) {
                     customFlag = true;
                     // custom flag
-                    String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                    String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                     currentText = Text.builder().append(Text.of(
                             TextColors.GREEN, baseFlagPerm, "  ",
                             TextColors.WHITE, "["))
@@ -297,7 +308,7 @@ public class ClaimFlagBase {
         } else if (flagType == FlagType.CLAIM) {
             for (Map.Entry<String, Boolean> permissionEntry : claimPermissions.entrySet()) {
                 String flagPermission = permissionEntry.getKey();
-                final String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                final String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 Boolean flagValue = permissionEntry.getValue();
                 Text flagText = null;
                 final ClaimFlag baseFlag = GPPermissionHandler.getFlagFromPermission(flagPermission);
@@ -313,9 +324,9 @@ public class ClaimFlagBase {
                         Text undefinedText = null;
                         if (hasPermission) {
                             undefinedText = Text.builder().append(
-                                Text.of(TextColors.GRAY, "undefined"))
-                                .onHover(TextActions.showText(Text.of(TextColors.GREEN, baseFlagPerm, TextColors.WHITE, " is currently being ", TextColors.RED, "overridden", TextColors.WHITE, " by an administrator", TextColors.WHITE, ".\nClick here to remove this flag.")))
-                                .onClick(TextActions.executeCallback(createFlagConsumer(src, claim, flagPermission, Tristate.UNDEFINED, source, flagType, FlagType.CLAIM, false))).build();
+                                    Text.of(TextColors.GRAY, "undefined"))
+                                    .onHover(TextActions.showText(Text.of(TextColors.GREEN, baseFlagPerm, TextColors.WHITE, " is currently being ", TextColors.RED, "overridden", TextColors.WHITE, " by an administrator", TextColors.WHITE, ".\nClick here to remove this flag.")))
+                                    .onClick(TextActions.executeCallback(createFlagConsumer(src, claim, flagPermission, Tristate.UNDEFINED, source, flagType, FlagType.CLAIM, false))).build();
                         } else {
                             undefinedText = Text.builder().append(
                                     Text.of(TextColors.GRAY, "undefined"))
@@ -350,7 +361,7 @@ public class ClaimFlagBase {
                             //TextColors.WHITE, "["))
                             .onHover(TextActions.showText(CommandHelper.getBaseFlagOverlayText(baseFlagPerm))).build();
                 }
-                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString()); 
+                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString());
                 flagText = Text.of(
                         baseFlagText, "  ",
                         flagText);
@@ -365,7 +376,7 @@ public class ClaimFlagBase {
                 }
 
                 Boolean flagValue = permissionEntry.getValue();
-                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 final ClaimFlag baseFlag = GPPermissionHandler.getFlagFromPermission(baseFlagPerm);
                 if (baseFlag == null) {
                     // invalid flag
@@ -393,9 +404,9 @@ public class ClaimFlagBase {
                     Text undefinedText = null;
                     if (hasPermission) {
                         undefinedText = Text.builder().append(
-                            Text.of(TextColors.AQUA, "[", TextColors.GOLD, "undefined", TextStyles.RESET, TextColors.AQUA, "]"))
-                            .onHover(TextActions.showText(Text.of(TextColors.GREEN, baseFlagPerm, TextColors.WHITE, " is currently not set.\nThe default claim value of ", TextColors.LIGHT_PURPLE, flagValue, TextColors.WHITE, " will be active until set.")))
-                            .onClick(TextActions.executeCallback(createFlagConsumer(src, claim, flagPermission, Tristate.fromBoolean(flagValue), source, flagType, FlagType.CLAIM, false))).build();
+                                Text.of(TextColors.AQUA, "[", TextColors.GOLD, "undefined", TextStyles.RESET, TextColors.AQUA, "]"))
+                                .onHover(TextActions.showText(Text.of(TextColors.GREEN, baseFlagPerm, TextColors.WHITE, " is currently not set.\nThe default claim value of ", TextColors.LIGHT_PURPLE, flagValue, TextColors.WHITE, " will be active until set.")))
+                                .onClick(TextActions.executeCallback(createFlagConsumer(src, claim, flagPermission, Tristate.fromBoolean(flagValue), source, flagType, FlagType.CLAIM, false))).build();
                     } else {
                         undefinedText = Text.builder().append(
                                 Text.of(TextColors.AQUA, "[", TextColors.GOLD, "undefined", TextStyles.RESET, TextColors.AQUA, "]"))
@@ -405,7 +416,7 @@ public class ClaimFlagBase {
                     final Text falseText = Text.of(TextColors.GRAY, getClickableText(src, claim, flagPermission, Tristate.UNDEFINED, Tristate.FALSE, source, flagType, FlagType.CLAIM, false));
                     flagText = Text.of(undefinedText, "  ", trueText, "  ", falseText);
                 }
-                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString()); 
+                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString());
                 flagText = Text.of(
                         baseFlagText, "  ",
                         flagText);
@@ -417,7 +428,7 @@ public class ClaimFlagBase {
                 Boolean flagValue = permissionEntry.getValue();
                 Text flagText = Text.of(TextColors.RED, getClickableText(src, claim, flagPermission, Tristate.fromBoolean(flagValue), source, FlagType.OVERRIDE));
                 Text currentText = flagList.get(flagPermission);
-                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 boolean customFlag = false;
                 Text hover = CommandHelper.getBaseFlagOverlayText(baseFlagPerm);
                 if (claim.isWilderness()) {
@@ -440,7 +451,7 @@ public class ClaimFlagBase {
         } else if (flagType == FlagType.INHERIT) {
             for (Map.Entry<String, ClaimClickData> permissionEntry : inheritPermissions.entrySet()) {
                 String flagPermission = permissionEntry.getKey();
-                final String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                final String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 final ClaimClickData claimClickData = permissionEntry.getValue();
                 final boolean flagValue = (boolean) claimClickData.value;
                 Text flagText = null;
@@ -476,7 +487,7 @@ public class ClaimFlagBase {
                             TextColors.GREEN, baseFlagPerm, "  "))
                             .onHover(TextActions.showText(CommandHelper.getBaseFlagOverlayText(baseFlagPerm))).build();
                 }
-                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString()); 
+                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString());
                 flagText = Text.of(
                         baseFlagText, "  ",
                         flagText);
@@ -487,7 +498,7 @@ public class ClaimFlagBase {
                 Text flagText = null;
                 String flagPermission = permissionEntry.getKey();
                 Boolean flagValue = permissionEntry.getValue();
-                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".",  "");
+                String baseFlagPerm = flagPermission.replace(GPPermissions.FLAG_BASE + ".", "");
                 if (!ClaimFlag.contains(baseFlagPerm)) {
                     continue;
                 }
@@ -502,7 +513,7 @@ public class ClaimFlagBase {
                 final Text trueText = Text.of(TextColors.GRAY, getClickableText(src, claim, flagPermission, Tristate.fromBoolean(flagValue), Tristate.TRUE, source, flagType, FlagType.DEFAULT, false));
                 final Text falseText = Text.of(TextColors.GRAY, getClickableText(src, claim, flagPermission, Tristate.fromBoolean(flagValue), Tristate.FALSE, source, flagType, FlagType.DEFAULT, false));
                 flagText = Text.of(trueText, "  ", falseText);
-                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString()); 
+                Text baseFlagText = getFlagText(flagPermission, baseFlag.toString());
                 flagText = Text.of(
                         baseFlagText, "  ",
                         flagText);
@@ -517,7 +528,7 @@ public class ClaimFlagBase {
         }
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         PaginationList.Builder paginationBuilder = paginationService.builder()
-                .title(claimFlagHead).padding(Text.of(TextStyles.STRIKETHROUGH,"-")).contents(textList);
+                .title(claimFlagHead).padding(Text.of(TextStyles.STRIKETHROUGH, "-")).contents(textList);
         final PaginationList paginationList = paginationBuilder.build();
         Integer activePage = 1;
         if (src instanceof Player) {
@@ -529,40 +540,6 @@ public class ClaimFlagBase {
             this.lastActiveFlagTypeMap.put(player.getUniqueId(), flagType);
         }
         paginationList.sendTo(src, activePage);
-    }
-
-    private static Text getFlagText(String flagPermission, String baseFlag) {
-        final String flagSource = GPPermissionHandler.getSourcePermission(flagPermission);
-        final String flagTarget = GPPermissionHandler.getTargetPermission(flagPermission);
-        Text sourceText = flagSource == null ? null : Text.of(TextColors.WHITE, "source=",TextColors.GREEN, flagSource);
-        Text targetText = flagTarget == null ? null : Text.of(TextColors.WHITE, "target=",TextColors.GREEN, flagTarget);
-        if (sourceText != null) {
-           /* if (targetText != null) {
-                sourceText = Text.of(sourceText, "  ");
-            } else {*/
-                sourceText = Text.of(sourceText, "\n");
-            //}
-        } else {
-            sourceText = Text.of();
-        }
-        if (targetText != null) {
-            targetText = Text.of(targetText);
-        } else {
-            targetText = Text.of();
-        }
-        Text baseFlagText = Text.of();
-        if (flagSource == null && flagTarget == null) {
-            baseFlagText = Text.builder().append(Text.of(TextColors.GREEN, baseFlag.toString(), " "))
-                .onHover(TextActions.showText(Text.of(sourceText, targetText))).build();
-        } else {
-            baseFlagText = Text.builder().append(Text.of(TextStyles.ITALIC, TextColors.YELLOW, baseFlag.toString(), " ", TextStyles.RESET))
-                    .onHover(TextActions.showText(Text.of(sourceText, targetText))).build();
-        }
-        final Text baseText = Text.builder().append(Text.of(
-                baseFlagText)).build();
-                //sourceText,
-                //targetText)).build();
-        return baseText;
     }
 
     private Consumer<CommandSource> createFlagConsumer(CommandSource src, GPClaim claim, String flagPermission, Tristate flagValue, String source, FlagType displayType, FlagType flagType, boolean toggleType) {
@@ -593,14 +570,14 @@ public class ClaimFlagBase {
                     }
                 }
                 claimContext = CommandHelper.validateCustomContext(src, claim, "default");
-            // Toggle CLAIM type
+                // Toggle CLAIM type
             } else if (flagType == FlagType.CLAIM) {
                 if (flagValue == Tristate.TRUE) {
                     newValue = Tristate.FALSE;
                 } else if (flagValue == Tristate.UNDEFINED) {
                     newValue = Tristate.TRUE;
                 }
-            // Toggle OVERRIDE type
+                // Toggle OVERRIDE type
             } else if (flagType == FlagType.OVERRIDE) {
                 if (flagValue == Tristate.TRUE) {
                     newValue = Tristate.FALSE;
@@ -703,5 +680,15 @@ public class ClaimFlagBase {
         return consumer -> {
             showFlagPermissions(src, claim, flagType, source);
         };
+    }
+
+    public enum FlagType {
+        ALL,
+        DEFAULT,
+        CLAIM,
+        OVERRIDE,
+        INHERIT,
+        GROUP,
+        PLAYER
     }
 }

@@ -31,8 +31,8 @@ import org.spongepowered.api.entity.living.player.Player;
 //applies a visualization for a player by sending him block change packets
 class VisualizationReversionTask implements Runnable {
 
-    private Player player;
-    private GPPlayerData playerData;
+    private final Player player;
+    private final GPPlayerData playerData;
 
     public VisualizationReversionTask(Player player, GPPlayerData playerData) {
         this.playerData = playerData;

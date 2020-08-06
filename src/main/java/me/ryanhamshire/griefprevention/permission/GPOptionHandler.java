@@ -54,7 +54,7 @@ public class GPOptionHandler {
         }
 
         // Handle global options (no context needed)
-        switch(option) {
+        switch (option) {
             case GPOptions.ABANDON_RETURN_RATIO_BASIC:
                 return playerData.optionAbandonReturnRatioBasic;
             case GPOptions.ABANDON_RETURN_RATIO_TOWN:
@@ -114,7 +114,7 @@ public class GPOptionHandler {
             return adminValue;
         }
 
-        switch(option) {
+        switch (option) {
             case GPOptions.MAX_CLAIM_SIZE_BASIC_X:
             case GPOptions.MAX_CLAIM_SIZE_BASIC_Y:
             case GPOptions.MAX_CLAIM_SIZE_BASIC_Z:
@@ -150,7 +150,7 @@ public class GPOptionHandler {
         }
 
         switch (type) {
-            case MAX_CLAIM_SIZE_X :
+            case MAX_CLAIM_SIZE_X:
                 if (claim.isTown()) {
                     return GPOptions.MAX_CLAIM_SIZE_TOWN_X;
                 }
@@ -158,7 +158,7 @@ public class GPOptionHandler {
                     return GPOptions.MAX_CLAIM_SIZE_SUBDIVISION_X;
                 }
                 return GPOptions.MAX_CLAIM_SIZE_BASIC_X;
-            case MAX_CLAIM_SIZE_Y :
+            case MAX_CLAIM_SIZE_Y:
                 if (claim.isTown()) {
                     return GPOptions.MAX_CLAIM_SIZE_TOWN_Y;
                 }
@@ -166,7 +166,7 @@ public class GPOptionHandler {
                     return GPOptions.MAX_CLAIM_SIZE_SUBDIVISION_Y;
                 }
                 return GPOptions.MAX_CLAIM_SIZE_BASIC_Y;
-            case MAX_CLAIM_SIZE_Z :
+            case MAX_CLAIM_SIZE_Z:
                 if (claim.isTown()) {
                     return GPOptions.MAX_CLAIM_SIZE_TOWN_Z;
                 }
@@ -174,7 +174,7 @@ public class GPOptionHandler {
                     return GPOptions.MAX_CLAIM_SIZE_SUBDIVISION_Z;
                 }
                 return GPOptions.MAX_CLAIM_SIZE_BASIC_Z;
-            case MIN_CLAIM_SIZE_X :
+            case MIN_CLAIM_SIZE_X:
                 if (claim.isTown()) {
                     return GPOptions.MIN_CLAIM_SIZE_TOWN_X;
                 }
@@ -182,7 +182,7 @@ public class GPOptionHandler {
                     return GPOptions.INVALID_OPTION;
                 }
                 return GPOptions.MIN_CLAIM_SIZE_BASIC_X;
-            case MIN_CLAIM_SIZE_Y :
+            case MIN_CLAIM_SIZE_Y:
                 if (claim.isTown()) {
                     return GPOptions.MIN_CLAIM_SIZE_TOWN_Y;
                 }
@@ -190,7 +190,7 @@ public class GPOptionHandler {
                     return GPOptions.INVALID_OPTION;
                 }
                 return GPOptions.MIN_CLAIM_SIZE_BASIC_Y;
-            case MIN_CLAIM_SIZE_Z :
+            case MIN_CLAIM_SIZE_Z:
                 if (claim.isTown()) {
                     return GPOptions.MIN_CLAIM_SIZE_TOWN_Z;
                 }
@@ -198,7 +198,7 @@ public class GPOptionHandler {
                     return GPOptions.INVALID_OPTION;
                 }
                 return GPOptions.MIN_CLAIM_SIZE_BASIC_Z;
-            case CLAIM_LIMIT :
+            case CLAIM_LIMIT:
                 if (claim.isTown()) {
                     return GPOptions.CREATE_CLAIM_LIMIT_TOWN;
                 }
@@ -206,7 +206,7 @@ public class GPOptionHandler {
                     return GPOptions.CREATE_CLAIM_LIMIT_SUBDIVISION;
                 }
                 return GPOptions.CREATE_CLAIM_LIMIT_BASIC;
-            case EXPIRATION_DAYS_KEEP :
+            case EXPIRATION_DAYS_KEEP:
                 if (claim.isTown()) {
                     return GPOptions.TAX_EXPIRATION_TOWN_DAYS_KEEP;
                 }
@@ -214,7 +214,7 @@ public class GPOptionHandler {
                     return GPOptions.TAX_EXPIRATION_SUBDIVISION_DAYS_KEEP;
                 }
                 return GPOptions.TAX_EXPIRATION_BASIC_DAYS_KEEP;
-            case TAX_EXPIRATION :
+            case TAX_EXPIRATION:
                 if (claim.isTown()) {
                     return GPOptions.TAX_EXPIRATION_TOWN;
                 }
@@ -222,7 +222,7 @@ public class GPOptionHandler {
                     return GPOptions.TAX_EXPIRATION_SUBDIVISION;
                 }
                 return GPOptions.TAX_EXPIRATION_BASIC;
-            case TAX_RATE :
+            case TAX_RATE:
                 if (claim.isTown()) {
                     return GPOptions.TAX_RATE_TOWN;
                 }
@@ -237,7 +237,7 @@ public class GPOptionHandler {
                 }
                 return GPOptions.TAX_RATE_BASIC;
 
-            default :
+            default:
                 return null;
         }
     }

@@ -29,11 +29,7 @@ import me.ryanhamshire.griefprevention.claim.GPClaim;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -42,9 +38,9 @@ public class DatabaseDataStore extends DataStore {
 
     private Connection databaseConnection = null;
 
-    private String databaseUrl;
-    private String userName;
-    private String password;
+    private final String databaseUrl;
+    private final String userName;
+    private final String password;
 
     DatabaseDataStore(String url, String userName, String password) throws Exception {
         this.databaseUrl = url;
@@ -443,7 +439,6 @@ public class DatabaseDataStore extends DataStore {
                 }
             } catch (SQLException e) {
             }
-            ;
         }
 
         this.databaseConnection = null;

@@ -52,22 +52,18 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class CommandClaimList implements CommandExecutor {
 
     private final ClaimType forcedType;
+    private final Cache<UUID, String> lastActiveClaimTypeMap = Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
+            .build();
     private boolean canListOthers;
     private boolean canListAdmin;
     private boolean displayOwned = true;
-    private final Cache<UUID, String> lastActiveClaimTypeMap = Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
-            .build();
 
     public CommandClaimList() {
         this.forcedType = null;
@@ -96,7 +92,7 @@ public class CommandClaimList implements CommandExecutor {
 
         if (user == null) {
             if (!(src instanceof Player)) {
-                GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.commandPlayerInvalid.toText());
+                GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Player " + player.getName() + " is not valid."));
                 return CommandResult.success();
             }
 
@@ -107,7 +103,7 @@ public class CommandClaimList implements CommandExecutor {
         }
 
         if (worldProperties == null || !GriefPreventionPlugin.instance.claimsEnabledForWorld(worldProperties)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.claimDisabledWorld.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "Land claims are disabled in this world."));
             return CommandResult.success();
         }
 
@@ -179,10 +175,10 @@ public class CommandClaimList implements CommandExecutor {
             }
         }
         if (src instanceof Player) {
-            final Player player = (Player) src;
+            final Player player = src;
             final String lastClaimType = this.lastActiveClaimTypeMap.getIfPresent(player.getUniqueId());
             final String currentType = type == null ? "ALL" : type.toString();
-            if (lastClaimType != null && !lastClaimType.equals(currentType.toString())) {
+            if (lastClaimType != null && !lastClaimType.equals(currentType)) {
                 PaginationUtils.resetActivePage(player.getUniqueId());
             }
         }
@@ -221,7 +217,7 @@ public class CommandClaimList implements CommandExecutor {
                 .onClick(TextActions.executeCallback(createClaimListConsumer(src, user, ClaimType.TOWN, worldProperties)))
                 .onHover(TextActions.showText(townShowText)).build();
         Text claimListHead = Text.builder().append(Text.of(
-                TextColors.AQUA," Displaying : ", ownedTypeText, "  ", allTypeText, "  ", adminTypeText, "  ", basicTypeText, "  ", subTypeText, "  ", townTypeText)).build();
+                TextColors.AQUA, " Displaying : ", ownedTypeText, "  ", allTypeText, "  ", adminTypeText, "  ", basicTypeText, "  ", subTypeText, "  ", townTypeText)).build();
         final int fillSize = 20 - (claimsTextList.size() + 2);
         for (int i = 0; i < fillSize; i++) {
             claimsTextList.add(Text.of(" "));
@@ -233,7 +229,7 @@ public class CommandClaimList implements CommandExecutor {
         final PaginationList paginationList = paginationBuilder.build();
         Integer activePage = 1;
         if (src instanceof Player) {
-            final Player player = (Player) src;
+            final Player player = src;
             activePage = PaginationUtils.getActivePage(player.getUniqueId());
             if (activePage == null) {
                 activePage = 1;
@@ -245,11 +241,7 @@ public class CommandClaimList implements CommandExecutor {
 
     private Consumer<CommandSource> createClaimListConsumer(Player src, User user, String type, WorldProperties worldProperties) {
         return consumer -> {
-            if (type.equalsIgnoreCase("ALL")) {
-                this.displayOwned = false;
-            } else {
-                this.displayOwned = true;
-            }
+            this.displayOwned = !type.equalsIgnoreCase("ALL");
             showClaimList(src, user, null, worldProperties);
         };
     }

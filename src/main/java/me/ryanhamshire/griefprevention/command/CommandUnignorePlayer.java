@@ -35,6 +35,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
 
 public class CommandUnignorePlayer implements CommandExecutor {
 
@@ -53,7 +54,7 @@ public class CommandUnignorePlayer implements CommandExecutor {
         final Boolean ignoreStatus = playerData.ignoredPlayers.get(targetPlayer.getUniqueId());
         if (ignoreStatus == null || ignoreStatus == true) {
             try {
-                throw new CommandException(GriefPreventionPlugin.instance.messageData.playerNotIgnoring.toText());
+                throw new CommandException(Text.of("You're not ignoring that player."));
             } catch (CommandException e) {
                 src.sendMessage(e.getText());
                 return CommandResult.success();
@@ -61,7 +62,7 @@ public class CommandUnignorePlayer implements CommandExecutor {
         }
 
         GriefPreventionPlugin.instance.setIgnoreStatus(player.getWorld(), player, targetPlayer, IgnoreMode.None);
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.playerUnignoreConfirmation.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of("You're no longer ignoring chat messages from that player."));
         return CommandResult.success();
     }
 }

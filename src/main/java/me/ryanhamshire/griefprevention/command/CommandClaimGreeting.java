@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
@@ -35,6 +34,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class CommandClaimGreeting implements CommandExecutor {
@@ -64,9 +64,7 @@ public class CommandClaimGreeting implements CommandExecutor {
             claim.getInternalClaimData().setGreeting(greeting);
         }
         claim.getInternalClaimData().setRequiresSave(true);
-        final Text message = GriefPreventionPlugin.instance.messageData.claimGreeting
-                .apply(ImmutableMap.of(
-                "greeting", greeting)).build();
+        final Text message = Text.of(TextColors.GREEN, "Set claim greeting to " + greeting + ".");
         GriefPreventionPlugin.sendMessage(src, message);
 
         return CommandResult.success();

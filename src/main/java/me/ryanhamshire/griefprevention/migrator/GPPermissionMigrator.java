@@ -29,7 +29,6 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.util.Tristate;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +36,15 @@ import java.util.function.Consumer;
 
 public class GPPermissionMigrator {
 
-    private static GPPermissionMigrator instance;
+    private static final GPPermissionMigrator instance;
+
+    static {
+        instance = new GPPermissionMigrator();
+    }
+
+    public static GPPermissionMigrator getInstance() {
+        return instance;
+    }
 
     public Consumer<Subject> migrateSubjectPermissions() {
         return subject -> {
@@ -69,13 +76,5 @@ public class GPPermissionMigrator {
                 GriefPreventionPlugin.instance.getLogger().info("Finished migration of subject '" + subject.getIdentifier() + "'\n");
             }
         });
-    }
-
-    public static GPPermissionMigrator getInstance() {
-        return instance;
-    }
-
-    static {
-        instance = new GPPermissionMigrator();
     }
 }

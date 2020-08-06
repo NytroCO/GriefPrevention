@@ -33,13 +33,15 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandClaimBank implements CommandExecutor {
 
     private boolean townOnly = false;
 
     public CommandClaimBank() {
-        
+
     }
 
     public CommandClaimBank(boolean townOnly) {
@@ -57,13 +59,13 @@ public class CommandClaimBank implements CommandExecutor {
         }
 
         if (!GriefPreventionPlugin.getActiveConfig(player.getWorld().getProperties()).getConfig().claim.bankTaxSystem) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimBankTaxSystemNotEnabled.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "The bank/tax system is not enabled. If you want it enabled, set 'bank-tax-system' to true in config."));
             return CommandResult.success();
         }
         GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAt(player.getLocation());
         if (this.townOnly) {
             if (!claim.isInTown()) {
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.townNotIn.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You are not in a town."));
                 return CommandResult.success();
             }
             claim = claim.getTownClaim();

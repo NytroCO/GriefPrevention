@@ -47,14 +47,7 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.common.bridge.world.DimensionTypeBridge;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,17 +57,17 @@ import java.util.UUID;
 //manages data stored in the file system
 public class FlatFileDataStore extends DataStore {
 
-    private final static Path migrationVersionFilePath = dataLayerFolderPath.resolve("_migrationVersion");
-    private final static Path schemaVersionFilePath = dataLayerFolderPath.resolve("_schemaVersion");
-    private final static Path worldsConfigFolderPath = dataLayerFolderPath.resolve("worlds");
     public final static Path claimDataPath = Paths.get("GriefPreventionData", "ClaimData");
     public final static Path claimTemplatePath = claimDataPath.resolve("Templates");
     public final static Path worldClaimDataPath = Paths.get("GriefPreventionData", "WorldClaim");
     public final static Path playerDataPath = Paths.get("GriefPreventionData", "PlayerData");
     public final static Path redProtectDataPath = GriefPreventionPlugin.instance.getConfigPath().getParent().resolve("RedProtect").resolve("data");
     public final static Map<UUID, Task> cleanupClaimTasks = Maps.newHashMap();
-    private final Path rootConfigPath = GriefPreventionPlugin.instance.getConfigPath().resolve("worlds");
+    private final static Path migrationVersionFilePath = dataLayerFolderPath.resolve("_migrationVersion");
+    private final static Path schemaVersionFilePath = dataLayerFolderPath.resolve("_schemaVersion");
+    private final static Path worldsConfigFolderPath = dataLayerFolderPath.resolve("worlds");
     public static Path rootWorldSavePath;
+    private final Path rootConfigPath = GriefPreventionPlugin.instance.getConfigPath().resolve("worlds");
     private int claimLoadCount = 0;
 
     public FlatFileDataStore() {
@@ -239,8 +232,8 @@ public class FlatFileDataStore extends DataStore {
         // Task must be cancelled before removing the claimWorldManager reference to avoid a memory leak
         Task cleanupTask = cleanupClaimTasks.get(worldProperties.getUniqueId());
         if (cleanupTask != null) {
-           cleanupTask.cancel();
-           cleanupClaimTasks.remove(worldProperties.getUniqueId());
+            cleanupTask.cancel();
+            cleanupClaimTasks.remove(worldProperties.getUniqueId());
         }
 
         claimWorldManager.unload();
@@ -284,7 +277,7 @@ public class FlatFileDataStore extends DataStore {
             }
 
             try {
-               this.loadClaim(file, worldProperties, claimId);
+                this.loadClaim(file, worldProperties, claimId);
             } catch (Exception e) {
                 GriefPreventionPlugin.instance.getLogger().error(file.getAbsolutePath() + " failed to load.");
                 e.printStackTrace();
@@ -298,7 +291,7 @@ public class FlatFileDataStore extends DataStore {
         final int migration2dRate = GriefPreventionPlugin.getGlobalConfig().getConfig().playerdata.migrateAreaRate;
         final int migration3dRate = GriefPreventionPlugin.getGlobalConfig().getConfig().playerdata.migrateVolumeRate;
         boolean migrate = false;
-        if (resetMigration || resetClaimData || (migration2dRate > -1 && GriefPreventionPlugin.CLAIM_BLOCK_SYSTEM == ClaimBlockSystem.AREA) 
+        if (resetMigration || resetClaimData || (migration2dRate > -1 && GriefPreventionPlugin.CLAIM_BLOCK_SYSTEM == ClaimBlockSystem.AREA)
                 || (migration3dRate > -1 && GriefPreventionPlugin.CLAIM_BLOCK_SYSTEM == ClaimBlockSystem.VOLUME)) {
             // load all player data if migrating
             migrate = true;

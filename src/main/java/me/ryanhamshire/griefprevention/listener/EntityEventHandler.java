@@ -26,12 +26,7 @@
 package me.ryanhamshire.griefprevention.listener;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.google.common.collect.ImmutableMap;
-import me.ryanhamshire.griefprevention.DataStore;
-import me.ryanhamshire.griefprevention.GPFlags;
-import me.ryanhamshire.griefprevention.GPPlayerData;
-import me.ryanhamshire.griefprevention.GPTimings;
-import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
+import me.ryanhamshire.griefprevention.*;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.api.claim.ClaimFlag;
 import me.ryanhamshire.griefprevention.api.claim.TrustType;
@@ -76,17 +71,14 @@ import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource
 import org.spongepowered.api.event.cause.entity.damage.source.IndirectEntityDamageSource;
 import org.spongepowered.api.event.cause.entity.teleport.TeleportType;
 import org.spongepowered.api.event.cause.entity.teleport.TeleportTypes;
-import org.spongepowered.api.event.entity.AttackEntityEvent;
-import org.spongepowered.api.event.entity.CollideEntityEvent;
-import org.spongepowered.api.event.entity.DamageEntityEvent;
-import org.spongepowered.api.event.entity.MoveEntityEvent;
-import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.event.entity.*;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -94,8 +86,6 @@ import org.spongepowered.api.world.explosion.Explosion;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.common.SpongeImplHooks;
 import org.spongepowered.common.bridge.OwnershipTrackedBridge;
-//import org.spongepowered.common.data.util.NbtDataUtil;
-import org.spongepowered.common.bridge.entity.EntityBridge;
 
 import java.lang.ref.WeakReference;
 import java.time.Instant;
@@ -104,6 +94,8 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
+
+//import org.spongepowered.common.data.util.NbtDataUtil;
 
 public class EntityEventHandler {
 
@@ -124,7 +116,7 @@ public class EntityEventHandler {
 
         GPTimings.ENTITY_EXPLOSION_PRE_EVENT.startTimingIfSync();
         Location<World> location = event.getExplosion().getLocation();
-        GPClaim claim =  GriefPreventionPlugin.instance.dataStore.getClaimAt(location);
+        GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAt(location);
         User user = CauseContextHelper.getEventUser(event);
         Object source = event.getSource();
         if (source instanceof Explosion) {
@@ -146,7 +138,7 @@ public class EntityEventHandler {
             result = GPPermissionHandler.getClaimPermission(event, location, claim, GPPermissions.EXPLOSION, source, location.getBlock(), user, true);
         }
 
-        if(result == Tristate.FALSE) {
+        if (result == Tristate.FALSE) {
             event.setCancelled(true);
             GPTimings.ENTITY_EXPLOSION_PRE_EVENT.stopTimingIfSync();
             return;
@@ -183,7 +175,7 @@ public class EntityEventHandler {
 
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
-            targetClaim =  GriefPreventionPlugin.instance.dataStore.getClaimAt(entity.getLocation(), targetClaim);
+            targetClaim = GriefPreventionPlugin.instance.dataStore.getClaimAt(entity.getLocation(), targetClaim);
             if (GPPermissionHandler.getClaimPermission(event, entity.getLocation(), targetClaim, GPPermissions.ENTITY_DAMAGE, source, entity, user) == Tristate.FALSE) {
                 iterator.remove();
             }
@@ -283,10 +275,7 @@ public class EntityEventHandler {
                             if (result != Tristate.UNDEFINED) {
                                 if (result == Tristate.TRUE) {
                                     // Check if item drop is allowed
-                                    if (GPPermissionHandler.getClaimPermission(event, location, targetClaim, permission, actualSource, entity, user, TrustType.ACCESSOR, true) == Tristate.FALSE) {
-                                        return false;
-                                    }
-                                    return true;
+                                    return GPPermissionHandler.getClaimPermission(event, location, targetClaim, permission, actualSource, entity, user, TrustType.ACCESSOR, true) != Tristate.FALSE;
                                 }
                                 return false;
                             }
@@ -294,10 +283,7 @@ public class EntityEventHandler {
                     }
                 }
 
-                if (GPPermissionHandler.getClaimPermission(event, entity.getLocation(), targetClaim, permission, actualSource, entity, user, TrustType.ACCESSOR, true) == Tristate.FALSE) {
-                    return false;
-                }
-                return true;
+                return GPPermissionHandler.getClaimPermission(event, entity.getLocation(), targetClaim, permission, actualSource, entity, user, TrustType.ACCESSOR, true) != Tristate.FALSE;
             }
         });
 
@@ -394,14 +380,8 @@ public class EntityEventHandler {
                     Optional<UUID> creatorUuid = targetEntity.getCreator();
                     if (creatorUuid.isPresent()) {
                         Optional<User> creator = Sponge.getGame().getServiceManager().provide(UserStorageService.class).get().get(creatorUuid.get());
-                        if (creator.isPresent() && !creator.get().getUniqueId().equals(sourceUser.getUniqueId())) {
-                            return true;
-                        }
-                    } else if (sourceUser.getUniqueId().equals(claim.getOwnerUniqueId())) {
-                        return true;
-                    }
-    
-                    return false;
+                        return creator.isPresent() && !creator.get().getUniqueId().equals(sourceUser.getUniqueId());
+                    } else return sourceUser.getUniqueId().equals(claim.getOwnerUniqueId());
                 } else {
                     if (targetEntity instanceof Player) {
                         if (SpongeImplHooks.isCreatureOfType((net.minecraft.entity.Entity) source, EnumCreatureType.MONSTER)) {
@@ -449,12 +429,12 @@ public class EntityEventHandler {
 
                 // otherwise if protecting spawning players
                 if (defenderData.pvpImmune) {
-                    GriefPreventionPlugin.sendMessage(attacker, GriefPreventionPlugin.instance.messageData.pvpDefenseless.toText());
+                    GriefPreventionPlugin.sendMessage(attacker, Text.of(TextColors.RED, "You can't injure defenseless players."));
                     return true;
                 }
 
                 if (attackerData.pvpImmune) {
-                    GriefPreventionPlugin.sendMessage(attacker, GriefPreventionPlugin.instance.messageData.pvpFightImmune.toText());
+                    GriefPreventionPlugin.sendMessage(attacker, Text.of(TextColors.RED, "You can't fight someone while you're protected from PvP."));
                     return true;
                 }
 
@@ -467,12 +447,12 @@ public class EntityEventHandler {
                         if (attackerClaim != null && !attackerData.inPvpCombat(defender.getWorld()) && attackerClaim.protectPlayersInClaim()) {
                             attackerData.lastClaim = new WeakReference<>(attackerClaim);
                             GPAttackPlayerEvent
-                                pvpEvent =
-                                new GPAttackPlayerEvent(attackerClaim, defender);
+                                    pvpEvent =
+                                    new GPAttackPlayerEvent(attackerClaim, defender);
                             Sponge.getEventManager().post(pvpEvent);
                             if (!pvpEvent.isCancelled()) {
                                 pvpEvent.setCancelled(true);
-                                GriefPreventionPlugin.sendMessage(attacker, GriefPreventionPlugin.instance.messageData.pvpPlayerSafeZone.toText());
+                                GriefPreventionPlugin.sendMessage(attacker, Text.of(TextColors.RED, "That player is in a PvP safe zone."));
                                 return true;
                             }
                         }
@@ -481,12 +461,12 @@ public class EntityEventHandler {
                         if (defenderClaim != null && !defenderData.inPvpCombat(defender.getWorld()) && defenderClaim.protectPlayersInClaim()) {
                             defenderData.lastClaim = new WeakReference<>(defenderClaim);
                             GPAttackPlayerEvent
-                                pvpEvent =
-                                new GPAttackPlayerEvent(defenderClaim, defender);
+                                    pvpEvent =
+                                    new GPAttackPlayerEvent(defenderClaim, defender);
                             Sponge.getEventManager().post(pvpEvent);
                             if (!pvpEvent.isCancelled()) {
                                 pvpEvent.setCancelled(true);
-                                GriefPreventionPlugin.sendMessage(attacker, GriefPreventionPlugin.instance.messageData.pvpPlayerSafeZone.toText());
+                                GriefPreventionPlugin.sendMessage(attacker, Text.of(TextColors.RED, "That player is in a PvP safe zone."));
                                 return true;
                             }
                         }
@@ -501,17 +481,13 @@ public class EntityEventHandler {
                     return false;
                 }
                 if (!claim.isPvpEnabled()) {
-                    GriefPreventionPlugin.sendMessage(attacker, GriefPreventionPlugin.instance.messageData.pvpPlayerSafeZone.toText());
+                    GriefPreventionPlugin.sendMessage(attacker, Text.of(TextColors.RED, "That player is in a PvP safe zone."));
                     return true;
                 }
             }
         }
 
-        if (GPPermissionHandler.getClaimPermission(event, targetEntity.getLocation(), claim, GPPermissions.ENTITY_DAMAGE, attacker, targetEntity, user, trustType, true) == Tristate.FALSE) {
-            return true;
-        }
-
-        return false;
+        return GPPermissionHandler.getClaimPermission(event, targetEntity.getLocation(), claim, GPPermissions.ENTITY_DAMAGE, attacker, targetEntity, user, trustType, true) == Tristate.FALSE;
     }
 
     @Listener(order = Order.POST)
@@ -657,10 +633,7 @@ public class EntityEventHandler {
                     return true;
                 }
 
-                if (GPPermissionHandler.getClaimPermission(event, item.getLocation(), targetClaim, GPPermissions.ITEM_DROP, entity, item, user, TrustType.ACCESSOR, true) == Tristate.FALSE) {
-                    return false;
-                }
-                return true;
+                return GPPermissionHandler.getClaimPermission(event, item.getLocation(), targetClaim, GPPermissions.ITEM_DROP, entity, item, user, TrustType.ACCESSOR, true) != Tristate.FALSE;
             }
         });
 
@@ -668,7 +641,7 @@ public class EntityEventHandler {
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onEntityMove(MoveEntityEvent event){
+    public void onEntityMove(MoveEntityEvent event) {
         if ((!GPFlags.ENTER_CLAIM && !GPFlags.EXIT_CLAIM) || event.getFromTransform().getLocation().getBlockPosition().equals(event.getToTransform().getLocation().getBlockPosition())) {
             return;
         }
@@ -739,7 +712,7 @@ public class EntityEventHandler {
         }
 
         if (GPFlags.ENTER_CLAIM && !enterBlacklisted && playerData != null && playerData.lastClaim != null) {
-            final GPClaim lastClaim = (GPClaim) playerData.lastClaim.get();
+            final GPClaim lastClaim = playerData.lastClaim.get();
             if (lastClaim != null && lastClaim != fromClaim) {
                 if (GPPermissionHandler.getClaimPermission(event, toLocation, toClaim, GPPermissions.ENTER_CLAIM, entity, entity, player, TrustType.ACCESSOR, false) == Tristate.FALSE) {
                     Location<World> claimCorner = lastClaim.lesserBoundaryCorner.setPosition(new Vector3d(toClaim.lesserBoundaryCorner.getX(), player.getLocation().getY(), toClaim.greaterBoundaryCorner.getZ()));
@@ -808,11 +781,7 @@ public class EntityEventHandler {
                         }
                     }
 
-                    if (toClaim.isInTown()) {
-                        playerData.inTown = true;
-                    } else {
-                        playerData.inTown = false;
-                    }
+                    playerData.inTown = toClaim.isInTown();
                 }
             }
 
@@ -840,11 +809,11 @@ public class EntityEventHandler {
                 final Text cancelMessage = gpEvent.getMessage().orElse(null);
                 if (exitCancelled) {
                     if (player != null && cancelMessage != null) {
-                        GriefPreventionPlugin.sendClaimDenyMessage(fromClaim, player, GriefPreventionPlugin.instance.messageData.permissionClaimExit.toText());
+                        GriefPreventionPlugin.sendClaimDenyMessage(fromClaim, player, Text.of(TextColors.RED, "You don't have permission to exit this claim."));
                     }
                 } else if (enterCancelled) {
                     if (player != null && cancelMessage != null) {
-                        GriefPreventionPlugin.sendClaimDenyMessage(toClaim, player, GriefPreventionPlugin.instance.messageData.permissionClaimEnter.toText());
+                        GriefPreventionPlugin.sendClaimDenyMessage(toClaim, player, Text.of(TextColors.RED, "You don't have permission to enter this claim."));
                     }
                 }
 
@@ -883,11 +852,7 @@ public class EntityEventHandler {
                     }
                 }
 
-                if (toClaim.isInTown()) {
-                    playerData.inTown = true;
-                } else {
-                    playerData.inTown = false;
-                }
+                playerData.inTown = toClaim.isInTown();
             }
         }
 
@@ -950,9 +915,7 @@ public class EntityEventHandler {
                     }
                 }
                 if (cancelled) {
-                    final Text message = GriefPreventionPlugin.instance.messageData.permissionPortalExit
-                            .apply(ImmutableMap.of(
-                            "owner", sourceClaim.getOwnerName())).build();
+                    final Text message = Text.of(TextColors.RED, "You can't use this portal because you don't have " + sourceClaim.getOwnerName() + "'s permission to build an exit portal in the destination land claim.");
                     if (player != null) {
                         GriefPreventionPlugin.sendMessage(player, message);
                     }
@@ -981,13 +944,11 @@ public class EntityEventHandler {
                     }
                 }
                 if (cancelled) {
-                    final Text message = GriefPreventionPlugin.instance.messageData.permissionPortalEnter
-                            .apply(ImmutableMap.of(
-                            "owner", toClaim.getOwnerName())).build();
+                    final Text message = Text.of(TextColors.RED, "You can't use this portal because you don't have " + toClaim.getOwnerName() + "'s permission to enter the destination land claim.");
                     if (player != null) {
                         GriefPreventionPlugin.sendMessage(player, message);
                     }
-    
+
                     if (type.equals(EntityTypes.ENDER_PEARL)) {
                         ((EntityPlayer) player).inventory.addItemStackToInventory(new net.minecraft.item.ItemStack(Items.ENDER_PEARL));
                     }
@@ -1022,11 +983,7 @@ public class EntityEventHandler {
         }
 
         if (playerData != null) {
-            if (toClaim.isTown()) {
-                playerData.inTown = true;
-            } else {
-                playerData.inTown = false;
-            }
+            playerData.inTown = toClaim.isTown();
         }
         // TODO
         /*if (event.getCause().first(PortalTeleportCause.class).isPresent()) {
@@ -1058,11 +1015,7 @@ public class EntityEventHandler {
             @Override
             public boolean test(Entity entity) {
                 // Avoid living entities breaking itemframes
-                if (isRootEntityItemFrame && entity instanceof EntityLiving) {
-                    return false;
-                }
-
-                return true;
+                return !isRootEntityItemFrame || !(entity instanceof EntityLiving);
             }
         });
         GPTimings.ENTITY_COLLIDE_EVENT.stopTimingIfSync();

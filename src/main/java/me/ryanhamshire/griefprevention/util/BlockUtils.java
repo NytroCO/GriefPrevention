@@ -70,17 +70,16 @@ public class BlockUtils {
 
     public static final Direction[] CARDINAL_SET = {
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
-        };
+    };
     public static final Direction[] ORDINAL_SET = {
             Direction.NORTH, Direction.NORTHEAST, Direction.EAST, Direction.SOUTHEAST,
             Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST,
-        };
+    };
+    public static final Map<Integer, BlockPosCache> ENTITY_BLOCK_CACHE = new Int2ObjectArrayMap<>();
     private static final int NUM_XZ_BITS = 4;
     private static final int NUM_SHORT_Y_BITS = 8;
     private static final short XZ_MASK = 0xF;
     private static final short Y_SHORT_MASK = 0xFF;
-
-    public static final Map<Integer, BlockPosCache> ENTITY_BLOCK_CACHE = new Int2ObjectArrayMap<>();
     private static final Map<BlockState, Integer> BLOCKSTATE_META_CACHE = Maps.newHashMap();
     private static final String locationStringDelimiter = ";";
 
@@ -146,24 +145,20 @@ public class BlockUtils {
         if (claim.isCuboid()) {
             inClaim = (
                     x >= lesserBoundaryCorner.getX() &&
-                    x <= greaterBoundaryCorner.getX() &&
-                    y >= lesserBoundaryCorner.getY()) &&
+                            x <= greaterBoundaryCorner.getX() &&
+                            y >= lesserBoundaryCorner.getY()) &&
                     y <= greaterBoundaryCorner.getY() &&
                     z >= lesserBoundaryCorner.getZ() &&
                     z <= greaterBoundaryCorner.getZ();
         } else {
             inClaim = (y >= lesserBoundaryCorner.getY()) &&
-                x >= lesserBoundaryCorner.getX() &&
-                x < greaterBoundaryCorner.getX() + 1 &&
-                z >= lesserBoundaryCorner.getZ() &&
-                z < greaterBoundaryCorner.getZ() + 1;
+                    x >= lesserBoundaryCorner.getX() &&
+                    x < greaterBoundaryCorner.getX() + 1 &&
+                    z >= lesserBoundaryCorner.getZ() &&
+                    z < greaterBoundaryCorner.getZ() + 1;
         }
 
-        if (!inClaim) {
-            return false;
-        }
-
-        return true;
+        return inClaim;
     }
 
     public static boolean clickedClaimCorner(GPClaim claim, Vector3i clickedPos) {
@@ -176,12 +171,8 @@ public class BlockUtils {
         int greaterX = claim.getGreaterBoundaryCorner().getBlockX();
         int greaterY = claim.getGreaterBoundaryCorner().getBlockY();
         int greaterZ = claim.getGreaterBoundaryCorner().getBlockZ();
-        if ((clickedX == lesserX || clickedX == greaterX) && (clickedZ == lesserZ || clickedZ == greaterZ)
-                && (!claim.isCuboid() || (clickedY == lesserY || clickedY == greaterY))) {
-            return true;
-        }
-
-        return false;
+        return (clickedX == lesserX || clickedX == greaterX) && (clickedZ == lesserZ || clickedZ == greaterZ)
+                && (!claim.isCuboid() || (clickedY == lesserY || clickedY == greaterY));
     }
 
     public static int getBlockStateMeta(BlockState state) {
@@ -219,27 +210,18 @@ public class BlockUtils {
         return (num & ~(bitsToReplace << (which * 4)) | (data << (which * 4)));
     }
 
-    private static void saveChunkData(ChunkProviderServer chunkProviderServer, Chunk chunkIn)
-    {
-        try
-        {
+    private static void saveChunkData(ChunkProviderServer chunkProviderServer, Chunk chunkIn) {
+        try {
             chunkIn.setLastSaveTime(chunkIn.getWorld().getTotalWorldTime());
             chunkProviderServer.chunkLoader.saveChunk(chunkIn.getWorld(), chunkIn);
-        }
-        catch (IOException ioexception)
-        {
+        } catch (IOException ioexception) {
             //LOGGER.error((String)"Couldn\'t save chunk", (Throwable)ioexception);
-        }
-        catch (MinecraftException minecraftexception)
-        {
+        } catch (MinecraftException minecraftexception) {
             //LOGGER.error((String)"Couldn\'t save chunk; already in use by another instance of Minecraft?", (Throwable)minecraftexception);
         }
-        try
-        {
+        try {
             chunkProviderServer.chunkLoader.saveExtraChunkData(chunkIn.getWorld(), chunkIn);
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             //LOGGER.error((String)"Couldn\'t save entities", (Throwable)exception);
         }
     }
@@ -253,8 +235,7 @@ public class BlockUtils {
             saveChunk = true;
         }
 
-        for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : chunk.getEntityLists())
-        {
+        for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : chunk.getEntityLists()) {
             chunk.getWorld().unloadEntities(classinheritancemultimap);
         }
 
@@ -269,7 +250,7 @@ public class BlockUtils {
             Vector3i neighborPosition = spongeChunk.getPosition().add(direction.asBlockOffset());
             ChunkProviderBridge spongeChunkProvider = (ChunkProviderBridge) mcWorld.getChunkProvider();
             net.minecraft.world.chunk.Chunk neighbor = spongeChunkProvider.bridge$getLoadedChunkWithoutMarkingActive(neighborPosition.getX(),
-                neighborPosition.getZ());
+                    neighborPosition.getZ());
             if (neighbor != null) {
                 int neighborIndex = directionToIndex(direction);
                 int oppositeNeighborIndex = directionToIndex(direction.getOpposite());
@@ -313,12 +294,12 @@ public class BlockUtils {
                 Vector3i neighborPosition = spongeChunk.getPosition().add(direction.asBlockOffset());
                 ChunkProviderBridge spongeChunkProvider = (ChunkProviderBridge) world.getChunkProvider();
                 net.minecraft.world.chunk.Chunk neighbor = spongeChunkProvider.bridge$getLoadedChunkWithoutMarkingActive(neighborPosition.getX(),
-                    neighborPosition.getZ());
+                        neighborPosition.getZ());
                 if (neighbor != null) {
                     int neighborIndex = directionToIndex(direction);
                     int oppositeNeighborIndex = directionToIndex(direction.getOpposite());
                     ((ChunkBridge) spongeChunk).bridge$setNeighborChunk(neighborIndex, neighbor);
-                    ((ChunkBridge) neighbor).bridge$setNeighborChunk(oppositeNeighborIndex, (net.minecraft.world.chunk.Chunk)(Object) chunk);
+                    ((ChunkBridge) neighbor).bridge$setNeighborChunk(oppositeNeighborIndex, (net.minecraft.world.chunk.Chunk) chunk);
                 }
             }
         }
@@ -375,7 +356,7 @@ public class BlockUtils {
                     int neighborIndex = directionToIndex(direction);
                     int oppositeNeighborIndex = directionToIndex(direction.getOpposite());
                     ((ChunkBridge) spongeChunk).bridge$setNeighborChunk(neighborIndex, neighbor);
-                    ((ChunkBridge) neighbor).bridge$setNeighborChunk(oppositeNeighborIndex, (net.minecraft.world.chunk.Chunk)(Object) chunk);
+                    ((ChunkBridge) neighbor).bridge$setNeighborChunk(oppositeNeighborIndex, (net.minecraft.world.chunk.Chunk) chunk);
                 }
             }
 
@@ -422,7 +403,7 @@ public class BlockUtils {
                 if (blockRayHit.getLocation().getBlockType() != BlockTypes.TALLGRASS) {
                     return Optional.of(blockRayHit.getLocation());
                 }
-            } else { 
+            } else {
                 if (blockRayHit.getLocation().getBlockType() != BlockTypes.AIR &&
                         blockRayHit.getLocation().getBlockType() != BlockTypes.TALLGRASS) {
                     return Optional.of(blockRayHit.getLocation());
@@ -444,9 +425,7 @@ public class BlockUtils {
         if (source instanceof LocatableBlock) {
             final LocatableBlock locatableBlock = (LocatableBlock) source;
             MatterProperty matterProperty = locatableBlock.getBlockState().getProperty(MatterProperty.class).orElse(null);
-            if (matterProperty != null && matterProperty.getValue() == MatterProperty.Matter.LIQUID) {
-                return true;
-            }
+            return matterProperty != null && matterProperty.getValue() == MatterProperty.Matter.LIQUID;
         }
         return false;
     }
@@ -474,7 +453,7 @@ public class BlockUtils {
                         if (claimsInChunk != null) {
                             for (Claim claim : claimsInChunk) {
                                 final GPClaim gpClaim = (GPClaim) claim;
-                                if (gpClaim.parent == null && !claims.contains(claim)) {
+                                if (gpClaim.parent == null) {
                                     claims.add(claim);
                                 }
                             }

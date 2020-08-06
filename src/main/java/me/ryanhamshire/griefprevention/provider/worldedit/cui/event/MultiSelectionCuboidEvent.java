@@ -36,9 +36,9 @@ public class MultiSelectionCuboidEvent implements CUIEvent {
 
     public MultiSelectionCuboidEvent(UUID uniqueId) {
         this.uniqueId = uniqueId;
-        this.parameters = new String[] {
+        this.parameters = new String[]{
                 String.valueOf(this.uniqueId)
-            };
+        };
     }
 
     @Override

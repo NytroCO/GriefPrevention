@@ -32,6 +32,7 @@ import org.spongepowered.api.scheduler.Scheduler;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,13 +42,13 @@ import java.util.regex.Pattern;
 
 public class CustomLogger {
 
+    private static final Pattern inlineFormatterPattern = Pattern.compile("�.");
     private final SimpleDateFormat timestampFormat = new SimpleDateFormat("HH:mm");
     private final SimpleDateFormat filenameFormat = new SimpleDateFormat("yyyy_MM_dd");
     private final String logFolderPath = DataStore.dataLayerFolderPath + File.separator + "Logs";
     private final int secondsBetweenWrites = 10;
-
     // stringbuilder is not thread safe, stringbuffer is
-    private StringBuffer queuedEntries = new StringBuffer();
+    private final StringBuffer queuedEntries = new StringBuffer();
 
     public CustomLogger() {
         // ensure log folder exists
@@ -68,8 +69,6 @@ public class CustomLogger {
                             .instance);
         }
     }
-
-    private static final Pattern inlineFormatterPattern = Pattern.compile("�.");
 
     public void addEntry(String entry, CustomLogEntryTypes entryType) {
         // if disabled, do nothing
@@ -103,11 +102,7 @@ public class CustomLogger {
         if (entryType == CustomLogEntryTypes.AdminActivity && !GriefPreventionPlugin.getGlobalConfig().getConfig().logging.loggingAdminActivity) {
             return false;
         }
-        if (entryType == CustomLogEntryTypes.Debug && !GriefPreventionPlugin.debugLogging) {
-            return false;
-        }
-
-        return true;
+        return entryType != CustomLogEntryTypes.Debug || GriefPreventionPlugin.debugLogging;
     }
 
     void writeEntries() {
@@ -123,7 +118,7 @@ public class CustomLogger {
             File logFile = new File(filepath);
 
             // dump content
-            Files.append(this.queuedEntries.toString(), logFile, Charset.forName("UTF-8"));
+            Files.append(this.queuedEntries.toString(), logFile, StandardCharsets.UTF_8);
 
             // in case of a failure to write the above due to exception,
             // the unwritten entries will remain the buffer for the next write

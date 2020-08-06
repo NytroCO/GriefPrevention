@@ -56,7 +56,7 @@ public class PlayerStorageData {
             }
 
             this.loader = HoconConfigurationLoader.builder().setPath(path).build();
-            this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(PlayerDataConfig.class).bindToNew();
+            this.configMapper = ObjectMapper.forClass(PlayerDataConfig.class).bindToNew();
 
             load();
             save();

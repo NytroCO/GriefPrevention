@@ -51,32 +51,32 @@ public class RestoreNatureProcessingTask implements Runnable {
 
     // world information captured from the main thread
     // will be updated and sent back to main thread to be applied to the world
-    private BlockSnapshot[][][] snapshots;
+    private final BlockSnapshot[][][] snapshots;
 
     // other information collected from the main thread.
     // not to be updated, only to be passed back to main thread to provide some
     // context about the operation
     private int miny;
-    private DimensionType environment;
-    private Location<World> lesserBoundaryCorner;
-    private Location<World> greaterBoundaryCorner;
+    private final DimensionType environment;
+    private final Location<World> lesserBoundaryCorner;
+    private final Location<World> greaterBoundaryCorner;
     // absolutely must not be accessed. not thread safe.
-    private Player player;
-    private BiomeType biome;
-    private boolean creativeMode;
-    private int seaLevel;
-    private boolean aggressiveMode;
+    private final Player player;
+    private final BiomeType biome;
+    private final boolean creativeMode;
+    private final int seaLevel;
+    private final boolean aggressiveMode;
 
     // two lists of materials
     // natural blocks which don't naturally hang in their air
-    private ArrayList<BlockType> notAllowedToHang;
+    private final ArrayList<BlockType> notAllowedToHang;
 
     // a "complete" list of player-placed blocks. MUST BE MAINTAINED as patches introduce more
-    private ArrayList<BlockType> playerBlocks;
+    private final ArrayList<BlockType> playerBlocks;
 
     public RestoreNatureProcessingTask(BlockSnapshot[][][] snapshots, int miny, DimensionType environment, BiomeType biome,
-            Location<World> lesserBoundaryCorner, Location<World> greaterBoundaryCorner, int seaLevel, boolean aggressiveMode, boolean creativeMode,
-            Player player) {
+                                       Location<World> lesserBoundaryCorner, Location<World> greaterBoundaryCorner, int seaLevel, boolean aggressiveMode, boolean creativeMode,
+                                       Player player) {
         this.snapshots = snapshots;
         this.miny = miny;
         if (this.miny < 0) {
@@ -126,6 +126,134 @@ public class RestoreNatureProcessingTask implements Runnable {
             this.playerBlocks.add(BlockTypes.LOG2);
             this.playerBlocks.add(BlockTypes.VINE);
         }
+    }
+
+    public static ArrayList<BlockType> getPlayerBlocks(DimensionType environment, BiomeType biome) {
+        // NOTE on this list. why not make a list of natural blocks?
+        // answer: better to leave a few player blocks than to remove too many
+        // natural blocks. remember we're "restoring nature"
+        // a few extra player blocks can be manually removed, but it will be
+        // impossible to guess exactly which natural materials to use in manual
+        // repair of an overzealous block removal
+
+        // TODO : add mod support
+        ArrayList<BlockType> playerBlocks = new ArrayList<BlockType>();
+
+        playerBlocks.add(BlockTypes.FIRE);
+        playerBlocks.add(BlockTypes.BED);
+        playerBlocks.add(BlockTypes.PLANKS);
+        playerBlocks.add(BlockTypes.BOOKSHELF);
+        playerBlocks.add(BlockTypes.BREWING_STAND);
+        playerBlocks.add(BlockTypes.BRICK_BLOCK);
+        playerBlocks.add(BlockTypes.COBBLESTONE);
+        playerBlocks.add(BlockTypes.GLASS);
+        playerBlocks.add(BlockTypes.LAPIS_BLOCK);
+        playerBlocks.add(BlockTypes.DISPENSER);
+        playerBlocks.add(BlockTypes.NOTEBLOCK);
+        playerBlocks.add(BlockTypes.RAIL);
+        playerBlocks.add(BlockTypes.DETECTOR_RAIL);
+        playerBlocks.add(BlockTypes.STICKY_PISTON);
+        playerBlocks.add(BlockTypes.PISTON);
+        playerBlocks.add(BlockTypes.PISTON_EXTENSION);
+        playerBlocks.add(BlockTypes.WOOL);
+        playerBlocks.add(BlockTypes.PISTON_HEAD);
+        playerBlocks.add(BlockTypes.GOLD_BLOCK);
+        playerBlocks.add(BlockTypes.IRON_BLOCK);
+        playerBlocks.add(BlockTypes.DOUBLE_STONE_SLAB);
+        playerBlocks.add(BlockTypes.STONE_SLAB);
+        playerBlocks.add(BlockTypes.WHEAT);
+        playerBlocks.add(BlockTypes.TNT);
+        playerBlocks.add(BlockTypes.MOSSY_COBBLESTONE);
+        playerBlocks.add(BlockTypes.TORCH);
+        playerBlocks.add(BlockTypes.FIRE);
+        playerBlocks.add(BlockTypes.OAK_STAIRS);
+        playerBlocks.add(BlockTypes.CHEST);
+        playerBlocks.add(BlockTypes.REDSTONE_WIRE);
+        playerBlocks.add(BlockTypes.DIAMOND_BLOCK);
+        playerBlocks.add(BlockTypes.CRAFTING_TABLE);
+        playerBlocks.add(BlockTypes.FURNACE);
+        playerBlocks.add(BlockTypes.LIT_FURNACE);
+        playerBlocks.add(BlockTypes.WOODEN_DOOR);
+        playerBlocks.add(BlockTypes.STANDING_SIGN);
+        playerBlocks.add(BlockTypes.LADDER);
+        playerBlocks.add(BlockTypes.RAIL);
+        playerBlocks.add(BlockTypes.STONE_STAIRS);
+        playerBlocks.add(BlockTypes.WALL_SIGN);
+        playerBlocks.add(BlockTypes.STONE_PRESSURE_PLATE);
+        playerBlocks.add(BlockTypes.LEVER);
+        playerBlocks.add(BlockTypes.IRON_DOOR);
+        playerBlocks.add(BlockTypes.WOODEN_PRESSURE_PLATE);
+        playerBlocks.add(BlockTypes.REDSTONE_TORCH);
+        playerBlocks.add(BlockTypes.UNLIT_REDSTONE_TORCH);
+        playerBlocks.add(BlockTypes.STONE_BUTTON);
+        playerBlocks.add(BlockTypes.SNOW);
+        playerBlocks.add(BlockTypes.JUKEBOX);
+        playerBlocks.add(BlockTypes.FENCE);
+        playerBlocks.add(BlockTypes.PORTAL);
+        playerBlocks.add(BlockTypes.LIT_PUMPKIN);
+        playerBlocks.add(BlockTypes.CAKE);
+        playerBlocks.add(BlockTypes.UNPOWERED_REPEATER);
+        playerBlocks.add(BlockTypes.POWERED_REPEATER);
+        playerBlocks.add(BlockTypes.TRAPDOOR);
+        playerBlocks.add(BlockTypes.STONEBRICK);
+        playerBlocks.add(BlockTypes.BROWN_MUSHROOM_BLOCK);
+        playerBlocks.add(BlockTypes.RED_MUSHROOM_BLOCK);
+        playerBlocks.add(BlockTypes.IRON_BARS);
+        playerBlocks.add(BlockTypes.GLASS_PANE);
+        playerBlocks.add(BlockTypes.MELON_STEM);
+        playerBlocks.add(BlockTypes.FENCE_GATE);
+        playerBlocks.add(BlockTypes.BRICK_STAIRS);
+        playerBlocks.add(BlockTypes.STONE_BRICK_STAIRS);
+        playerBlocks.add(BlockTypes.ENCHANTING_TABLE);
+        playerBlocks.add(BlockTypes.BREWING_STAND);
+        playerBlocks.add(BlockTypes.CAULDRON);
+        playerBlocks.add(BlockTypes.WEB);
+        playerBlocks.add(BlockTypes.SPONGE);
+        playerBlocks.add(BlockTypes.GRAVEL);
+        playerBlocks.add(BlockTypes.EMERALD_BLOCK);
+        playerBlocks.add(BlockTypes.SANDSTONE);
+        playerBlocks.add(BlockTypes.WOODEN_SLAB);
+        playerBlocks.add(BlockTypes.DOUBLE_WOODEN_SLAB);
+        playerBlocks.add(BlockTypes.ENDER_CHEST);
+        playerBlocks.add(BlockTypes.SANDSTONE_STAIRS);
+        playerBlocks.add(BlockTypes.SPRUCE_STAIRS);
+        playerBlocks.add(BlockTypes.JUNGLE_STAIRS);
+        playerBlocks.add(BlockTypes.COMMAND_BLOCK);
+        playerBlocks.add(BlockTypes.BEACON);
+        playerBlocks.add(BlockTypes.COBBLESTONE_WALL);
+        playerBlocks.add(BlockTypes.FLOWER_POT);
+        playerBlocks.add(BlockTypes.CARROTS);
+        playerBlocks.add(BlockTypes.POTATOES);
+        playerBlocks.add(BlockTypes.WOODEN_BUTTON);
+        playerBlocks.add(BlockTypes.SKULL);
+        playerBlocks.add(BlockTypes.ANVIL);
+
+        // these are unnatural in the standard world, but not in the nether
+        if (environment.equals(DimensionTypes.NETHER)) {
+            playerBlocks.add(BlockTypes.NETHERRACK);
+            playerBlocks.add(BlockTypes.SOUL_SAND);
+            playerBlocks.add(BlockTypes.GLOWSTONE);
+            playerBlocks.add(BlockTypes.NETHER_BRICK);
+            playerBlocks.add(BlockTypes.NETHER_BRICK_FENCE);
+            playerBlocks.add(BlockTypes.NETHER_BRICK_STAIRS);
+        }
+
+        // these are unnatural in the standard and nether worlds, but not in the end
+        if (environment.equals(DimensionTypes.THE_END)) {
+            playerBlocks.add(BlockTypes.OBSIDIAN);
+            playerBlocks.add(BlockTypes.END_STONE);
+            playerBlocks.add(BlockTypes.END_PORTAL_FRAME);
+        }
+
+        //these are unnatural in sandy biomes, but not elsewhere
+        if (biome == BiomeTypes.DESERT || biome == BiomeTypes.DESERT_HILLS || biome == BiomeTypes.BEACH ||
+                !environment.equals(DimensionTypes.OVERWORLD)) {
+            playerBlocks.add(BlockTypes.LEAVES);
+            playerBlocks.add(BlockTypes.LOG);
+            playerBlocks.add(BlockTypes.LOG2);
+        }
+
+        return playerBlocks;
     }
 
     @Override
@@ -588,133 +716,5 @@ public class RestoreNatureProcessingTask implements Runnable {
         }
 
         return y;
-    }
-
-    public static ArrayList<BlockType> getPlayerBlocks(DimensionType environment, BiomeType biome) {
-        // NOTE on this list. why not make a list of natural blocks?
-        // answer: better to leave a few player blocks than to remove too many
-        // natural blocks. remember we're "restoring nature"
-        // a few extra player blocks can be manually removed, but it will be
-        // impossible to guess exactly which natural materials to use in manual
-        // repair of an overzealous block removal
-
-        // TODO : add mod support
-        ArrayList<BlockType> playerBlocks = new ArrayList<BlockType>();
-
-        playerBlocks.add(BlockTypes.FIRE);
-        playerBlocks.add(BlockTypes.BED);
-        playerBlocks.add(BlockTypes.PLANKS);
-        playerBlocks.add(BlockTypes.BOOKSHELF);
-        playerBlocks.add(BlockTypes.BREWING_STAND);
-        playerBlocks.add(BlockTypes.BRICK_BLOCK);
-        playerBlocks.add(BlockTypes.COBBLESTONE);
-        playerBlocks.add(BlockTypes.GLASS);
-        playerBlocks.add(BlockTypes.LAPIS_BLOCK);
-        playerBlocks.add(BlockTypes.DISPENSER);
-        playerBlocks.add(BlockTypes.NOTEBLOCK);
-        playerBlocks.add(BlockTypes.RAIL);
-        playerBlocks.add(BlockTypes.DETECTOR_RAIL);
-        playerBlocks.add(BlockTypes.STICKY_PISTON);
-        playerBlocks.add(BlockTypes.PISTON);
-        playerBlocks.add(BlockTypes.PISTON_EXTENSION);
-        playerBlocks.add(BlockTypes.WOOL);
-        playerBlocks.add(BlockTypes.PISTON_HEAD);
-        playerBlocks.add(BlockTypes.GOLD_BLOCK);
-        playerBlocks.add(BlockTypes.IRON_BLOCK);
-        playerBlocks.add(BlockTypes.DOUBLE_STONE_SLAB);
-        playerBlocks.add(BlockTypes.STONE_SLAB);
-        playerBlocks.add(BlockTypes.WHEAT);
-        playerBlocks.add(BlockTypes.TNT);
-        playerBlocks.add(BlockTypes.MOSSY_COBBLESTONE);
-        playerBlocks.add(BlockTypes.TORCH);
-        playerBlocks.add(BlockTypes.FIRE);
-        playerBlocks.add(BlockTypes.OAK_STAIRS);
-        playerBlocks.add(BlockTypes.CHEST);
-        playerBlocks.add(BlockTypes.REDSTONE_WIRE);
-        playerBlocks.add(BlockTypes.DIAMOND_BLOCK);
-        playerBlocks.add(BlockTypes.CRAFTING_TABLE);
-        playerBlocks.add(BlockTypes.FURNACE);
-        playerBlocks.add(BlockTypes.LIT_FURNACE);
-        playerBlocks.add(BlockTypes.WOODEN_DOOR);
-        playerBlocks.add(BlockTypes.STANDING_SIGN);
-        playerBlocks.add(BlockTypes.LADDER);
-        playerBlocks.add(BlockTypes.RAIL);
-        playerBlocks.add(BlockTypes.STONE_STAIRS);
-        playerBlocks.add(BlockTypes.WALL_SIGN);
-        playerBlocks.add(BlockTypes.STONE_PRESSURE_PLATE);
-        playerBlocks.add(BlockTypes.LEVER);
-        playerBlocks.add(BlockTypes.IRON_DOOR);
-        playerBlocks.add(BlockTypes.WOODEN_PRESSURE_PLATE);
-        playerBlocks.add(BlockTypes.REDSTONE_TORCH);
-        playerBlocks.add(BlockTypes.UNLIT_REDSTONE_TORCH);
-        playerBlocks.add(BlockTypes.STONE_BUTTON);
-        playerBlocks.add(BlockTypes.SNOW);
-        playerBlocks.add(BlockTypes.JUKEBOX);
-        playerBlocks.add(BlockTypes.FENCE);
-        playerBlocks.add(BlockTypes.PORTAL);
-        playerBlocks.add(BlockTypes.LIT_PUMPKIN);
-        playerBlocks.add(BlockTypes.CAKE);
-        playerBlocks.add(BlockTypes.UNPOWERED_REPEATER);
-        playerBlocks.add(BlockTypes.POWERED_REPEATER);
-        playerBlocks.add(BlockTypes.TRAPDOOR);
-        playerBlocks.add(BlockTypes.STONEBRICK);
-        playerBlocks.add(BlockTypes.BROWN_MUSHROOM_BLOCK);
-        playerBlocks.add(BlockTypes.RED_MUSHROOM_BLOCK);
-        playerBlocks.add(BlockTypes.IRON_BARS);
-        playerBlocks.add(BlockTypes.GLASS_PANE);
-        playerBlocks.add(BlockTypes.MELON_STEM);
-        playerBlocks.add(BlockTypes.FENCE_GATE);
-        playerBlocks.add(BlockTypes.BRICK_STAIRS);
-        playerBlocks.add(BlockTypes.STONE_BRICK_STAIRS);
-        playerBlocks.add(BlockTypes.ENCHANTING_TABLE);
-        playerBlocks.add(BlockTypes.BREWING_STAND);
-        playerBlocks.add(BlockTypes.CAULDRON);
-        playerBlocks.add(BlockTypes.WEB);
-        playerBlocks.add(BlockTypes.SPONGE);
-        playerBlocks.add(BlockTypes.GRAVEL);
-        playerBlocks.add(BlockTypes.EMERALD_BLOCK);
-        playerBlocks.add(BlockTypes.SANDSTONE);
-        playerBlocks.add(BlockTypes.WOODEN_SLAB);
-        playerBlocks.add(BlockTypes.DOUBLE_WOODEN_SLAB);
-        playerBlocks.add(BlockTypes.ENDER_CHEST);
-        playerBlocks.add(BlockTypes.SANDSTONE_STAIRS);
-        playerBlocks.add(BlockTypes.SPRUCE_STAIRS);
-        playerBlocks.add(BlockTypes.JUNGLE_STAIRS);
-        playerBlocks.add(BlockTypes.COMMAND_BLOCK);
-        playerBlocks.add(BlockTypes.BEACON);
-        playerBlocks.add(BlockTypes.COBBLESTONE_WALL);
-        playerBlocks.add(BlockTypes.FLOWER_POT);
-        playerBlocks.add(BlockTypes.CARROTS);
-        playerBlocks.add(BlockTypes.POTATOES);
-        playerBlocks.add(BlockTypes.WOODEN_BUTTON);
-        playerBlocks.add(BlockTypes.SKULL);
-        playerBlocks.add(BlockTypes.ANVIL);
-
-        // these are unnatural in the standard world, but not in the nether
-        if (environment.equals(DimensionTypes.NETHER)) {
-            playerBlocks.add(BlockTypes.NETHERRACK);
-            playerBlocks.add(BlockTypes.SOUL_SAND);
-            playerBlocks.add(BlockTypes.GLOWSTONE);
-            playerBlocks.add(BlockTypes.NETHER_BRICK);
-            playerBlocks.add(BlockTypes.NETHER_BRICK_FENCE);
-            playerBlocks.add(BlockTypes.NETHER_BRICK_STAIRS);
-        }
-
-        // these are unnatural in the standard and nether worlds, but not in the end
-        if (environment.equals(DimensionTypes.THE_END)) {
-            playerBlocks.add(BlockTypes.OBSIDIAN);
-            playerBlocks.add(BlockTypes.END_STONE);
-            playerBlocks.add(BlockTypes.END_PORTAL_FRAME);
-        }
-
-        //these are unnatural in sandy biomes, but not elsewhere 
-        if (biome == BiomeTypes.DESERT || biome == BiomeTypes.DESERT_HILLS || biome == BiomeTypes.BEACH ||
-                !environment.equals(DimensionTypes.OVERWORLD)) {
-            playerBlocks.add(BlockTypes.LEAVES);
-            playerBlocks.add(BlockTypes.LOG);
-            playerBlocks.add(BlockTypes.LOG2);
-        }
-
-        return playerBlocks;
     }
 }

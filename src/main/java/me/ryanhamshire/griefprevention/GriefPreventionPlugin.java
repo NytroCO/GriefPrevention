@@ -25,16 +25,6 @@
  */
 package me.ryanhamshire.griefprevention;
 
-import static org.spongepowered.api.command.args.GenericArguments.choices;
-import static org.spongepowered.api.command.args.GenericArguments.doubleNum;
-import static org.spongepowered.api.command.args.GenericArguments.integer;
-import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.command.args.GenericArguments.optional;
-import static org.spongepowered.api.command.args.GenericArguments.player;
-import static org.spongepowered.api.command.args.GenericArguments.playerOrSource;
-import static org.spongepowered.api.command.args.GenericArguments.string;
-import static org.spongepowered.api.command.args.GenericArguments.user;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -46,83 +36,12 @@ import me.ryanhamshire.griefprevention.claim.ClaimContextCalculator;
 import me.ryanhamshire.griefprevention.claim.ClaimsMode;
 import me.ryanhamshire.griefprevention.claim.GPClaim;
 import me.ryanhamshire.griefprevention.claim.GPClaimManager;
-import me.ryanhamshire.griefprevention.command.CommandAccessTrust;
-import me.ryanhamshire.griefprevention.command.CommandAdjustBonusClaimBlocks;
-import me.ryanhamshire.griefprevention.command.CommandClaimAbandon;
-import me.ryanhamshire.griefprevention.command.CommandClaimAbandonAll;
-import me.ryanhamshire.griefprevention.command.CommandClaimAdmin;
-import me.ryanhamshire.griefprevention.command.CommandClaimBank;
-import me.ryanhamshire.griefprevention.command.CommandClaimBasic;
-import me.ryanhamshire.griefprevention.command.CommandClaimBook;
-import me.ryanhamshire.griefprevention.command.CommandClaimBuy;
-import me.ryanhamshire.griefprevention.command.CommandClaimBuyBlocks;
-import me.ryanhamshire.griefprevention.command.CommandClaimClear;
-import me.ryanhamshire.griefprevention.command.CommandClaimCuboid;
-import me.ryanhamshire.griefprevention.command.CommandClaimDelete;
-import me.ryanhamshire.griefprevention.command.CommandClaimDeleteAll;
-import me.ryanhamshire.griefprevention.command.CommandClaimDeleteAllAdmin;
-import me.ryanhamshire.griefprevention.command.CommandClaimFarewell;
-import me.ryanhamshire.griefprevention.command.CommandClaimFlag;
-import me.ryanhamshire.griefprevention.command.CommandClaimFlagDebug;
-import me.ryanhamshire.griefprevention.command.CommandClaimFlagGroup;
-import me.ryanhamshire.griefprevention.command.CommandClaimFlagPlayer;
-import me.ryanhamshire.griefprevention.command.CommandClaimFlagReset;
-import me.ryanhamshire.griefprevention.command.CommandClaimGreeting;
-import me.ryanhamshire.griefprevention.command.CommandClaimIgnore;
-import me.ryanhamshire.griefprevention.command.CommandClaimInfo;
-import me.ryanhamshire.griefprevention.command.CommandClaimInherit;
-import me.ryanhamshire.griefprevention.command.CommandClaimList;
-import me.ryanhamshire.griefprevention.command.CommandClaimName;
-import me.ryanhamshire.griefprevention.command.CommandClaimOption;
-import me.ryanhamshire.griefprevention.command.CommandClaimOptionGroup;
-import me.ryanhamshire.griefprevention.command.CommandClaimOptionPlayer;
-import me.ryanhamshire.griefprevention.command.CommandClaimPermissionGroup;
-import me.ryanhamshire.griefprevention.command.CommandClaimPermissionPlayer;
-import me.ryanhamshire.griefprevention.command.CommandClaimSell;
-import me.ryanhamshire.griefprevention.command.CommandClaimSellBlocks;
-import me.ryanhamshire.griefprevention.command.CommandClaimSetSpawn;
-import me.ryanhamshire.griefprevention.command.CommandClaimSpawn;
-import me.ryanhamshire.griefprevention.command.CommandClaimSubdivide;
-import me.ryanhamshire.griefprevention.command.CommandClaimTown;
-import me.ryanhamshire.griefprevention.command.CommandClaimTransfer;
-import me.ryanhamshire.griefprevention.command.CommandClaimWorldEdit;
-import me.ryanhamshire.griefprevention.command.CommandContainerTrust;
-import me.ryanhamshire.griefprevention.command.CommandDebug;
-import me.ryanhamshire.griefprevention.command.CommandGivePet;
-import me.ryanhamshire.griefprevention.command.CommandGpReload;
-import me.ryanhamshire.griefprevention.command.CommandGpVersion;
-import me.ryanhamshire.griefprevention.command.CommandIgnorePlayer;
-import me.ryanhamshire.griefprevention.command.CommandIgnoredPlayerList;
-import me.ryanhamshire.griefprevention.command.CommandPermissionTrust;
-import me.ryanhamshire.griefprevention.command.CommandPlayerInfo;
-import me.ryanhamshire.griefprevention.command.CommandRestoreNature;
-import me.ryanhamshire.griefprevention.command.CommandRestoreNatureAggressive;
-import me.ryanhamshire.griefprevention.command.CommandRestoreNatureFill;
-import me.ryanhamshire.griefprevention.command.CommandSeparate;
-import me.ryanhamshire.griefprevention.command.CommandSetAccruedClaimBlocks;
-import me.ryanhamshire.griefprevention.command.CommandSoftMute;
-import me.ryanhamshire.griefprevention.command.CommandTownChat;
-import me.ryanhamshire.griefprevention.command.CommandTownTag;
-import me.ryanhamshire.griefprevention.command.CommandTrust;
-import me.ryanhamshire.griefprevention.command.CommandTrustAll;
-import me.ryanhamshire.griefprevention.command.CommandTrustList;
-import me.ryanhamshire.griefprevention.command.CommandUnignorePlayer;
-import me.ryanhamshire.griefprevention.command.CommandUnlockDrops;
-import me.ryanhamshire.griefprevention.command.CommandUnseparate;
-import me.ryanhamshire.griefprevention.command.CommandUntrust;
-import me.ryanhamshire.griefprevention.command.CommandUntrustAll;
+import me.ryanhamshire.griefprevention.command.*;
 import me.ryanhamshire.griefprevention.configuration.GriefPreventionConfig;
-import me.ryanhamshire.griefprevention.configuration.MessageDataConfig;
-import me.ryanhamshire.griefprevention.configuration.MessageStorage;
 import me.ryanhamshire.griefprevention.configuration.category.BlacklistCategory;
 import me.ryanhamshire.griefprevention.configuration.type.ConfigBase;
 import me.ryanhamshire.griefprevention.configuration.type.GlobalConfig;
-import me.ryanhamshire.griefprevention.listener.BlockEventHandler;
-import me.ryanhamshire.griefprevention.listener.EntityEventHandler;
-import me.ryanhamshire.griefprevention.listener.MCClansEventHandler;
-import me.ryanhamshire.griefprevention.listener.NucleusEventHandler;
-import me.ryanhamshire.griefprevention.listener.PlayerEventHandler;
-import me.ryanhamshire.griefprevention.listener.WorldEventHandler;
+import me.ryanhamshire.griefprevention.listener.*;
 import me.ryanhamshire.griefprevention.logging.CustomLogEntryTypes;
 import me.ryanhamshire.griefprevention.logging.CustomLogger;
 import me.ryanhamshire.griefprevention.migrator.GPPermissionMigrator;
@@ -134,11 +53,7 @@ import me.ryanhamshire.griefprevention.provider.GPApiProvider;
 import me.ryanhamshire.griefprevention.provider.MCClansApiProvider;
 import me.ryanhamshire.griefprevention.provider.NucleusApiProvider;
 import me.ryanhamshire.griefprevention.provider.WorldEditApiProvider;
-import me.ryanhamshire.griefprevention.task.CleanupUnusedClaimsTask;
-import me.ryanhamshire.griefprevention.task.DeliverClaimBlocksTask;
-import me.ryanhamshire.griefprevention.task.IgnoreLoaderThread;
-import me.ryanhamshire.griefprevention.task.PvPImmunityValidationTask;
-import me.ryanhamshire.griefprevention.task.SendPlayerMessageTask;
+import me.ryanhamshire.griefprevention.task.*;
 import me.ryanhamshire.griefprevention.util.BlockUtils;
 import me.ryanhamshire.griefprevention.util.PlayerUtils;
 import net.minecraft.entity.EnumCreatureType;
@@ -188,8 +103,6 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextTemplate;
-import org.spongepowered.api.text.TextTemplateArgumentException;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Chunk;
@@ -204,105 +117,81 @@ import org.spongepowered.common.registry.RegistryHelper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.spongepowered.api.command.args.GenericArguments.*;
+
 @Plugin(id = "griefprevention", name = "GriefPrevention", version = "4.3.0", description = "This plugin is designed to prevent all forms of grief.")
 public class GriefPreventionPlugin {
 
-    // for convenience, a reference to the instance of this plugin
-    public static GriefPreventionPlugin instance;
     public static final String MOD_ID = "GriefPrevention";
     public static final EventContextKey<GriefPreventionPlugin> PLUGIN_CONTEXT = EventContextKey.builder(GriefPreventionPlugin.class)
-        .name(MOD_ID)
-        .id(MOD_ID)
-        .build();
+            .name(MOD_ID)
+            .id(MOD_ID)
+            .build();
     public static final String API_VERSION = GriefPreventionPlugin.class.getPackage().getSpecificationVersion();
     public static final String IMPLEMENTATION_NAME = GriefPreventionPlugin.class.getPackage().getImplementationTitle();
-    public static final String IMPLEMENTATION_VERSION =  GriefPreventionPlugin.class.getPackage().getImplementationVersion();
-    public static String SPONGE_VERSION = "unknown";
-    @Inject public PluginContainer pluginContainer;
-    @Inject private Logger logger;
-    @Inject private Metrics2 metrics;
-    @Inject @ConfigDir(sharedRoot = false)
-    private Path configPath;
-    public MessageStorage messageStorage;
-    public MessageDataConfig messageData;
-    public static ClaimBlockSystem CLAIM_BLOCK_SYSTEM;
-    //java.util.concurrent.ScheduledExecutorService executor = Executors.newScheduledThreadPool(
-
+    public static final String IMPLEMENTATION_VERSION = GriefPreventionPlugin.class.getPackage().getImplementationVersion();
     public static final String CONFIG_HEADER = "4.3.0\n"
             + "# If you need help with the configuration or have any questions related to GriefPrevention,\n"
             + "# join us on Discord or drop by our forums and leave a post.\n"
             + "# Discord: https://discord.gg/jy4FQDz\n"
             + "# Forums: https://forums.spongepowered.org/t/griefprevention-official-thread-1-10-1-11-1-12/1123\n";
-
     // GP Public user info
     public static final UUID PUBLIC_UUID = UUID.fromString("41C82C87-7AfB-4024-BA57-13D2C99CAE77");
     public static final UUID WORLD_USER_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     public static final UUID ADMIN_USER_UUID = UUID.fromString("11111111-1111-1111-1111-111111111111");
-    public static User PUBLIC_USER;
-    public static User WORLD_USER;
     public static final String PUBLIC_NAME = "[GPPublic]";
     public static final String WORLD_USER_NAME = "[GPWorld]";
-
+    // how far away to search from a tree trunk for its branch blocks
+    public static final int TREE_RADIUS = 5;
+    //java.util.concurrent.ScheduledExecutorService executor = Executors.newScheduledThreadPool(
+    // how long to wait before deciding a player is staying online or staying offline, for notication messages
+    public static final int NOTIFICATION_SECONDS = 20;
+    public static final Text GP_TEXT = Text.of(TextColors.RESET, "[", TextColors.AQUA, "GP", TextColors.WHITE, "] ");
+    public static final Map<String, String> ID_MAP = Maps.newHashMap();
+    public static final List<String> ITEM_IDS = new ArrayList<>();
+    // for convenience, a reference to the instance of this plugin
+    public static GriefPreventionPlugin instance;
+    public static String SPONGE_VERSION = "unknown";
+    public static ClaimBlockSystem CLAIM_BLOCK_SYSTEM;
+    public static User PUBLIC_USER;
+    public static User WORLD_USER;
     // GP Custom Subjects
     public static Subject GLOBAL_SUBJECT;
-
+    public static boolean debugLogging = false;
+    public static boolean debugActive = false;
+    @Inject
+    public PluginContainer pluginContainer;
     // this handles data storage, like player and region data
     public DataStore dataStore;
-
     public MCClansApiProvider clanApiProvider;
     public NucleusApiProvider nucleusApiProvider;
     public WorldEditApiProvider worldEditProvider;
     public PermissionService permissionService;
     public PermissionDescription.Builder permissionDescriptionBuilder;
-    private GriefPreventionApi api;
-
     public Optional<EconomyService> economyService;
     public Executor executor;
-
     public boolean permPluginInstalled = false;
-
     public ItemType modificationTool = ItemTypes.GOLDEN_SHOVEL;
     public ItemType investigationTool = ItemTypes.STICK;
     public int maxInspectionDistance = 100;
-
     // log entry manager for GP's custom log files
     CustomLogger customLogger;
-    public static boolean debugLogging = false;
-    public static boolean debugActive = false;
-    private Map<String, GPDebugData> debugUserMap = Maps.newHashMap();
-
-    // how far away to search from a tree trunk for its branch blocks
-    public static final int TREE_RADIUS = 5;
-
-    // how long to wait before deciding a player is staying online or staying offline, for notication messages
-    public static final int NOTIFICATION_SECONDS = 20;
-
-    public static final Text GP_TEXT = Text.of(TextColors.RESET, "[", TextColors.AQUA, "GP", TextColors.WHITE, "] ");
-
-    public static final Map<String, String> ID_MAP = Maps.newHashMap();
-    public static final List<String> ITEM_IDS = new ArrayList<>();
-
-    public Path getConfigPath() {
-        return this.configPath;
-    }
-
-    public Logger getLogger() {
-        return this.logger;
-    }
+    @Inject
+    private Logger logger;
+    @Inject
+    private Metrics2 metrics;
+    @Inject
+    @ConfigDir(sharedRoot = false)
+    private Path configPath;
+    private GriefPreventionApi api;
+    private final Map<String, GPDebugData> debugUserMap = Maps.newHashMap();
 
     // adds a server log entry
     public static void addLogEntry(String entry, CustomLogEntryTypes customLogType, boolean verbose) {
@@ -390,6 +279,237 @@ public class GriefPreventionPlugin {
         addLogEntry(entry, CustomLogEntryTypes.Debug, GriefPreventionPlugin.debugLogging);
     }
 
+    public static Player checkPlayer(CommandSource src) throws CommandException {
+        if (src instanceof Player) {
+            final Player player = (Player) src;
+            if (!GriefPreventionPlugin.instance.claimsEnabledForWorld(player.getWorld().getProperties())) {
+                throw new CommandException(Text.of(TextColors.RED, "Land claims are disabled in this world."));
+            }
+            return player;
+        } else {
+            throw new CommandException(Text.of("You must be a player to run this command!"));
+        }
+    }
+
+    public static String getfriendlyLocationString(Location<World> location) {
+        return location.getExtent().getName() + ": x" + location.getBlockX() + ", z" + location.getBlockZ();
+    }
+
+    public static boolean isInventoryEmpty(Player player) {
+        InventoryPlayer inventory = ((EntityPlayerMP) player).inventory;
+        for (ItemStack stack : inventory.mainInventory) {
+            if (stack != null) {
+                return false;
+            }
+        }
+        for (ItemStack stack : inventory.armorInventory) {
+            if (stack != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // ensures a piece of the managed world is loaded into server memory (generates the chunk if necessary)
+    private static void GuaranteeChunkLoaded(Location<World> location) {
+        location.getExtent().loadChunk(location.getBlockPosition(), true);
+    }
+
+    public static void sendClaimDenyMessage(GPClaim claim, CommandSource source, Text message) {
+        if (claim.getData() != null && !claim.getData().allowDenyMessages()) {
+            return;
+        }
+
+        sendMessage(source, message);
+    }
+
+    public static void sendMessage(CommandSource source, Text message) {
+        if (source instanceof Player && SpongeImplHooks.isFakePlayer((net.minecraft.entity.Entity) source)) {
+            return;
+        }
+        if (message.toText() == Text.of() || message == null) {
+            return;
+        }
+
+        if (source == null) {
+            GriefPreventionPlugin.addLogEntry(Text.of(message).toPlain());
+        } else {
+            source.sendMessage(message);
+        }
+    }
+
+    public static void sendMessage(CommandSource source, Text message, long delayInTicks) {
+        if (source instanceof Player && SpongeImplHooks.isFakePlayer((net.minecraft.entity.Entity) source)) {
+            return;
+        }
+
+        if (source instanceof Player) {
+            SendPlayerMessageTask task = new SendPlayerMessageTask((Player) source, message);
+            if (delayInTicks > 0) {
+                Sponge.getGame().getScheduler().createTaskBuilder().delayTicks(delayInTicks).execute(task).submit(GriefPreventionPlugin.instance);
+            } else {
+                task.run();
+            }
+        } else {
+            source.sendMessage(message);
+        }
+    }
+
+    public static GriefPreventionConfig<?> getActiveConfig(WorldProperties worldProperties) {
+        return getActiveConfig(worldProperties.getUniqueId());
+    }
+
+    public static GriefPreventionConfig<? extends ConfigBase> getActiveConfig(UUID worldUniqueId) {
+        GriefPreventionConfig<ConfigBase> config = DataStore.worldConfigMap.get(worldUniqueId);
+        if (config != null) {
+            return config;
+        }
+
+        config = DataStore.dimensionConfigMap.get(worldUniqueId);
+        if (config != null) {
+            return config;
+        }
+
+        return DataStore.globalConfig;
+    }
+
+    public static GriefPreventionConfig<GlobalConfig> getGlobalConfig() {
+        return DataStore.globalConfig;
+    }
+
+    public static boolean isEntityProtected(Entity entity) {
+        // ignore monsters
+        return !SpongeImplHooks.isCreatureOfType((net.minecraft.entity.Entity) entity, EnumCreatureType.MONSTER);
+    }
+
+    public static User getOrCreateUser(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+
+        if (uuid == WORLD_USER_UUID) {
+            return WORLD_USER;
+        }
+
+        // check the cache
+        Optional<User> player = Sponge.getGame().getServiceManager().provide(UserStorageService.class).get().get(uuid);
+        if (player.isPresent()) {
+            return player.get();
+        } else {
+            try {
+                GameProfile gameProfile = Sponge.getServer().getGameProfileManager().get(uuid).get();
+                return Sponge.getGame().getServiceManager().provide(UserStorageService.class).get().getOrCreate(gameProfile);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+    }
+
+    public static boolean isSourceIdBlacklisted(String flag, Object source, WorldProperties worldProperties) {
+        final List<String> flagList = GPBlacklists.blacklistMap.get(flag);
+        final boolean checkFlag = flagList != null && !flagList.isEmpty();
+        if (!checkFlag && !GPBlacklists.GLOBAL_SOURCE) {
+            return false;
+        }
+
+        final GriefPreventionConfig<?> activeConfig = GriefPreventionPlugin.getActiveConfig(worldProperties);
+        final String id = GPPermissionHandler.getPermissionIdentifier(source);
+        final String idNoMeta = GPPermissionHandler.getIdentifierWithoutMeta(id);
+
+        // Check global
+        if (GPBlacklists.GLOBAL_SOURCE) {
+            final BlacklistCategory blacklistCategory = activeConfig.getConfig().blacklist;
+            final List<String> globalSourceBlacklist = blacklistCategory.getGlobalSourceBlacklist();
+            if (globalSourceBlacklist == null) {
+                return false;
+            }
+            for (String str : globalSourceBlacklist) {
+                if (FilenameUtils.wildcardMatch(id, str)) {
+                    return true;
+                }
+                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
+                    return true;
+                }
+            }
+        }
+        // Check flag
+        if (checkFlag) {
+            for (String str : flagList) {
+                if (FilenameUtils.wildcardMatch(id, str)) {
+                    return true;
+                }
+                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isTargetIdBlacklisted(String flag, Object target, WorldProperties worldProperties) {
+        final List<String> flagList = GPBlacklists.blacklistMap.get(flag);
+        final boolean checkFlag = flagList != null && !flagList.isEmpty();
+        if (!checkFlag && !GPBlacklists.GLOBAL_TARGET) {
+            return false;
+        }
+
+        final GriefPreventionConfig<?> activeConfig = GriefPreventionPlugin.getActiveConfig(worldProperties);
+        final String id = GPPermissionHandler.getPermissionIdentifier(target);
+        final String idNoMeta = GPPermissionHandler.getIdentifierWithoutMeta(id);
+
+        // Check global
+        if (GPBlacklists.GLOBAL_TARGET) {
+            final BlacklistCategory blacklistCategory = activeConfig.getConfig().blacklist;
+            final List<String> globalTargetBlacklist = blacklistCategory.getGlobalTargetBlacklist();
+            if (globalTargetBlacklist == null) {
+                return false;
+            }
+            for (String str : globalTargetBlacklist) {
+                if (FilenameUtils.wildcardMatch(id, str)) {
+                    return true;
+                }
+                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
+                    return true;
+                }
+            }
+        }
+        // Check flag
+        if (checkFlag) {
+            for (String str : flagList) {
+                if (FilenameUtils.wildcardMatch(id, str)) {
+                    return true;
+                }
+                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean containsProfanity(String message) {
+        final String[] words = message.split("\\s+");
+        for (String banned : DataStore.bannedWords) {
+            for (String word : words) {
+                if (FilenameUtils.wildcardMatch(word, banned)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public Path getConfigPath() {
+        return this.configPath;
+    }
+
+    public Logger getLogger() {
+        return this.logger;
+    }
+
     @Listener
     public void onChangeServiceProvider(ChangeServiceProviderEvent event) {
         if (event.getNewProvider() instanceof PermissionService && this.validateSpongeVersion()) {
@@ -423,7 +543,7 @@ public class GriefPreventionPlugin {
     public void onGameReload(GameReloadEvent event) {
         this.loadConfig();
         if (event.getSource() instanceof CommandSource) {
-            sendMessage((CommandSource) event.getSource(), this.messageData.pluginReload.toText());
+            sendMessage((CommandSource) event.getSource(), Text.of("GriefPrevention has been reloaded."));
         }
     }
 
@@ -442,286 +562,286 @@ public class GriefPreventionPlugin {
         this.permissionDescriptionBuilder = this.permissionService.newDescriptionBuilder(this.pluginContainer);
         if (this.permissionDescriptionBuilder != null) {
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_ABANDON_ALL_CLAIMS)
-                .description(Text.of("Allows a user to run the command /abandonallclaims"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_ABANDON_ALL_CLAIMS)
+                    .description(Text.of("Allows a user to run the command /abandonallclaims"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_ABANDON_BASIC)
-                .description(Text.of("Allows a user to run the command /abandonclaim"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_ABANDON_BASIC)
+                    .description(Text.of("Allows a user to run the command /abandonclaim"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_ABANDON_TOP_LEVEL_CLAIM)
-                .description(Text.of("Allows a user to run the command /abandontoplevelclaim"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_ABANDON_TOP_LEVEL_CLAIM)
+                    .description(Text.of("Allows a user to run the command /abandontoplevelclaim"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_ADJUST_CLAIM_BLOCKS)
-                .description(Text.of("Allows a user to run the command /acb"))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_ADJUST_CLAIM_BLOCKS)
+                    .description(Text.of("Allows a user to run the command /acb"))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_ADMIN_CLAIMS)
-                .description(Text.of("Allows a user to run the command /adminclaims"))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_ADMIN_CLAIMS)
+                    .description(Text.of("Allows a user to run the command /adminclaims"))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_BAN_ITEM)
-                .description(Text.of("Allows a user to run the command /banitem"))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_BAN_ITEM)
+                    .description(Text.of("Allows a user to run the command /banitem"))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_BASIC_MODE)
-                .description(Text.of("Allows a user to run the command /basicclaims"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_BASIC_MODE)
+                    .description(Text.of("Allows a user to run the command /basicclaims"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_BUY_CLAIM_BLOCKS)
-                .description(Text.of("Allows a user to run the command /buyclaimblocks"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_BUY_CLAIM_BLOCKS)
+                    .description(Text.of("Allows a user to run the command /buyclaimblocks"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_CLEAR)
-                .description(Text.of("Allows a user to run the command /claimclear"))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_CLEAR)
+                    .description(Text.of("Allows a user to run the command /claimclear"))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_INFO_BASE)
-                .description(Text.of("Allows a user to run the command /claiminfo"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_INFO_BASE)
+                    .description(Text.of("Allows a user to run the command /claiminfo"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_INFO_OTHERS)
-                .description(Text.of("Allows a user to run the command /claiminfo on other claims."))
-                .assign(PermissionDescription.ROLE_STAFF, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_INFO_OTHERS)
+                    .description(Text.of("Allows a user to run the command /claiminfo on other claims."))
+                    .assign(PermissionDescription.ROLE_STAFF, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_INFO_TELEPORT_BASE)
-                .description(Text.of("Allows a user to use the teleport feature in /claiminfo"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_INFO_TELEPORT_BASE)
+                    .description(Text.of("Allows a user to use the teleport feature in /claiminfo"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_INFO_TELEPORT_OTHERS)
-                .description(Text.of("Allows a user to use the teleport feature in /claiminfo on other claims."))
-                .assign(PermissionDescription.ROLE_STAFF, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_INFO_TELEPORT_OTHERS)
+                    .description(Text.of("Allows a user to use the teleport feature in /claiminfo on other claims."))
+                    .assign(PermissionDescription.ROLE_STAFF, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_PERMISSION_GROUP)
-                .description(Text.of("Sets a permission on a group for claim you are standing in."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_PERMISSION_GROUP)
+                    .description(Text.of("Sets a permission on a group for claim you are standing in."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_PERMISSION_PLAYER)
-                .description(Text.of("Sets a permission on a player for claim you are standing in."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_PERMISSION_PLAYER)
+                    .description(Text.of("Sets a permission on a player for claim you are standing in."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CUBOID_CLAIMS)
-                .description(Text.of("Toggles 3D cuboid claims mode."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CUBOID_CLAIMS)
+                    .description(Text.of("Toggles 3D cuboid claims mode."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_DEBUG)
-                .description(Text.of("Allows an admin to debug events being cancelled by GP."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_DEBUG)
+                    .description(Text.of("Allows an admin to debug events being cancelled by GP."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_DELETE_ADMIN_CLAIMS)
-                .description(Text.of("Deletes all administrative claims."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_DELETE_ADMIN_CLAIMS)
+                    .description(Text.of("Deletes all administrative claims."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_DELETE_CLAIMS)
-                .description(Text.of("Delete all of another player's claims."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_DELETE_CLAIMS)
+                    .description(Text.of("Delete all of another player's claims."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_FLAGS_CLAIM)
-                .description(Text.of("Gets/Sets claim flags in the claim you are standing in."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_FLAGS_CLAIM)
+                    .description(Text.of("Gets/Sets claim flags in the claim you are standing in."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_FLAGS_DEBUG)
-                .description(Text.of("Toggles claim flag debug mode."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_FLAGS_DEBUG)
+                    .description(Text.of("Toggles claim flag debug mode."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_FLAGS_GROUP)
-                .description(Text.of("Gets/Sets claim flags for a group in claim you are standing in."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_FLAGS_GROUP)
+                    .description(Text.of("Gets/Sets claim flags for a group in claim you are standing in."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_FLAGS_PLAYER)
-                .description(Text.of("Gets/Sets claim flags for a player in claim you are standing in."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_FLAGS_PLAYER)
+                    .description(Text.of("Gets/Sets claim flags for a player in claim you are standing in."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_FLAGS_RESET)
-                .description(Text.of("Resets claim you are standing in to flag defaults."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_FLAGS_RESET)
+                    .description(Text.of("Resets claim you are standing in to flag defaults."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_GIVE_ACCESS_TRUST)
-                .description(Text.of("Grants a player entry to your claim(s) and use of your bed(s)"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_GIVE_ACCESS_TRUST)
+                    .description(Text.of("Grants a player entry to your claim(s) and use of your bed(s)"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_GIVE_BOOK)
-                .description(Text.of("Gives a player a manual about claiming land."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_GIVE_BOOK)
+                    .description(Text.of("Gives a player a manual about claiming land."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_GIVE_BUILDER_TRUST)
-                .description(Text.of("Grants a player edit access to your claim(s)."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_GIVE_BUILDER_TRUST)
+                    .description(Text.of("Grants a player edit access to your claim(s)."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_GIVE_CONTAINER_TRUST)
-                .description(Text.of("Grants a player access to your claim's containers, crops, animals, bed, buttons, and levers."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_GIVE_CONTAINER_TRUST)
+                    .description(Text.of("Grants a player access to your claim's containers, crops, animals, bed, buttons, and levers."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_GIVE_PERMISSION_TRUST)
-                .description(Text.of("Grants a player permission to grant their level of permission to others."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_GIVE_PERMISSION_TRUST)
+                    .description(Text.of("Grants a player permission to grant their level of permission to others."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_GIVE_PET)
-                .description(Text.of("Allows a player to give away a pet they tamed."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_GIVE_PET)
+                    .description(Text.of("Allows a player to give away a pet they tamed."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_IGNORE_CLAIMS)
-                .description(Text.of("Toggles ignore claims mode."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_IGNORE_CLAIMS)
+                    .description(Text.of("Toggles ignore claims mode."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_IGNORE_PLAYER)
-                .description(Text.of("Ignores another player's chat messages."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_IGNORE_PLAYER)
+                    .description(Text.of("Ignores another player's chat messages."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_LIST)
-                .description(Text.of("List all claims owned by a player."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_LIST)
+                    .description(Text.of("List all claims owned by a player."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_LIST_IGNORED_PLAYERS)
-                .description(Text.of("Lists the players you're ignoring in chat."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_LIST_IGNORED_PLAYERS)
+                    .description(Text.of("Lists the players you're ignoring in chat."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_LIST_TRUST)
-                .description(Text.of("Lists permissions for the claim you're standing i"))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_LIST_TRUST)
+                    .description(Text.of("Lists permissions for the claim you're standing i"))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_PLAYER_INFO_BASE)
-                .description(Text.of("Gets information about a player such as claim blocks and options."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_PLAYER_INFO_BASE)
+                    .description(Text.of("Gets information about a player such as claim blocks and options."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_RELOAD)
-                .description(Text.of("Reloads GriefPrevention's configuration, messages, and player options."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_RELOAD)
+                    .description(Text.of("Reloads GriefPrevention's configuration, messages, and player options."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_REMOVE_TRUST)
-                .description(Text.of("Revokes a player's access to your claim."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_REMOVE_TRUST)
+                    .description(Text.of("Revokes a player's access to your claim."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_RESTORE_NATURE)
-                .description(Text.of("Switches the shovel tool to restoration mode."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_RESTORE_NATURE)
+                    .description(Text.of("Switches the shovel tool to restoration mode."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_RESTORE_NATURE_AGGRESSIVE)
-                .description(Text.of("Switches the shovel tool to aggressive restoration mode."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_RESTORE_NATURE_AGGRESSIVE)
+                    .description(Text.of("Switches the shovel tool to aggressive restoration mode."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_RESTORE_NATURE_FILL)
-                .description(Text.of("Switches the shovel tool to fill mode."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_RESTORE_NATURE_FILL)
+                    .description(Text.of("Switches the shovel tool to fill mode."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SELL_CLAIM_BLOCKS)
-                .description(Text.of("Sell your claim blocks for server money. Doesn't work on servers without a compatible "
-                        + "economy plugin."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SELL_CLAIM_BLOCKS)
+                    .description(Text.of("Sell your claim blocks for server money. Doesn't work on servers without a compatible "
+                            + "economy plugin."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SEPARATE_PLAYERS)
-                .description(Text.of("Forces two players to ignore each other in chat."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SEPARATE_PLAYERS)
+                    .description(Text.of("Forces two players to ignore each other in chat."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SET_ACCRUED_CLAIM_BLOCKS)
-                .description(Text.of("Updates a player's accrued claim block total."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SET_ACCRUED_CLAIM_BLOCKS)
+                    .description(Text.of("Updates a player's accrued claim block total."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SET_CLAIM_FAREWELL)
-                .description(Text.of("Sets the farewell message of your claim."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SET_CLAIM_FAREWELL)
+                    .description(Text.of("Sets the farewell message of your claim."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SET_CLAIM_GREETING)
-                .description(Text.of("Sets the greeting message of your claim."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SET_CLAIM_GREETING)
+                    .description(Text.of("Sets the greeting message of your claim."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SET_CLAIM_NAME)
-                .description(Text.of("Sets the name of your claim."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SET_CLAIM_NAME)
+                    .description(Text.of("Sets the name of your claim."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SIEGE)
-                .description(Text.of("Initiates a siege versus another player."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SIEGE)
+                    .description(Text.of("Initiates a siege versus another player."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SOFT_MUTE_PLAYER)
-                .description(Text.of("Toggles whether a player's messages will only reach other soft-muted players."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SOFT_MUTE_PLAYER)
+                    .description(Text.of("Toggles whether a player's messages will only reach other soft-muted players."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_SUBDIVIDE_CLAIMS)
-                .description(Text.of("Switches the shovel tool to subdivision mode, used to subdivide your claims."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_SUBDIVIDE_CLAIMS)
+                    .description(Text.of("Switches the shovel tool to subdivision mode, used to subdivide your claims."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_CLAIM_INHERIT)
-                .description(Text.of("Toggles inheritance from parent claim."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_CLAIM_INHERIT)
+                    .description(Text.of("Toggles inheritance from parent claim."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_UNBAN_ITEM)
-                .description(Text.of("Unbans the specified item id or item in hand if no id is specified."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_UNBAN_ITEM)
+                    .description(Text.of("Unbans the specified item id or item in hand if no id is specified."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_UNIGNORE_PLAYER)
-                .description(Text.of("Unignores another player's chat messages."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_UNIGNORE_PLAYER)
+                    .description(Text.of("Unignores another player's chat messages."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_UNLOCK_DROPS)
-                .description(Text.of("Allows other players to pick up the items you dropped when you died."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_UNLOCK_DROPS)
+                    .description(Text.of("Allows other players to pick up the items you dropped when you died."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_UNSEPARATE_PLAYERS)
-                .description(Text.of("Reverses /separate."))
-                .assign(PermissionDescription.ROLE_ADMIN, true)
-                .register();
+                    .id(GPPermissions.COMMAND_UNSEPARATE_PLAYERS)
+                    .description(Text.of("Reverses /separate."))
+                    .assign(PermissionDescription.ROLE_ADMIN, true)
+                    .register();
             this.permissionDescriptionBuilder
-                .id(GPPermissions.COMMAND_TRANSFER_CLAIM)
-                .description(Text.of("Transfers a basic or admin claim to another player."))
-                .assign(PermissionDescription.ROLE_USER, true)
-                .register();
+                    .id(GPPermissions.COMMAND_TRANSFER_CLAIM)
+                    .description(Text.of("Transfers a basic or admin claim to another player."))
+                    .assign(PermissionDescription.ROLE_USER, true)
+                    .register();
         }
         instance = this;
         this.getLogger().info("Grief Prevention boot start.");
@@ -897,12 +1017,12 @@ public class GriefPreventionPlugin {
     public void registerBaseCommands() {
 
         ImmutableMap.Builder<String, String> flagChoicesBuilder = ImmutableMap.builder();
-        for (ClaimFlag flag: ClaimFlag.values()) {
+        for (ClaimFlag flag : ClaimFlag.values()) {
             flagChoicesBuilder.put(flag.toString().toLowerCase(), flag.toString().toLowerCase());
         }
 
         ImmutableMap.Builder<String, String> optionChoicesBuilder = ImmutableMap.builder();
-        for (String option: GPOptions.DEFAULT_OPTIONS.keySet()) {
+        for (String option : GPOptions.DEFAULT_OPTIONS.keySet()) {
             option = option.replaceAll("griefprevention.", "");
             optionChoicesBuilder.put(option, option);
         }
@@ -1087,10 +1207,10 @@ public class GriefPreventionPlugin {
                 .permission(GPPermissions.COMMAND_CLAIM_CLEAR)
                 .arguments(onlyOne(string(Text.of("target"))),
                         optional(//GenericArguments.firstParsing(
-                            GenericArguments.seq(
-                                    onlyOne(string(Text.of("claim"))),
-                                    optional(onlyOne(GenericArguments.world(Text.of("world")))))))
-                            //string(Text.of("claim")))))
+                                GenericArguments.seq(
+                                        onlyOne(string(Text.of("claim"))),
+                                        optional(onlyOne(GenericArguments.world(Text.of("world")))))))
+                //string(Text.of("claim")))))
                 .executor(new CommandClaimClear())
                 .build(), "claimclear", "claimclear");
 
@@ -1155,7 +1275,7 @@ public class GriefPreventionPlugin {
                 .description(Text.of("Toggles debug"))
                 .permission(GPPermissions.COMMAND_DEBUG)
                 .arguments(GenericArguments.seq(choices(Text.of("target"), debugChoices),
-                                optional(user(Text.of("user")))))
+                        optional(user(Text.of("user")))))
                 .executor(new CommandDebug())
                 .build(), "gpdebug");
 
@@ -1480,70 +1600,70 @@ public class GriefPreventionPlugin {
                 .permission(GPPermissions.COMMAND_FLAGS_CLAIM)
                 .arguments(GenericArguments.firstParsing(
                         optional(GenericArguments.seq(
-                            choices(Text.of("flag"), flagChoices),
-                            GenericArguments.firstParsing(
-                                GenericArguments.seq(
-                                    choices(Text.of("target"), catalogChoices),
-                                    onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                            .put("-1", Tristate.FALSE)
-                                            .put("0", Tristate.UNDEFINED)
-                                            .put("1", Tristate.TRUE)
-                                            .put("false", Tristate.FALSE)
-                                            .put("undefined", Tristate.UNDEFINED)
-                                            .put("true", Tristate.TRUE)
-                                            .build())),
-                                    GenericArguments.firstParsing(
-                                            GenericArguments.seq(
-                                                    onlyOne(choices(Text.of("context"), contextChoices)),
-                                                    optional(string(Text.of("reason")))),
-                                            optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                GenericArguments.seq(
-                                    onlyOne(choices(Text.of("source"), catalogChoices)),
-                                    choices(Text.of("target"), catalogChoices),
-                                    onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                            .put("-1", Tristate.FALSE)
-                                            .put("0", Tristate.UNDEFINED)
-                                            .put("1", Tristate.TRUE)
-                                            .put("false", Tristate.FALSE)
-                                            .put("undefined", Tristate.UNDEFINED)
-                                            .put("true", Tristate.TRUE)
-                                            .build())),
-                                    GenericArguments.firstParsing(
-                                            GenericArguments.seq(
-                                                    onlyOne(choices(Text.of("context"), contextChoices)),
-                                                    optional(string(Text.of("reason")))),
-                                            optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                GenericArguments.seq(
-                                        string(Text.of("target")),
-                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                .put("-1", Tristate.FALSE)
-                                                .put("0", Tristate.UNDEFINED)
-                                                .put("1", Tristate.TRUE)
-                                                .put("false", Tristate.FALSE)
-                                                .put("undefined", Tristate.UNDEFINED)
-                                                .put("true", Tristate.TRUE)
-                                                .build())),
-                                        GenericArguments.firstParsing(
-                                                GenericArguments.seq(
-                                                        onlyOne(choices(Text.of("context"), contextChoices)),
-                                                        optional(string(Text.of("reason")))),
-                                                optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                GenericArguments.seq(
-                                        onlyOne(choices(Text.of("source"), catalogChoices)),
-                                        string(Text.of("target")),
-                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                .put("-1", Tristate.FALSE)
-                                                .put("0", Tristate.UNDEFINED)
-                                                .put("1", Tristate.TRUE)
-                                                .put("false", Tristate.FALSE)
-                                                .put("undefined", Tristate.UNDEFINED)
-                                                .put("true", Tristate.TRUE)
-                                                .build())),
-                                        GenericArguments.firstParsing(
-                                                GenericArguments.seq(
-                                                        onlyOne(choices(Text.of("context"), contextChoices)),
-                                                        optional(string(Text.of("reason")))),
-                                                optional(onlyOne(choices(Text.of("context"), contextChoices)))
+                                choices(Text.of("flag"), flagChoices),
+                                GenericArguments.firstParsing(
+                                        GenericArguments.seq(
+                                                choices(Text.of("target"), catalogChoices),
+                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                        .put("-1", Tristate.FALSE)
+                                                        .put("0", Tristate.UNDEFINED)
+                                                        .put("1", Tristate.TRUE)
+                                                        .put("false", Tristate.FALSE)
+                                                        .put("undefined", Tristate.UNDEFINED)
+                                                        .put("true", Tristate.TRUE)
+                                                        .build())),
+                                                GenericArguments.firstParsing(
+                                                        GenericArguments.seq(
+                                                                onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                optional(string(Text.of("reason")))),
+                                                        optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                        GenericArguments.seq(
+                                                onlyOne(choices(Text.of("source"), catalogChoices)),
+                                                choices(Text.of("target"), catalogChoices),
+                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                        .put("-1", Tristate.FALSE)
+                                                        .put("0", Tristate.UNDEFINED)
+                                                        .put("1", Tristate.TRUE)
+                                                        .put("false", Tristate.FALSE)
+                                                        .put("undefined", Tristate.UNDEFINED)
+                                                        .put("true", Tristate.TRUE)
+                                                        .build())),
+                                                GenericArguments.firstParsing(
+                                                        GenericArguments.seq(
+                                                                onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                optional(string(Text.of("reason")))),
+                                                        optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                        GenericArguments.seq(
+                                                string(Text.of("target")),
+                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                        .put("-1", Tristate.FALSE)
+                                                        .put("0", Tristate.UNDEFINED)
+                                                        .put("1", Tristate.TRUE)
+                                                        .put("false", Tristate.FALSE)
+                                                        .put("undefined", Tristate.UNDEFINED)
+                                                        .put("true", Tristate.TRUE)
+                                                        .build())),
+                                                GenericArguments.firstParsing(
+                                                        GenericArguments.seq(
+                                                                onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                optional(string(Text.of("reason")))),
+                                                        optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                        GenericArguments.seq(
+                                                onlyOne(choices(Text.of("source"), catalogChoices)),
+                                                string(Text.of("target")),
+                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                        .put("-1", Tristate.FALSE)
+                                                        .put("0", Tristate.UNDEFINED)
+                                                        .put("1", Tristate.TRUE)
+                                                        .put("false", Tristate.FALSE)
+                                                        .put("undefined", Tristate.UNDEFINED)
+                                                        .put("true", Tristate.TRUE)
+                                                        .build())),
+                                                GenericArguments.firstParsing(
+                                                        GenericArguments.seq(
+                                                                onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                optional(string(Text.of("reason")))),
+                                                        optional(onlyOne(choices(Text.of("context"), contextChoices)))
                                                 )))))))
                 .executor(new CommandClaimFlag())
                 .build(), "claimflag", "cf");
@@ -1553,11 +1673,11 @@ public class GriefPreventionPlugin {
                 .permission(GPPermissions.COMMAND_OPTIONS_BASE)
                 .arguments(GenericArguments.firstParsing(
                         optional(GenericArguments.seq(
-                            choices(Text.of("option"), optionChoices),
-                            GenericArguments.firstParsing(
-                                    doubleNum(Text.of("value")),
-                                    integer(Text.of("value"))),
-                            optional(onlyOne(string(Text.of("context"))))))))
+                                choices(Text.of("option"), optionChoices),
+                                GenericArguments.firstParsing(
+                                        doubleNum(Text.of("value")),
+                                        integer(Text.of("value"))),
+                                optional(onlyOne(string(Text.of("context"))))))))
                 .executor(new CommandClaimOption())
                 .build(), "claimoption", "co");
 
@@ -1567,10 +1687,10 @@ public class GriefPreventionPlugin {
                 .arguments(GenericArguments.seq(
                         string(Text.of("group")),
                         optional(GenericArguments.seq(
-                            choices(Text.of("option"), optionChoices),
-                            GenericArguments.firstParsing(
-                                    doubleNum(Text.of("value")),
-                                    integer(Text.of("value")))))))
+                                choices(Text.of("option"), optionChoices),
+                                GenericArguments.firstParsing(
+                                        doubleNum(Text.of("value")),
+                                        integer(Text.of("value")))))))
                 .executor(new CommandClaimOptionGroup())
                 .build(), "claimoptiongroup", "cog");
 
@@ -1580,10 +1700,10 @@ public class GriefPreventionPlugin {
                 .arguments(GenericArguments.seq(
                         user(Text.of("user")),
                         optional(GenericArguments.seq(
-                            choices(Text.of("option"), optionChoices),
-                            GenericArguments.firstParsing(
-                                    doubleNum(Text.of("value")),
-                                    integer(Text.of("value")))))))
+                                choices(Text.of("option"), optionChoices),
+                                GenericArguments.firstParsing(
+                                        doubleNum(Text.of("value")),
+                                        integer(Text.of("value")))))))
                 .executor(new CommandClaimOptionPlayer())
                 .build(), "claimoptionplayer", "cop");
 
@@ -1592,72 +1712,72 @@ public class GriefPreventionPlugin {
                 .permission(GPPermissions.COMMAND_FLAGS_GROUP)
                 .arguments(GenericArguments.firstParsing(
                         GenericArguments.seq(
-                            onlyOne(string(Text.of("group"))),
-                            optional(GenericArguments.seq(
-                                    choices(Text.of("flag"), flagChoices),
-                                    GenericArguments.firstParsing(
-                                        GenericArguments.seq(
-                                            choices(Text.of("target"), catalogChoices),
-                                            onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                    .put("-1", Tristate.FALSE)
-                                                    .put("0", Tristate.UNDEFINED)
-                                                    .put("1", Tristate.TRUE)
-                                                    .put("false", Tristate.FALSE)
-                                                    .put("undefined", Tristate.UNDEFINED)
-                                                    .put("true", Tristate.TRUE)
-                                                    .build())),
-                                            GenericArguments.firstParsing(
-                                                    GenericArguments.seq(
-                                                            onlyOne(choices(Text.of("context"), contextChoices)),
-                                                            optional(string(Text.of("reason")))),
-                                                    optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                        GenericArguments.seq(
-                                            onlyOne(choices(Text.of("source"), catalogChoices)),
-                                            choices(Text.of("target"), catalogChoices),
-                                            onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                    .put("-1", Tristate.FALSE)
-                                                    .put("0", Tristate.UNDEFINED)
-                                                    .put("1", Tristate.TRUE)
-                                                    .put("false", Tristate.FALSE)
-                                                    .put("undefined", Tristate.UNDEFINED)
-                                                    .put("true", Tristate.TRUE)
-                                                    .build())),
-                                            GenericArguments.firstParsing(
-                                                    GenericArguments.seq(
-                                                            onlyOne(choices(Text.of("context"), contextChoices)),
-                                                            optional(string(Text.of("reason")))),
-                                                    optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                        GenericArguments.seq(
-                                                string(Text.of("target")),
-                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                        .put("-1", Tristate.FALSE)
-                                                        .put("0", Tristate.UNDEFINED)
-                                                        .put("1", Tristate.TRUE)
-                                                        .put("false", Tristate.FALSE)
-                                                        .put("undefined", Tristate.UNDEFINED)
-                                                        .put("true", Tristate.TRUE)
-                                                        .build())),
-                                                GenericArguments.firstParsing(
-                                                        GenericArguments.seq(
-                                                                onlyOne(choices(Text.of("context"), contextChoices)),
-                                                                optional(string(Text.of("reason")))),
-                                                        optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                        GenericArguments.seq(
-                                                onlyOne(choices(Text.of("source"), catalogChoices)),
-                                                string(Text.of("target")),
-                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                        .put("-1", Tristate.FALSE)
-                                                        .put("0", Tristate.UNDEFINED)
-                                                        .put("1", Tristate.TRUE)
-                                                        .put("false", Tristate.FALSE)
-                                                        .put("undefined", Tristate.UNDEFINED)
-                                                        .put("true", Tristate.TRUE)
-                                                        .build())),
-                                                GenericArguments.firstParsing(
-                                                        GenericArguments.seq(
-                                                                onlyOne(choices(Text.of("context"), contextChoices)),
-                                                                optional(string(Text.of("reason")))),
-                                                        optional(onlyOne(choices(Text.of("context"), contextChoices)))
+                                onlyOne(string(Text.of("group"))),
+                                optional(GenericArguments.seq(
+                                        choices(Text.of("flag"), flagChoices),
+                                        GenericArguments.firstParsing(
+                                                GenericArguments.seq(
+                                                        choices(Text.of("target"), catalogChoices),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                                GenericArguments.seq(
+                                                        onlyOne(choices(Text.of("source"), catalogChoices)),
+                                                        choices(Text.of("target"), catalogChoices),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                                GenericArguments.seq(
+                                                        string(Text.of("target")),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                                GenericArguments.seq(
+                                                        onlyOne(choices(Text.of("source"), catalogChoices)),
+                                                        string(Text.of("target")),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices)))
                                                         ))))))))
                 .executor(new CommandClaimFlagGroup())
                 .build(), "claimflaggroup", "cfg");
@@ -1667,72 +1787,72 @@ public class GriefPreventionPlugin {
                 .permission(GPPermissions.COMMAND_FLAGS_PLAYER)
                 .arguments(GenericArguments.firstParsing(
                         GenericArguments.seq(
-                            onlyOne(user(Text.of("player"))),
-                            optional(GenericArguments.seq(
-                                    choices(Text.of("flag"), flagChoices),
-                                    GenericArguments.firstParsing(
-                                        GenericArguments.seq(
-                                            choices(Text.of("target"), catalogChoices),
-                                            onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                    .put("-1", Tristate.FALSE)
-                                                    .put("0", Tristate.UNDEFINED)
-                                                    .put("1", Tristate.TRUE)
-                                                    .put("false", Tristate.FALSE)
-                                                    .put("undefined", Tristate.UNDEFINED)
-                                                    .put("true", Tristate.TRUE)
-                                                    .build())),
-                                            GenericArguments.firstParsing(
-                                                    GenericArguments.seq(
-                                                            onlyOne(choices(Text.of("context"), contextChoices)),
-                                                            optional(string(Text.of("reason")))),
-                                                    optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                        GenericArguments.seq(
-                                            onlyOne(choices(Text.of("source"), catalogChoices)),
-                                            choices(Text.of("target"), catalogChoices),
-                                            onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                    .put("-1", Tristate.FALSE)
-                                                    .put("0", Tristate.UNDEFINED)
-                                                    .put("1", Tristate.TRUE)
-                                                    .put("false", Tristate.FALSE)
-                                                    .put("undefined", Tristate.UNDEFINED)
-                                                    .put("true", Tristate.TRUE)
-                                                    .build())),
-                                            GenericArguments.firstParsing(
-                                                    GenericArguments.seq(
-                                                            onlyOne(choices(Text.of("context"), contextChoices)),
-                                                            optional(string(Text.of("reason")))),
-                                                    optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                        GenericArguments.seq(
-                                                string(Text.of("target")),
-                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                        .put("-1", Tristate.FALSE)
-                                                        .put("0", Tristate.UNDEFINED)
-                                                        .put("1", Tristate.TRUE)
-                                                        .put("false", Tristate.FALSE)
-                                                        .put("undefined", Tristate.UNDEFINED)
-                                                        .put("true", Tristate.TRUE)
-                                                        .build())),
-                                                GenericArguments.firstParsing(
-                                                        GenericArguments.seq(
-                                                                onlyOne(choices(Text.of("context"), contextChoices)),
-                                                                optional(string(Text.of("reason")))),
-                                                        optional(onlyOne(choices(Text.of("context"), contextChoices))))),
-                                        GenericArguments.seq(
-                                                onlyOne(choices(Text.of("source"), catalogChoices)),
-                                                string(Text.of("target")),
-                                                onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
-                                                        .put("-1", Tristate.FALSE)
-                                                        .put("0", Tristate.UNDEFINED)
-                                                        .put("1", Tristate.TRUE)
-                                                        .put("false", Tristate.FALSE)
-                                                        .put("undefined", Tristate.UNDEFINED)
-                                                        .put("true", Tristate.TRUE)
-                                                        .build())),
-                                                GenericArguments.firstParsing(
-                                                        GenericArguments.seq(
-                                                                onlyOne(choices(Text.of("context"), contextChoices)),
-                                                                optional(string(Text.of("reason")))),
-                                                        optional(onlyOne(choices(Text.of("context"), contextChoices)))
+                                onlyOne(user(Text.of("player"))),
+                                optional(GenericArguments.seq(
+                                        choices(Text.of("flag"), flagChoices),
+                                        GenericArguments.firstParsing(
+                                                GenericArguments.seq(
+                                                        choices(Text.of("target"), catalogChoices),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                                GenericArguments.seq(
+                                                        onlyOne(choices(Text.of("source"), catalogChoices)),
+                                                        choices(Text.of("target"), catalogChoices),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                                GenericArguments.seq(
+                                                        string(Text.of("target")),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices))))),
+                                                GenericArguments.seq(
+                                                        onlyOne(choices(Text.of("source"), catalogChoices)),
+                                                        string(Text.of("target")),
+                                                        onlyOne(choices(Text.of("value"), ImmutableMap.<String, Tristate>builder()
+                                                                .put("-1", Tristate.FALSE)
+                                                                .put("0", Tristate.UNDEFINED)
+                                                                .put("1", Tristate.TRUE)
+                                                                .put("false", Tristate.FALSE)
+                                                                .put("undefined", Tristate.UNDEFINED)
+                                                                .put("true", Tristate.TRUE)
+                                                                .build())),
+                                                        GenericArguments.firstParsing(
+                                                                GenericArguments.seq(
+                                                                        onlyOne(choices(Text.of("context"), contextChoices)),
+                                                                        optional(string(Text.of("reason")))),
+                                                                optional(onlyOne(choices(Text.of("context"), contextChoices)))
                                                         ))))))))
                 .executor(new CommandClaimFlagPlayer())
                 .build(), "claimflagplayer", "cfp");
@@ -1766,8 +1886,6 @@ public class GriefPreventionPlugin {
                     asset.copyToDirectory(localePath.getParent());
                 }
             }
-            messageStorage = new MessageStorage(localePath);
-            messageData = messageStorage.getConfig();
             DataStore.USE_GLOBAL_PLAYER_STORAGE = DataStore.globalConfig.getConfig().playerdata.useGlobalPlayerDataStorage;
             GPFlags.populateFlagStatus();
             CLAIM_BLOCK_SYSTEM = DataStore.globalConfig.getConfig().playerdata.claimBlockSystem;
@@ -1811,24 +1929,12 @@ public class GriefPreventionPlugin {
         }
     }
 
-    public static Player checkPlayer(CommandSource src) throws CommandException {
-        if (src instanceof Player) {
-            final Player player = (Player) src;
-            if (!GriefPreventionPlugin.instance.claimsEnabledForWorld(player.getWorld().getProperties())) {
-                throw new CommandException(GriefPreventionPlugin.instance.messageData.claimDisabledWorld.toText());
-            }
-            return player;
-        } else {
-            throw new CommandException(Text.of("You must be a player to run this command!"));
-        }
-    }
-
     public void setIgnoreStatus(World world, User ignorer, User ignoree, IgnoreMode mode) {
         GPPlayerData playerData = this.dataStore.getOrCreatePlayerData(world, ignorer.getUniqueId());
         if (mode == IgnoreMode.None) {
             playerData.ignoredPlayers.remove(ignoree.getUniqueId());
         } else {
-            playerData.ignoredPlayers.put(ignoree.getUniqueId(), mode == IgnoreMode.StandardIgnore ? false : true);
+            playerData.ignoredPlayers.put(ignoree.getUniqueId(), mode != IgnoreMode.StandardIgnore);
         }
 
         playerData.ignoreListChanged = true;
@@ -1838,20 +1944,12 @@ public class GriefPreventionPlugin {
         }
     }
 
-    public enum IgnoreMode {
-        None, StandardIgnore, AdminIgnore
-    }
-
     public String trustEntryToPlayerName(String entry) {
         if (entry.startsWith("[") || entry.equals("public")) {
             return entry;
         } else {
             return PlayerUtils.lookupPlayerName(entry);
         }
-    }
-
-    public static String getfriendlyLocationString(Location<World> location) {
-        return location.getExtent().getName() + ": x" + location.getBlockX() + ", z" + location.getBlockZ();
     }
 
     // called when a player spawns, applies protection for that player if necessary
@@ -1884,28 +1982,13 @@ public class GriefPreventionPlugin {
             playerData.pvpImmune = true;
 
             // inform the player after he finishes respawning
-            GriefPreventionPlugin.sendMessage(player, this.messageData.pvpImmunityStart.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("You're protected from attack by other players as long as your inventory is empty."));
 
             // start a task to re-check this player's inventory every minute
             // until his immunity is gone
             PvPImmunityValidationTask task = new PvPImmunityValidationTask(player);
             Sponge.getGame().getScheduler().createTaskBuilder().delay(1, TimeUnit.MINUTES).execute(task).submit(this);
         }
-    }
-
-    public static boolean isInventoryEmpty(Player player) {
-        InventoryPlayer inventory = ((EntityPlayerMP) player).inventory;
-        for (ItemStack stack : inventory.mainInventory) {
-            if (stack != null) {
-                return false;
-            }
-        }
-        for (ItemStack stack : inventory.armorInventory) {
-            if (stack != null) {
-                return false;
-            }
-        }
-        return true;
     }
 
     // moves a player from the claim they're in to a nearby wilderness location
@@ -1930,86 +2013,6 @@ public class GriefPreventionPlugin {
                 return player.setLocationSafely(player.getLocation().add(0, 2, 0));
             }
         }
-    }
-
-    // ensures a piece of the managed world is loaded into server memory (generates the chunk if necessary)
-    private static void GuaranteeChunkLoaded(Location<World> location) {
-        location.getExtent().loadChunk(location.getBlockPosition(), true);
-    }
-
-    public static void sendClaimDenyMessage(GPClaim claim, CommandSource source, Text message) {
-        if (claim.getData() != null && !claim.getData().allowDenyMessages()) {
-            return;
-        }
-
-        sendMessage(source, message);
-    }
-
-    public static void sendMessage(CommandSource src, String messageKey, TextTemplate template, Map<String, ?>  params) {
-        Text message = null;
-        try {
-            message = template.apply(params).build();
-        } catch (TextTemplateArgumentException e) {
-            // fix message data
-            GriefPreventionPlugin.instance.messageStorage.resetMessageData(messageKey);
-        }
-        if (message != null) {
-            sendMessage(src, message);
-        }
-    }
-
-    public static void sendMessage(CommandSource source, Text message) {
-        if (source instanceof Player && SpongeImplHooks.isFakePlayer((net.minecraft.entity.Entity) source)) {
-            return;
-        }
-        if (message.toText() == Text.of() || message == null) {
-            return;
-        }
-
-        if (source == null) {
-            GriefPreventionPlugin.addLogEntry(Text.of(message).toPlain());
-        } else {
-            source.sendMessage(message);
-        }
-    }
-
-    public static void sendMessage(CommandSource source, Text message, long delayInTicks) {
-        if (source instanceof Player && SpongeImplHooks.isFakePlayer((net.minecraft.entity.Entity) source)) {
-            return;
-        }
-
-        if (source instanceof Player) {
-            SendPlayerMessageTask task = new SendPlayerMessageTask((Player) source, message);
-            if (delayInTicks > 0) {
-                Sponge.getGame().getScheduler().createTaskBuilder().delayTicks(delayInTicks).execute(task).submit(GriefPreventionPlugin.instance);
-            } else {
-                task.run();
-            }
-        } else {
-            source.sendMessage(message);
-        }
-    }
-
-    public static GriefPreventionConfig<?> getActiveConfig(WorldProperties worldProperties) {
-        return getActiveConfig(worldProperties.getUniqueId());
-    }
-
-    public static GriefPreventionConfig<? extends ConfigBase> getActiveConfig(UUID worldUniqueId) {
-        GriefPreventionConfig<ConfigBase> config = DataStore.worldConfigMap.get(worldUniqueId);
-        if (config != null) {
-            return config;
-        }
-
-        config = DataStore.dimensionConfigMap.get(worldUniqueId);
-        if (config != null) {
-            return config;
-        }
-
-        return DataStore.globalConfig;
-    }
-
-    public static GriefPreventionConfig<GlobalConfig> getGlobalConfig() {
-        return DataStore.globalConfig;
     }
 
     // checks whether players can create claims in a world
@@ -2070,7 +2073,7 @@ public class GriefPreventionPlugin {
         // show visualization to player who started the restoration
         if (player != null) {
             GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
-            GPClaim claim = new GPClaim(lesserBoundaryCorner, greaterBoundaryCorner , ClaimType.BASIC, false);
+            GPClaim claim = new GPClaim(lesserBoundaryCorner, greaterBoundaryCorner, ClaimType.BASIC, false);
             // TODO
             claim.getVisualizer().resetVisuals();
             claim.getVisualizer().createClaimBlockVisuals(player.getLocation().getBlockY(), player.getLocation(), playerData);
@@ -2092,9 +2095,7 @@ public class GriefPreventionPlugin {
         // if it looks like an IP address
         if (matcher.find()) {
             // and it's not in the list of allowed IP addresses
-            if (!GriefPreventionPlugin.getGlobalConfig().getConfig().spam.allowedIpAddresses.contains(matcher.group())) {
-                return true;
-            }
+            return !GriefPreventionPlugin.getGlobalConfig().getConfig().spam.allowedIpAddresses.contains(matcher.group());
         }
 
         return false;
@@ -2104,132 +2105,7 @@ public class GriefPreventionPlugin {
         return this.debugUserMap;
     }
 
-    public static boolean isEntityProtected(Entity entity) {
-        // ignore monsters
-        if (SpongeImplHooks.isCreatureOfType((net.minecraft.entity.Entity) entity, EnumCreatureType.MONSTER)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static User getOrCreateUser(UUID uuid) {
-        if (uuid == null) {
-            return null;
-        }
-
-        if (uuid == WORLD_USER_UUID) {
-            return WORLD_USER;
-        }
-
-        // check the cache
-        Optional<User> player = Sponge.getGame().getServiceManager().provide(UserStorageService.class).get().get(uuid);
-        if (player.isPresent()) {
-            return player.get();
-        } else {
-            try {
-                GameProfile gameProfile = Sponge.getServer().getGameProfileManager().get(uuid).get();
-                return Sponge.getGame().getServiceManager().provide(UserStorageService.class).get().getOrCreate(gameProfile);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-    }
-
-    public static boolean isSourceIdBlacklisted(String flag, Object source, WorldProperties worldProperties) {
-        final List<String> flagList = GPBlacklists.blacklistMap.get(flag);
-        final boolean checkFlag = flagList != null && !flagList.isEmpty();
-        if (!checkFlag && !GPBlacklists.GLOBAL_SOURCE) {
-            return false;
-        }
-
-        final GriefPreventionConfig<?> activeConfig = GriefPreventionPlugin.getActiveConfig(worldProperties);
-        final String id = GPPermissionHandler.getPermissionIdentifier(source);
-        final String idNoMeta = GPPermissionHandler.getIdentifierWithoutMeta(id);
-
-        // Check global
-        if (GPBlacklists.GLOBAL_SOURCE) {
-            final BlacklistCategory blacklistCategory = activeConfig.getConfig().blacklist;
-            final List<String> globalSourceBlacklist = blacklistCategory.getGlobalSourceBlacklist();
-            if (globalSourceBlacklist == null) {
-                return false;
-            }
-            for (String str : globalSourceBlacklist) {
-                if (FilenameUtils.wildcardMatch(id, str)) {
-                    return true;
-                }
-                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
-                    return true;
-                }
-            }
-        }
-        // Check flag
-        if (checkFlag) {
-            for (String str : flagList) {
-                if (FilenameUtils.wildcardMatch(id, str)) {
-                    return true;
-                }
-                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean isTargetIdBlacklisted(String flag, Object target, WorldProperties worldProperties) {
-        final List<String> flagList = GPBlacklists.blacklistMap.get(flag);
-        final boolean checkFlag = flagList != null && !flagList.isEmpty();
-        if (!checkFlag && !GPBlacklists.GLOBAL_TARGET) {
-            return false;
-        }
-
-        final GriefPreventionConfig<?> activeConfig = GriefPreventionPlugin.getActiveConfig(worldProperties);
-        final String id = GPPermissionHandler.getPermissionIdentifier(target);
-        final String idNoMeta = GPPermissionHandler.getIdentifierWithoutMeta(id);
-
-        // Check global
-        if (GPBlacklists.GLOBAL_TARGET) {
-            final BlacklistCategory blacklistCategory = activeConfig.getConfig().blacklist;
-            final List<String> globalTargetBlacklist = blacklistCategory.getGlobalTargetBlacklist();
-            if (globalTargetBlacklist == null) {
-                return false;
-            }
-            for (String str : globalTargetBlacklist) {
-                if (FilenameUtils.wildcardMatch(id, str)) {
-                    return true;
-                }
-                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
-                    return true;
-                }
-            }
-        }
-        // Check flag
-        if (checkFlag) {
-            for (String str : flagList) {
-                if (FilenameUtils.wildcardMatch(id, str)) {
-                    return true;
-                }
-                if (FilenameUtils.wildcardMatch(idNoMeta, str)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean containsProfanity(String message) {
-        final String[] words = message.split("\\s+");
-        for (String banned : DataStore.bannedWords) {
-            for (String word : words) {
-                if (FilenameUtils.wildcardMatch(word, banned)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+    public enum IgnoreMode {
+        None, StandardIgnore, AdminIgnore
     }
 }

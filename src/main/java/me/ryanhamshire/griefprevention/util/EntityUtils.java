@@ -54,7 +54,7 @@ public class EntityUtils {
         }
         if (entityName.contains(".")) {
             if ((entityName.indexOf(".") + 1) < entityName.length()) {
-                entityName = entityName.substring(entityName.indexOf(".") + 1, entityName.length());
+                entityName = entityName.substring(entityName.indexOf(".") + 1);
             }
         }
 

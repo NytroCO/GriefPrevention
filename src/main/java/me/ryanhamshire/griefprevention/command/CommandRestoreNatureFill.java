@@ -25,7 +25,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import me.ryanhamshire.griefprevention.ShovelMode;
@@ -36,6 +35,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 public class CommandRestoreNatureFill implements CommandExecutor {
 
@@ -58,9 +58,7 @@ public class CommandRestoreNatureFill implements CommandExecutor {
             playerData.fillRadius = 2;
         }
 
-        final Text message = GriefPreventionPlugin.instance.messageData.restoreNatureFillModeActive
-                .apply(ImmutableMap.of(
-                "radius", playerData.fillRadius)).build();
+        final Text message = Text.of(TextColors.GREEN, "Fill mode activated with radius " + playerData.fillRadius + ". Right click an area to fill.");
         GriefPreventionPlugin.sendMessage(player, message);
         return CommandResult.success();
     }

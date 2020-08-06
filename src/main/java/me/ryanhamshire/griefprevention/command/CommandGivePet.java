@@ -34,6 +34,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
 
 public class CommandGivePet implements CommandExecutor {
 
@@ -52,7 +53,7 @@ public class CommandGivePet implements CommandExecutor {
         // special case: cancellation
         if (args.getOne("player").orElse(false).equals(true)) {
             playerData.petGiveawayRecipient = null;
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandPetTransferCancel.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of("Pet giveaway cancelled."));
             return CommandResult.success();
         }
 
@@ -63,7 +64,7 @@ public class CommandGivePet implements CommandExecutor {
         playerData.petGiveawayRecipient = targetPlayer;
 
         // send instructions
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandPetTransferReady.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of("Ready to transfer!  Right-click the pet you'd like to give away, or cancel with /GivePet cancel."));
 
         return CommandResult.success();
     }

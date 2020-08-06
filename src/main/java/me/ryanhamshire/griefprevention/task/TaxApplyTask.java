@@ -103,7 +103,7 @@ public class TaxApplyTask implements Runnable {
             } else {
                 if (claim.isTown()) {
                     handleTownTax(claim, playerData);
-                } else if (claim.isBasicClaim()){
+                } else if (claim.isBasicClaim()) {
                     handleClaimTax(claim, playerData, false);
                 }
             }
@@ -153,11 +153,11 @@ public class TaxApplyTask implements Runnable {
                 if (inTown) {
                     final GPClaim town = claim.getTownClaim();
                     town.getData()
-                        .getEconomyData()
-                        .addBankTransaction(new GPBankTransaction(BankTransactionType.TAX_SUCCESS, Instant.now(), taxOwed));
+                            .getEconomyData()
+                            .addBankTransaction(new GPBankTransaction(BankTransactionType.TAX_SUCCESS, Instant.now(), taxOwed));
                     town.getEconomyAccount()
-                        .get()
-                        .deposit(this.economyService.getDefaultCurrency(), BigDecimal.valueOf(taxOwed), Sponge.getCauseStackManager().getCurrentCause());
+                            .get()
+                            .deposit(this.economyService.getDefaultCurrency(), BigDecimal.valueOf(taxOwed), Sponge.getCauseStackManager().getCurrentCause());
                 }
                 claim.getData().save();
             }

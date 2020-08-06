@@ -24,7 +24,6 @@
  */
 package me.ryanhamshire.griefprevention.command;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import me.ryanhamshire.griefprevention.GPPlayerData;
 import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
@@ -66,7 +65,7 @@ public class CommandClaimPermissionGroup implements CommandExecutor {
 
         final String permission = args.<String>getOne("permission").orElse(null);
         if (permission != null && !player.hasPermission(permission)) {
-            GriefPreventionPlugin.sendMessage(src, GriefPreventionPlugin.instance.messageData.permissionAssignWithoutHaving.toText());
+            GriefPreventionPlugin.sendMessage(src, Text.of(TextColors.RED, "You are not allowed to assign a permission that you do not have."));
             return CommandResult.success();
         }
 
@@ -74,16 +73,14 @@ public class CommandClaimPermissionGroup implements CommandExecutor {
         final String value = args.<String>getOne("value").orElse(null);
 
         if (!PermissionUtils.hasGroupSubject(group)) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandGroupInvalid.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Group " + group + " is not valid."));
             return CommandResult.success();
         }
 
         final Subject subj = PermissionUtils.getGroupSubject(group);
         GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
-        final Text message = GriefPreventionPlugin.instance.messageData.permissionClaimManage
-                .apply(ImmutableMap.of(
-                "type", claim.getType().name())).build();
+        final Text message = Text.of(TextColors.RED, "You don't have permission to manage " + claim.getType().name() + " claims.");
         if (claim.isWilderness() && !playerData.canManageWilderness) {
             GriefPreventionPlugin.sendMessage(src, message);
             return CommandResult.success();
@@ -99,8 +96,8 @@ public class CommandClaimPermissionGroup implements CommandExecutor {
             Map<String, Boolean> permissions = subj.getSubjectData().getPermissions(contexts);
             for (Map.Entry<String, Boolean> permissionEntry : permissions.entrySet()) {
                 Boolean permValue = permissionEntry.getValue();
-                Object[] permText = new Object[] { TextColors.GREEN, permissionEntry.getKey(), "  ",
-                                TextColors.GOLD, permValue.toString() };
+                Object[] permText = new Object[]{TextColors.GREEN, permissionEntry.getKey(), "  ",
+                        TextColors.GOLD, permValue.toString()};
                 permList.add(permText);
             }
 

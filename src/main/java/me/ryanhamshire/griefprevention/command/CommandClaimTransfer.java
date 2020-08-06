@@ -35,7 +35,7 @@ public class CommandClaimTransfer implements CommandExecutor {
 
         final User targetPlayer = args.<User>getOne("user").orElse(null);
         if (targetPlayer == null) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.commandPlayerInvalid.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "Player is not valid."));
             return CommandResult.success();
         }
 
@@ -44,7 +44,7 @@ public class CommandClaimTransfer implements CommandExecutor {
         final GPClaim claim = GriefPreventionPlugin.instance.dataStore.getClaimAtPlayer(playerData, player.getLocation());
 
         if (claim == null || claim.isWilderness()) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimNotFound.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "There's no claim here."));
             return CommandResult.empty();
         }
 
@@ -52,17 +52,17 @@ public class CommandClaimTransfer implements CommandExecutor {
         final boolean isAdmin = playerData.canIgnoreClaim(claim);
         // check permission
         if (!isAdmin && claim.isAdminClaim() && !player.hasPermission(GPPermissions.COMMAND_ADMIN_CLAIMS)) {
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.permissionClaimTransferAdmin.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "You don't have permission to transfer admin claims."));
             return CommandResult.empty();
         } else if (!isAdmin && !player.getUniqueId().equals(ownerId) && claim.isUserTrusted(player, TrustType.MANAGER)) {
             if (claim.parent == null) {
                 // Managers can only transfer child claims
-                GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimNotYours.toText());
+                GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This isn't your claim."));
                 return CommandResult.success();
             }
         } else if (!isAdmin && !claim.isAdminClaim() && !player.getUniqueId().equals(ownerId)) {
             // verify ownership
-            GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimNotYours.toText());
+            GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.RED, "This isn't your claim."));
             return CommandResult.success();
         }
 
@@ -72,8 +72,8 @@ public class CommandClaimTransfer implements CommandExecutor {
             PlayerData targetPlayerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), targetPlayer.getUniqueId());
             if (claimResult.getResultType() == ClaimResultType.INSUFFICIENT_CLAIM_BLOCKS) {
                 src.sendMessage(Text.of(TextColors.RED, "Could not transfer claim to player with UUID " + targetPlayer.getUniqueId() + "."
-                    + " Player only has " + targetPlayerData.getRemainingClaimBlocks() + " claim blocks remaining." 
-                    + " The claim requires a total of " + claim.getClaimBlocks() + " claim blocks to own."));
+                        + " Player only has " + targetPlayerData.getRemainingClaimBlocks() + " claim blocks remaining."
+                        + " The claim requires a total of " + claim.getClaimBlocks() + " claim blocks to own."));
             } else if (claimResult.getResultType() == ClaimResultType.WRONG_CLAIM_TYPE) {
                 src.sendMessage(Text.of(TextColors.RED, "The wilderness claim cannot be transferred."));
             } else if (claimResult.getResultType() == ClaimResultType.CLAIM_EVENT_CANCELLED) {
@@ -83,7 +83,7 @@ public class CommandClaimTransfer implements CommandExecutor {
         }
 
         // confirm
-        GriefPreventionPlugin.sendMessage(player, GriefPreventionPlugin.instance.messageData.claimTransferSuccess.toText());
+        GriefPreventionPlugin.sendMessage(player, Text.of(TextColors.GREEN, "Claim transferred."));
         GriefPreventionPlugin.addLogEntry(player.getName() + " transferred a claim at "
                         + GriefPreventionPlugin.getfriendlyLocationString(claim.getLesserBoundaryCorner()) + " to " + targetPlayer.getName() + ".",
                 CustomLogEntryTypes.AdminActivity);

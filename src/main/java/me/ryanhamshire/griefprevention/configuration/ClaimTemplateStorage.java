@@ -46,12 +46,12 @@ import java.util.UUID;
 
 public class ClaimTemplateStorage {
 
+    public Path filePath;
     private HoconConfigurationLoader loader;
     private CommentedConfigurationNode root = SimpleCommentedConfigurationNode.root(ConfigurationOptions.defaults()
             .setHeader(GriefPreventionPlugin.CONFIG_HEADER));
     private ObjectMapper<ClaimTemplateConfig>.BoundInstance configMapper;
     private ClaimTemplateConfig configBase;
-    public Path filePath;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public ClaimTemplateStorage(Path path) {
@@ -65,7 +65,7 @@ public class ClaimTemplateStorage {
             }
 
             this.loader = HoconConfigurationLoader.builder().setPath(path).build();
-            this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(ClaimTemplateConfig.class).bindToNew();
+            this.configMapper = ObjectMapper.forClass(ClaimTemplateConfig.class).bindToNew();
 
             reload();
             save();
@@ -86,7 +86,7 @@ public class ClaimTemplateStorage {
             }
 
             this.loader = HoconConfigurationLoader.builder().setPath(this.filePath).build();
-            this.configMapper = (ObjectMapper.BoundInstance) ObjectMapper.forClass(ClaimTemplateConfig.class).bindToNew();
+            this.configMapper = ObjectMapper.forClass(ClaimTemplateConfig.class).bindToNew();
 
             reload();
             this.configBase.templateName = templateName;

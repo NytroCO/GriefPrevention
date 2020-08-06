@@ -32,7 +32,7 @@ import java.util.List;
 
 public class GPTrustClaimEvent extends GPClaimEvent implements TrustClaimEvent {
 
-    private TrustType trustType;
+    private final TrustType trustType;
 
     public GPTrustClaimEvent(Claim claim, TrustType trustType) {
         super(claim);
